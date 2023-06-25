@@ -7,7 +7,7 @@ run: hello.img
 	qemu-system-i386 -hda hello.img
 
 hello.img: hello.asm
-	nasm hello.asm -o hello.img
+	nasm hello.asm -Werror -o hello.img || rm hello.img
 
 
 # buckle up...
