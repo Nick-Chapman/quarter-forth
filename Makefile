@@ -1,5 +1,17 @@
 
-run: buckle.exe
+# hello world in boot sector
+top: hello.img
+	xxd hello.img
+
+run: hello.img
+	qemu-system-i386 -hda hello.img
+
+hello.img: hello.asm
+	nasm hello.asm -o hello.img
+
+
+# buckle up...
+brun: buckle.exe
 	./buckle.exe ; echo $$?
 
 buckle.exe: buckle.o
