@@ -3,20 +3,21 @@
 
 top: dump
 
-dump: disk.img
-	xxd disk.img
+dump: _build _build/disk.img
+	xxd _build/disk.img
 
-run: disk.img
-	qemu-system-i386 -hda disk.img
+run: _build _build/disk.img
+	qemu-system-i386 -hda _build/disk.img
 
-units = bootloader payload # $(patsubst %.asm, %, $(wildcard *.asm))
+units = bootloader payload
+images = $(patsubst %, _build/%.img, $(units))
 
-images = $(patsubst %, %.img, $(units))
-
-disk.img: $(images)
+_build/disk.img: $(images)
 	@echo Creating disk image
 	@cat $^ > $@
 
-%.img: %.asm Makefile
+_build/%.img: %.asm Makefile
 	@echo Assembling $<
 	@nasm -o $@ $<
+
+_build: ; @mkdir -p $@
