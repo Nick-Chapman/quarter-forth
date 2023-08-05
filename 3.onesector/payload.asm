@@ -16,6 +16,8 @@ set_screen_page:
     int 0x10
     ret
 
+    times 300 db 0xee
+
 print_hello:
     mov ah, 0x13 ;write string
     mov al, 1 ;write mode: update cursor
@@ -27,6 +29,8 @@ print_hello:
     mov dl, 1 ;column
     int 0x10
     ret
+
+    times 300 db 0xee
 
 msg:
     db "Hello OneSector World!"

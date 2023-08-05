@@ -8,7 +8,7 @@ start:
     mov es, ax ; cant set es to literal
 
     mov ah, 0x02 ; Function: Read Sectros From Drive
-    mov al, 1 ; sector count
+    mov al, 2 ; sector count
     mov ch, 0 ; cylinder
     mov cl, 2 ; sector
     mov dh, 0 ; head
