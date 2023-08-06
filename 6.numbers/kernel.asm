@@ -17,7 +17,7 @@ hello:
 
 bye:
 .name: db "bye"
-.link: dw hello.link ; previous
+.link: dw hello.link
 .size: db (.link - .name)
 .code:
     mov di, .msg
@@ -27,7 +27,7 @@ bye:
 
 hey:
 .name: db "hey"
-.link: dw bye.link ; previous
+.link: dw bye.link
 .size: db (.link - .name)
 .code:
     mov di, .msg
@@ -35,10 +35,51 @@ hey:
     ret
 .msg: db "{Hey There!}", 13, 0
 
-dictionary equ hey.link ; last one
+dot:
+.name: db "."
+.link: dw hey.link
+.size: db (.link - .name)
+.code:
+    call ps_pop_number
+    call print_number
+    call newline
+    ret
+
+add:
+.name: db "+"
+.link: dw dot.link
+.size: db (.link - .name)
+.code:
+    call ps_pop_number
+    mov bx, ax
+    call ps_pop_number
+    add ax, bx
+    call ps_push_number
+    ret
+
+dictionary equ add.link ; last one
+
+
+;;; Register Usage
+;;; BP - Parameter Stack
+
+;;; Push number(anything) on parameter stack
+;;; [in AX=number]
+ps_push_number:
+    sub bp, 2
+    mov [bp], ax
+    ret
+
+;;; Pop number(anything) from parameter stack
+;;; [out AX=number]
+ps_pop_number:
+    mov ax, [bp]
+    add bp, 2
+    ret
 
 
 start:
+    mov bp, 0xf800 ; why here?
     call cls
 .loop:
     call read_word
@@ -46,9 +87,7 @@ start:
     mov dx, buffer
     call try_parse_as_number
     jnz .nan
-
-    call print_number
-    call newline
+    call ps_push_number
     jmp .loop
 
 .nan:
@@ -64,7 +103,6 @@ start:
 .notfound:
     call print_nope
     jmp .loop
-
 
 newline:
     mov al, 13
