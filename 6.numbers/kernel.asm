@@ -25,7 +25,17 @@ bye:
     ret
 .msg: db "{Goodbye!}", 13, 0
 
-dictionary equ bye.link ; last one
+hey:
+.name: db "hey"
+.link: dw bye.link ; previous
+.size: db (.link - .name)
+.code:
+    mov di, .msg
+    call print_msg
+    ret
+.msg: db "{Hey There!}", 13, 0
+
+dictionary equ hey.link ; last one
 
 
 start:
@@ -45,11 +55,11 @@ start:
     mov dx, buffer
     call dictfind
 
-    cmp bp, 0
+    cmp bx, 0
     jz .notfound
-    ;; execute code at bp+3
-    add bp, 3
-    call bp
+    ;; execute code at bx+3
+    add bx, 3
+    call bx
     jmp .loop
 .notfound:
     call print_nope
@@ -66,7 +76,7 @@ print_nope:
     mov di, .msg
     call print_msg
     ret
-.msg:  db "{NOPE}", 0
+.msg:  db "{NOPE}", 13, 0
 
 
 ;;; Print a number in decimal
@@ -124,29 +134,30 @@ try_parse_as_number:
 
 
 ;;; Lookup word in dictionary, return entry if found or 0 otherwise
-;;; [in DX=sought-name, out BP=entry/0]
+;;; [in DX=sought-name, out BX=entry/0]
 ;;; [uses SI, DI, BX, CX]
 dictfind:
-    mov bp, dictionary
     mov di, dx
-    call strlen ; cx=len
-    mov bx, cx
+    call strlen ; ax=len
+    mov bx, dictionary
 .loop:
-    cmp cl, [bp+2] ; hmm, 8bit length comapre
-    jnz .skip
+    cmp al, [bx+2] ; hmm, 8bit length comapre
+    jnz .next
     ;; length matches; compare names
-    mov si, dx ; sought name
-    mov di, bp
-    sub di, cx ; this entry name
-    mov cx, bx ; length
+    mov si, dx ; si=sought name
+    mov di, bx
+    sub di, ax ; di=this entry name
+    mov cx, ax ; length
+    push ax
     call cmp_n
-    jz .ret
-.skip:
-    mov bp, [bp] ; traverse link
-    cmp bp, 0
+    pop ax
+    jnz .next
+    ret ; BX=entry
+.next:
+    mov bx, [bx] ; traverse link
+    cmp bx, 0
     jnz .loop
-.ret:
-    ret
+    ret ; BX=0 - not found
 
 ;;; Print message to output.
 ;;; [in DI=message(null terminated)]
@@ -174,29 +185,29 @@ cmp_n:
     inc di
     dec cx
     jnz .loop
-    ret
+    ret ; Z - matches
 .ret:
-    ret
+    ret ; NZ - diff
 
 ;;; Compute length of a null-terminated string
-;;; [in DI=string; out CX=length]
-;;; [consumes DI; uses AL]
+;;; [in DI=string; out AX=length]
+;;; [consumes DI; uses BL]
 strlen:
-    mov cx, 0
+    mov ax, 0
 .loop:
-    mov al, [di]
-    cmp al, 0
+    mov bl, [di]
+    cmp bl, 0
     jz .ret
-    inc cx
+    inc ax
     inc di
     jmp .loop
 .ret:
     ret
 
 ;;; Read word from keyboard into buffer memory
-;;; [uses AX,BP]
+;;; [uses AX,DI]
 read_word:
-    mov bp, buffer
+    mov di, buffer
 .skip:
     call read_char
     call write_char ; echo
@@ -205,13 +216,13 @@ read_word:
 .loop:
     cmp al, 0x21
     jb .done ; stop at white-space
-    mov [bp], al
-    inc bp
+    mov [di], al
+    inc di
     call read_char
     call write_char ; echo
     jmp .loop
 .done:
-    mov byte [bp], 0 ; add null terminator
+    mov byte [di], 0 ; add null terminator
     ret
 
 ;;; Write char to output; special case 13 as 10(NL);13(CR)
