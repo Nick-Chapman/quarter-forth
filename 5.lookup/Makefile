@@ -1,5 +1,5 @@
 
-# read words
+# Add dictionary lookup
 
 top: run
 
