@@ -1,7 +1,9 @@
 hello
-bye
-hey
-30 12 + .
-100 23 - .
-12 dup * .
-22 100 swap - .
+
+11 10 dup * swap dup * swap - .
+
+: hb hello bye ;
+: sqr dup * ;
+
+hb
+7 sqr sqr .

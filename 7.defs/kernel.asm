@@ -1,14 +1,8 @@
 
-;;; TODO
-;;; macro to push/pop specific register to param stack
-;;; top of dict changing
-;;; here, writing, : ;
-
 BITS 16
 org 0x500
 
     jmp start
-
 
 ;;; Register Usage
 ;;; BP - Parameter Stack
@@ -36,23 +30,27 @@ db (%%link - %%name)
 %endmacro
 
 
-defword "hello"
-    mov di, hello_msg
+%macro echo 1
+    jmp %%after
+%%message: db %1, 13, 0
+%%after:
+    mov di, %%message
     call print_msg
+%endmacro
+
+
+defword "hello"
+    echo "{Hello!}"
     ret
-hello_msg: db "{Hello there!}", 13, 0
 
 defword "bye"
-    mov di, bye_msg
-    call print_msg
+    echo "{Bye!}"
     ret
-bye_msg: db "{Goodbye!}", 13, 0
 
 defword "hey"
-    mov di, hey_msg
-    call print_msg
+    echo "{Hey!}"
     ret
-hey_msg: db "{Hey There!}", 13, 0
+
 
 defword "+"
     POP bx
@@ -94,7 +92,11 @@ defword "swap"
     PUSH ax
     ret
 
-dictionary equ lastlink
+defword ":"
+    jmp colon_intepreter
+
+
+dictionary: dw lastlink
 
 
 start:
@@ -196,7 +198,7 @@ try_parse_as_number:
 dictfind:
     mov di, dx
     call strlen ; ax=len
-    mov bx, dictionary
+    mov bx, [dictionary]
 .loop:
     cmp al, [bx+2] ; hmm, 8bit length comapre
     jnz .next
@@ -336,4 +338,95 @@ cls:
     ret
 
 
-buffer:
+colon_intepreter:
+    call read_word
+    mov di, buffer
+    call create_entry
+.loop:
+    call read_word
+    mov dx, buffer
+    mov di, dx
+    call is_semi
+    jz .yes
+    call dictfind ; answer in bx. TODO: test not 0 !
+    add bx, 3
+    mov ax, bx
+    call write_call
+    jmp .loop
+.yes:
+    ;echo "{SEMI!}"
+    call write_ret
+    ret
+
+is_semi:
+    cmp word [di], ";"
+    ret
+
+;;; Create dictionary entry for new word, in DI=word-name, uses BX
+create_entry:
+    push di
+    call strlen ; -> AX
+    pop di
+
+    push ax ; save length
+    call write_string
+
+    mov ax, [dictionary]
+    mov bx, [here]
+    mov [dictionary], bx
+    call write_word16 ; link
+
+    pop ax ; restore length
+    call write_byte
+    ret
+
+
+;;; Write string to [here], in DI=string, AX=length, consumes DI; use CX
+write_string:
+    mov cx, ax
+.loop:
+    cmp cx, 0
+    jz .done
+    mov ax, [di]
+    call write_byte
+    inc di
+    dec cx
+    jmp .loop
+.done:
+    ret
+
+;;; in AX=absolute-address-to-call
+write_call:
+    push ax
+    mov al, 0xe8 ; x86 encoding for "call"
+    call write_byte
+    pop ax
+    sub ax, [here]
+    sub ax, 2
+    call write_word16
+    ret
+
+write_ret:
+    mov al, 0xc3 ; x86 encoding for "ret"
+    call write_byte
+    ret
+
+;;; Write byte to [here], in AL=byte, uses BX
+write_byte:
+    mov bx, [here]
+    mov [bx], al
+    inc word [here]
+    ret
+
+;;; Write word16 to [here], in AX=word16, uses BX
+write_word16:
+    mov bx, [here]
+    mov [bx], ax
+    add word [here], 2
+    ret
+
+
+buffer: times 64 db 0
+
+here: dw here_start
+here_start:
