@@ -10,6 +10,22 @@ org 0x500
     jmp start
 
 
+;;; Register Usage
+;;; BP - Parameter Stack
+
+;;; Push to parameter stack
+%macro PUSH 1
+    sub bp, 2
+    mov [bp], %1
+%endmacro
+
+;;; Pop from parameter stack
+%macro POP 1
+    mov %1, [bp]
+    add bp, 2
+%endmacro
+
+
 %define lastlink 0
 
 %macro defword 1
@@ -39,73 +55,46 @@ defword "hey"
 hey_msg: db "{Hey There!}", 13, 0
 
 defword "+"
-    call ps_pop_number
-    mov bx, ax
-    call ps_pop_number
+    POP bx
+    POP ax
     add ax, bx
-    call ps_push_number
+    PUSH ax
     ret
 
 defword "-"
-    call ps_pop_number
-    mov bx, ax
-    call ps_pop_number
+    POP bx
+    POP ax
     sub ax, bx
-    call ps_push_number
+    PUSH ax
     ret
 
 defword "*"
-    call ps_pop_number
-    mov bx, ax
-    call ps_pop_number
+    POP bx
+    POP ax
     mul bx ; implict ax
-    call ps_push_number
+    PUSH ax
     ret
 
 defword "."
-    call ps_pop_number
+    POP ax
     call print_number
     call newline
     ret
 
 defword "dup"
-    call ps_pop_number
-    call ps_push_number
-    call ps_push_number
+    POP ax
+    PUSH ax
+    PUSH ax
     ret
 
 defword "swap"
-    call ps_pop_number
-    push ax
-    call ps_pop_number
-    mov bx, ax
-    pop ax
-    call ps_push_number
-    mov ax, bx
-    call ps_push_number
+    POP bx
+    POP ax
+    PUSH bx
+    PUSH ax
     ret
-
-
 
 dictionary equ lastlink
-
-
-;;; Register Usage
-;;; BP - Parameter Stack
-
-;;; Push number(anything) on parameter stack
-;;; [in AX=number]
-ps_push_number:
-    sub bp, 2
-    mov [bp], ax
-    ret
-
-;;; Pop number(anything) from parameter stack
-;;; [out AX=number]
-ps_pop_number:
-    mov ax, [bp]
-    add bp, 2
-    ret
 
 
 start:
@@ -117,7 +106,7 @@ start:
     mov dx, buffer
     call try_parse_as_number
     jnz .nan
-    call ps_push_number
+    PUSH ax
     jmp .loop
 
 .nan:
