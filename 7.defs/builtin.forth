@@ -2,7 +2,7 @@ hello
 
 11 10 dup * swap dup * swap - .
 
-: hb hello bye ;
+: hb hello xxx bye ;
 : sqr dup * ;
 
 hb

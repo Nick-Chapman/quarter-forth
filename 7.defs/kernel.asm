@@ -116,13 +116,13 @@ start:
     call dictfind
 
     cmp bx, 0
-    jz .notfound
+    jz .missing
     ;; execute code at bx+3
     add bx, 3
     call bx
     jmp .loop
-.notfound:
-    call print_nope
+.missing:
+    echo "{Nope}"
     jmp .loop
 
 newline:
@@ -130,12 +130,6 @@ newline:
     call write_char
     ret
 
-;;; [uses DI]]
-print_nope:
-    mov di, .msg
-    call print_msg
-    ret
-.msg:  db "{NOPE}", 13, 0
 
 
 ;;; Print a number in decimal
@@ -346,17 +340,27 @@ colon_intepreter:
     call read_word
     mov dx, buffer
     mov di, dx
+
     call is_semi
-    jz .yes
-    call dictfind ; answer in bx. TODO: test not 0 !
+    jz .semi
+
+    call dictfind
+    cmp bx, 0
+    jz .missing
+
     add bx, 3
     mov ax, bx
     call write_call
     jmp .loop
-.yes:
+
+.semi:
     ;echo "{SEMI!}"
     call write_ret
     ret
+
+.missing:
+    echo "{Nope}"
+    jmp .loop
 
 is_semi:
     cmp word [di], ";"
