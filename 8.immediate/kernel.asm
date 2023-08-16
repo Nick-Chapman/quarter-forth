@@ -29,10 +29,25 @@ db (%%link - %%name)
 %define lastlink %%link
 %endmacro
 
+%macro defwordimm 1
+%%name: db %1
+%%link: dw lastlink
+db ((%%link - %%name) | 0x80)
+%define lastlink %%link
+%endmacro
+
 
 %macro echo 1
     jmp %%after
 %%message: db %1, 13, 0
+%%after:
+    mov di, %%message
+    call print_string
+%endmacro
+
+%macro echo_n 1
+    jmp %%after
+%%message: db %1, 0
 %%after:
     mov di, %%message
     call print_string
@@ -118,11 +133,11 @@ defword ":"
     jmp colon_intepreter
 
 
-defword "if"
+defwordimm "if"
     echo "{IF}"
     ret
 
-defword "then"
+defwordimm "then"
     echo "{THEN}"
     ret
 
@@ -196,7 +211,9 @@ dictfind:
     call strlen ; ax=len
     mov bx, [dictionary]
 .loop:
-    cmp al, [bx+2] ; hmm, 8bit length comapre
+    mov cl, [bx+2]
+    and cl, 0x7f
+    cmp al, cl ; 8bit length comapre
     jnz .next
     ;; length matches; compare names
     mov si, dx ; si=sought name
@@ -283,8 +300,8 @@ startup_read_char:
 
 builtin: dw builtin_data
 builtin_data:
-    incbin "builtin.forth"
-    ;incbin "small.forth"
+    ;incbin "builtin.forth"
+    incbin "small.forth"
     db 0
 
 ;;; Read char from input
@@ -316,17 +333,32 @@ colon_intepreter:
     cmp bx, 0
     jz .missing
 
-    ;; mov ax, '['
-    ;; call print_char
-    ;; mov ax, 0
-    ;; mov al, [bx+2] ; see size; in prep for ading immediate bit
-    ;; call print_number
-    ;; mov ax, ']'
-    ;; call print_char
+    ;mov ax, '['
+    ;call print_char
+    ;mov ax, 0
+    ;mov al, [bx+2] ; see size; in prep for ading immediate bit
+    ;call print_number
+    ;mov ax, ']'
+    ;call print_char
 
+    mov al, [bx+2] ; see size; in prep for ading immediate bit
+    cmp al, 0x80
+    ja .immediate
+
+    ;mov ax, 'x'
+    ;call print_char
     add bx, 3
     mov ax, bx
     call write_call
+    jmp .loop
+
+.immediate:
+    ;mov ax, 'i'
+    ;call print_char
+    ; echo_n "{IMM}"
+    ;; execute code at bx+3
+    add bx, 3
+    call bx
     jmp .loop
 
 .number:
