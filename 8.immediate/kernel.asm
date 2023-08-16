@@ -73,6 +73,28 @@ defword "*"
     PUSH ax
     ret
 
+defword "<"
+    POP bx
+    POP ax
+    cmp ax, bx
+    mov ax, 0xffff ; true
+    jl isLess
+    mov ax, 0 ; false
+isLess:
+    PUSH ax
+    ret
+
+defword "="
+    POP bx
+    POP ax
+    cmp ax, bx
+    mov ax, 0xffff ; true
+    jz isEq
+    mov ax, 0 ; false
+isEq:
+    PUSH ax
+    ret
+
 defword "."
     POP ax
     call print_number
@@ -96,11 +118,21 @@ defword ":"
     jmp colon_intepreter
 
 
+defword "if"
+    echo "{IF}"
+    ret
+
+defword "then"
+    echo "{THEN}"
+    ret
+
+
 dictionary: dw lastlink
 
 
 start:
-    mov bp, 0xf800 ; why here?
+    ;mov bp, 0xf800 ; why here?
+    mov bp, 0xf000 ; why here?
     call cls
 .loop:
     call read_word
@@ -284,10 +316,13 @@ read_word:
     mov byte [di], 0 ; add null terminator
     ret
 
-;;; Write char to output; special case 13 as 10(NL);13(CR)
+
+;;; Write char to output; special case 13 as 10(NL);13(CR) -- TODO: rename print_char
 ;;; [in AL=char]
 ;;; [consumes AL; uses AH BH]
 write_char: ; in AL
+;    jmp .go
+;.go:
     cmp al, 13
     jz .nl_cr
     cmp al, 10
@@ -320,6 +355,7 @@ startup_read_char:
 builtin: dw builtin_data
 builtin_data:
     incbin "builtin.forth"
+    ;incbin "small.forth"
     db 0
 
 ;;; Read char from input
@@ -357,6 +393,23 @@ colon_intepreter:
     call dictfind
     cmp bx, 0
     jz .missing
+
+    ;; push bx
+
+    ;; mov ax, 0
+    ;; mov al, [bx+2] ; size
+    ;; push ax
+
+    ;; ;echo "COMPILING"
+    ;; ;mov di, buffer
+    ;; ;call print_msg
+    ;mov ax, '['
+    ;call write_char
+    ;; pop ax
+    ;; call print_number
+    ;; mov ax, ']'
+    ;; call write_char
+    ;; pop bx
 
     add bx, 3
     mov ax, bx
@@ -451,6 +504,11 @@ write_byte:
     inc word [here]
     ret
 
+    ret
+    ret
+    ret
+    ret
+    
 ;;; Write word16 to [here], in AX=word16, uses BX
 write_word16:
     mov bx, [here]
@@ -458,6 +516,9 @@ write_word16:
     add word [here], 2
     ret
 
+
+%assign xxx ($-$$)
+%warning foo xxx bar
 
 buffer: times 64 db 0
 

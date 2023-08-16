@@ -14,7 +14,7 @@ start:
     mov sp, 0
 
     mov ah, 0x02 ; Function: Read Sectors From Drive
-    mov al, 2 ; sector count
+    mov al, 3 ; sector count
     mov ch, 0 ; cylinder
     mov cl, 2 ; sector
     mov dh, 0 ; head

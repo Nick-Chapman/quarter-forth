@@ -1,6 +1,8 @@
 
 # Add numbers and parameter stack
 
+check: _build _build/kernel.img
+
 top: _build run
 
 dump: _build _build/kernel.img
@@ -20,7 +22,7 @@ _build/disk.img: $(images)
 	@echo Creating disk image
 	@cat $^ > $@
 
-_build/%.img: %.asm builtin.forth Makefile
+_build/%.img: %.asm builtin.forth small.forth Makefile
 	@echo Assembling $<
 	@nasm -o $@ $<
 

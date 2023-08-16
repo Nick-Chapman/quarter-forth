@@ -9,4 +9,11 @@ hello
 hb
 7 sqr sqr .
 100 decrement .
+
+6 7 < .
+7 7 < .
+
+6 7 = .
+7 7 = .
+
 bye
