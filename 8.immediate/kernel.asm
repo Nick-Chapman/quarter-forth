@@ -35,7 +35,7 @@ db (%%link - %%name)
 %%message: db %1, 13, 0
 %%after:
     mov di, %%message
-    call print_msg
+    call print_string
 %endmacro
 
 
@@ -98,7 +98,7 @@ isEq:
 defword "."
     POP ax
     call print_number
-    call newline
+    call print_newline
     ret
 
 defword "dup"
@@ -131,7 +131,7 @@ dictionary: dw lastlink
 
 
 start:
-    mov bp, 0xf800 ; why here? ;; allows 2k for call stack
+    mov bp, 0xf800 ; allows 2k for call stack
     call cls
 .loop:
     call read_word
@@ -156,42 +156,7 @@ start:
     echo "{Nope}"
     jmp .loop
 
-newline:
-    mov al, 13
-    call write_char
-    ret
 
-
-
-;;; Print a number in decimal
-;;; [in AX=number]
-;;; [uses BX, DX]
-print_number:
-    push ax
-    push bx
-    call .go
-    pop bx
-    pop ax
-    ret
-.go:
-    mov bx, 10
-.nest:
-    mov dx, 0
-    div bx ; ax=ax/10; dx=ax%10
-    cmp ax, 0 ; last digit?
-    jz .print_digit ; YES, so print it
-    ;; NO, deal with more significant digits first
-    push dx
-    call .nest
-    pop dx
-    ;; drop to print this one
-.print_digit:
-    push ax
-    mov al, dl
-    add al, '0'
-    call write_char
-    pop ax
-    ret
 
 ;;; Try to parse a string as a number
 ;;; [in DX=string-to-be-tested, out Z=yes-number, DX:AX=number]
@@ -249,21 +214,6 @@ dictfind:
     jnz .loop
     ret ; BX=0 - not found
 
-;;; Print message to output.
-;;; [in DI=message(null terminated)]
-;;; [consumes DI]
-print_msg:
-    push ax
-.loop:
-    mov al, [di]
-    cmp al, 0 ; null?
-    je .done
-    call write_char
-    inc di
-    jmp .loop
-.done:
-    pop ax
-    ret
 
 ;;; Compare n bytes at two pointers
 ;;; [in CX=n, SI/DI=pointers-to-things-to-compare, out Z=same]
@@ -302,7 +252,7 @@ read_word:
     mov di, buffer
 .skip:
     call [read_char]
-    call write_char ; echo
+    call print_char ; echo
     cmp al, 0x21
     jb .skip ; skip leading white-space
 .loop:
@@ -311,36 +261,11 @@ read_word:
     mov [di], al
     inc di
     call [read_char]
-    call write_char ; echo
+    call print_char ; echo
     jmp .loop
 .done:
     mov byte [di], 0 ; add null terminator
     ret
-
-
-;;; Write char to output; special case 13 as 10(NL);13(CR) -- TODO: rename print_char
-;;; [in AL=char]
-;;; [consumes AL; uses AH BH]
-write_char: ; in AL
-    push bx
-    call .go
-    pop bx
-    ret
-.go:
-    cmp al, 13
-    jz .nl_cr
-    cmp al, 10
-    jz .nl_cr
-.raw:
-    mov ah, 0x0e ; Function: Teletype output
-    mov bh, 0
-    int 0x10
-    ret
-.nl_cr:
-    mov al, 10 ; NL
-    call .raw
-    mov al, 13 ; CR
-    jmp .raw
 
 
 read_char: dw startup_read_char
@@ -370,13 +295,6 @@ interactive_read_char:
     int 0x16
     ret
 
-;;; Clear screen
-;;; [uses AX]
-cls:
-    mov ax, 0x0003 ; AH=0 AL=3 video mode 80x25
-    int 0x10
-    ret
-
 
 colon_intepreter:
     call read_word
@@ -399,12 +317,12 @@ colon_intepreter:
     jz .missing
 
     ;; mov ax, '['
-    ;; call write_char
+    ;; call print_char
     ;; mov ax, 0
     ;; mov al, [bx+2] ; see size; in prep for ading immediate bit
     ;; call print_number
     ;; mov ax, ']'
-    ;; call write_char
+    ;; call print_char
 
     add bx, 3
     mov ax, bx
@@ -461,6 +379,8 @@ create_entry:
     call write_byte
     ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Write to [here]
 
 ;;; Write string to [here], in DI=string, AX=length, consumes DI; use CX
 write_string:
@@ -506,7 +426,103 @@ write_word16:
     add word [here], 2
     ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Print to output
+
+;;; Print number in decimal format.
+;;; in: AX=number
+print_number:
+    push ax
+    push bx
+    push dx
+    call .go
+    pop dx
+    pop bx
+    pop ax
+    ret
+.go:
+    mov bx, 10
+.nest:
+    mov dx, 0
+    div bx ; ax=ax/10; dx=ax%10
+    cmp ax, 0 ; last digit?
+    jz .print_digit ; YES, so print it
+    ;; NO, deal with more significant digits first
+    push dx
+    call .nest
+    pop dx
+    ;; then drop to print this one
+.print_digit:
+    push ax
+    mov al, dl
+    add al, '0'
+    call print_char
+    pop ax
+    ret
+
+;;; Print null-terminated string.
+;;; in: DI=string
+print_string:
+    push ax
+    push di
+.loop:
+    mov al, [di]
+    cmp al, 0 ; null?
+    je .done
+    call print_char
+    inc di
+    jmp .loop
+.done:
+    pop ax
+    pop di
+    ret
+
+;;; Print newline to output
+print_newline:
+    push ax
+    mov al, 13
+    call print_char
+    pop ax
+    ret
+
+;;; Print char to output; special case 13 as 10(NL);13(CR)
+;;; in: AL=char
+print_char:
+    push ax
+    push bx
+    call .go
+    pop bx
+    pop ax
+    ret
+.go:
+    cmp al, 13
+    jz .nl_cr
+    cmp al, 10
+    jz .nl_cr
+.raw:
+    mov ah, 0x0e ; Function: Teletype output
+    mov bh, 0
+    int 0x10
+    ret
+.nl_cr:
+    mov al, 10 ; NL
+    call .raw
+    mov al, 13 ; CR
+    jmp .raw
+
+
+;;; Clear screen
+cls:
+    push ax
+    mov ax, 0x0003 ; AH=0 AL=3 video mode 80x25
+    int 0x10
+    pop ax
+    ret
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Size check...
+
 %assign R ($-$$)  ;; Space required for above code
 %assign S 3       ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
@@ -515,7 +531,11 @@ write_word16:
 %error "Kernel too big!" required=R, allowed=A (#sectors=S)
 %endif
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; buffer & here
+
 buffer: times 64 db 0
 
 here: dw here_start
-here_start:
+here_start: ; persistent heap
