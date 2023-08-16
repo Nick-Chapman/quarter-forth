@@ -131,8 +131,7 @@ dictionary: dw lastlink
 
 
 start:
-    ;mov bp, 0xf800 ; why here?
-    mov bp, 0xf000 ; why here?
+    mov bp, 0xf800 ; why here? ;; allows 2k for call stack
     call cls
 .loop:
     call read_word
@@ -169,7 +168,9 @@ newline:
 ;;; [uses BX, DX]
 print_number:
     push ax
+    push bx
     call .go
+    pop bx
     pop ax
     ret
 .go:
@@ -321,8 +322,11 @@ read_word:
 ;;; [in AL=char]
 ;;; [consumes AL; uses AH BH]
 write_char: ; in AL
-;    jmp .go
-;.go:
+    push bx
+    call .go
+    pop bx
+    ret
+.go:
     cmp al, 13
     jz .nl_cr
     cmp al, 10
@@ -394,22 +398,13 @@ colon_intepreter:
     cmp bx, 0
     jz .missing
 
-    ;; push bx
-
+    ;; mov ax, '['
+    ;; call write_char
     ;; mov ax, 0
-    ;; mov al, [bx+2] ; size
-    ;; push ax
-
-    ;; ;echo "COMPILING"
-    ;; ;mov di, buffer
-    ;; ;call print_msg
-    ;mov ax, '['
-    ;call write_char
-    ;; pop ax
+    ;; mov al, [bx+2] ; see size; in prep for ading immediate bit
     ;; call print_number
     ;; mov ax, ']'
     ;; call write_char
-    ;; pop bx
 
     add bx, 3
     mov ax, bx
@@ -504,11 +499,6 @@ write_byte:
     inc word [here]
     ret
 
-    ret
-    ret
-    ret
-    ret
-    
 ;;; Write word16 to [here], in AX=word16, uses BX
 write_word16:
     mov bx, [here]
@@ -516,9 +506,14 @@ write_word16:
     add word [here], 2
     ret
 
-
-%assign xxx ($-$$)
-%warning foo xxx bar
+;;; Size check...
+%assign R ($-$$)  ;; Space required for above code
+%assign S 3       ;; Number of sectors the bootloader loads
+%assign A (S*512) ;; Therefore: Maximum space allowed
+;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
+%if R>A
+%error "Kernel too big!" required=R, allowed=A (#sectors=S)
+%endif
 
 buffer: times 64 db 0
 

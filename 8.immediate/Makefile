@@ -1,8 +1,6 @@
 
 # Add numbers and parameter stack
 
-check: _build _build/kernel.img
-
 top: _build run
 
 dump: _build _build/kernel.img
@@ -10,9 +8,9 @@ dump: _build _build/kernel.img
 
 run: _build/disk.img
 	@echo Runing QEMU
-	@#qemu-system-i386 -hda _build/disk.img
+	@qemu-system-i386 -hda _build/disk.img
 	@#qemu-system-i386 -drive index=0,media=disk,format=raw,file=$<
-	@qemu-system-i386 -drive format=raw,file=$<
+	@#qemu-system-i386 -drive format=raw,file=$<
 
 
 units = bootloader kernel
