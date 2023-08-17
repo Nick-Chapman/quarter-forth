@@ -156,14 +156,14 @@ defwordimm "if"
 
 do_if:
     pop bx
-    mov ax, [bx]
     POP cx
     cmp cx, 0
-    jz .yes
-    jmp ax ; branch to target
-.yes:
+    jz .no
     add bx, 2 ; skip over target pointer, and continue
     jmp bx
+.no:
+    mov bx, [bx]
+    jmp bx ; branch to target
 
 defwordimm "then"
     POP bx
@@ -331,7 +331,7 @@ startup_read_char:
 builtin: dw builtin_data
 builtin_data:
     incbin "predefined.forth"
-    incbin "play.forth"
+    incbin "regression.forth"
     db 0
 
 ;;; Read char from input
@@ -586,7 +586,7 @@ cls:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 3       ;; Number of sectors the bootloader loads
+%assign S 4       ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A
