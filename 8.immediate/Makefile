@@ -20,7 +20,7 @@ _build/disk.img: $(images)
 	@echo Creating disk image
 	@cat $^ > $@
 
-_build/%.img: %.asm builtin.forth small.forth Makefile
+_build/%.img: %.asm predefined.forth play.forth Makefile
 	@echo Assembling $<
 	@nasm -o $@ $<
 

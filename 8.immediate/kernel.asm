@@ -129,16 +129,46 @@ defword "swap"
     PUSH ax
     ret
 
+defword "over"
+    POP ax
+    POP bx
+    PUSH bx
+    PUSH ax
+    PUSH bx
+    ret
+
+defword "drop"
+    POP ax
+    ret
+
 defword ":"
     jmp colon_intepreter
 
 
 defwordimm "if"
-    echo "{IF}"
+    mov ax, do_if
+    call write_call
+    mov ax, [here]
+    PUSH ax
+    mov ax, 0
+    call write_word16
     ret
 
+do_if:
+    pop bx
+    mov ax, [bx]
+    POP cx
+    cmp cx, 0
+    jz .yes
+    jmp ax ; branch to target
+.yes:
+    add bx, 2 ; skip over target pointer, and continue
+    jmp bx
+
 defwordimm "then"
-    echo "{THEN}"
+    POP bx
+    mov ax, [here]
+    mov word [bx], ax
     ret
 
 
@@ -300,8 +330,8 @@ startup_read_char:
 
 builtin: dw builtin_data
 builtin_data:
-    ;incbin "builtin.forth"
-    incbin "small.forth"
+    incbin "predefined.forth"
+    incbin "play.forth"
     db 0
 
 ;;; Read char from input
