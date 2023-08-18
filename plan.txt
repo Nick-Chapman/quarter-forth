@@ -179,4 +179,109 @@ literal
 ]
 
 ----------------------------------------------------------------------
-Now lets make a reduced list of words I hope to tackle....
+Now lets make a reduced list of words I hope to tackle.
+And classify.
+
+
+Input
+    key (but not until I have char support)
+    word
+
+Output
+    cr
+    spaces
+    space
+    emit
+    .
+
+Numerics
+    +
+    -
+    *
+    /
+    /mod
+    mod
+    1+
+    1-
+    abs
+    negate
+    min
+    max
+
+Boolean
+    =
+    <>
+    <
+    0=
+    0<
+    0>
+    and
+    or
+
+Stack-twiddling
+    swap
+    dup
+    over
+    rot
+    drop
+
+Dictionary
+    : xxx yyy ;
+    create
+    variable xxx
+    constant xxx
+
+Compiling, control-flow
+    if
+    then
+    else
+    do
+    loop
+    literal
+    [
+    ]
+    branch
+    0branch
+
+Dictionary/Heap
+    here
+    h (variable containing here pointer?)
+    !
+    @
+    ?
+    +!
+    fill
+    erase
+    cell
+    cells
+    allot (shifts h?)
+
+    : ,   here ! cell allot ; (from chapter 9)
+
+Execution tokens
+    ' xxx
+    [']
+    execute
+
+Internal state
+    sp@
+    s0
+
+Return Stack
+    >r
+    r>
+    r@
+
+Misc:
+    ( xxx)   ( comments! )
+    immediate
+    ?dup
+    abort" xx"
+    page
+    exit
+    quit
+    does>
+    postpone xxx
+
+String
+    ." xxx"
