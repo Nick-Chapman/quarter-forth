@@ -217,6 +217,7 @@ Boolean
     0>
     and
     or
+    invert (jones)
 
 Stack-twiddling
     swap
@@ -242,10 +243,13 @@ Compiling, control-flow
     ]
     branch
     0branch
+    state (jones)
+    ;
 
 Dictionary/Heap
+    latest (jones)
     here
-    h (variable containing here pointer?)
+    h (variable containing here pointer? - also known as cp?)
     !
     @
     ?
@@ -262,6 +266,8 @@ Execution tokens
     ' xxx
     [']
     execute
+    find (jones)
+    >cfa (jones)
 
 Internal state
     sp@
@@ -282,6 +288,9 @@ Misc:
     quit
     does>
     postpone xxx
+    hidden (jones)
+    char (jones)
+    lit (jones)
 
 String
     ." xxx"
