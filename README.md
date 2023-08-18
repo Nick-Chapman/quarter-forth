@@ -2,10 +2,9 @@
 
 Implementing a Forth system on bare metal x86.
 Initially following the [steps](,steps) in the _tumble forth_ tutorial.
-But going my own way after getting if/then immediates working.
+But going my own way after getting if/then immediates working. [Plan](plan.txt)
 
-
-References:
+### References:
 - [Collapse OS, Why Forth?](http://collapseos.org/forth.html)
 - [Tumble Forth](https://tumbleforth.hardcoded.net)
 - [Starting Forth](https://www.forth.com/starting-forth)

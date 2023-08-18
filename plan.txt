@@ -1,0 +1,182 @@
+
+Words to implement.
+
+Where possible in forth. Pushing just the real core primitives to asm.
+
+----------------------------------------------------------------------
+First off: List everything in _Starting forth_. Not using UPPERCASE; too shouty.
+See many numeric words which I am not interested in. Also many "2" and "c" (char) versions of ops which can wait. Also, editor/buffer stuff is out of scope for me.
+
+
+Chapter 1 (fundermental)
+: xxx yyy ;
+cr
+spaces
+space
+emit
+." xxx"
++
+.
+
+Chapter 2 (getting results)
++
+-
+*
+/
+/mod
+mod
+swap
+dup
+over
+rot
+drop
+2swap
+2dup
+2over
+2drop
+
+Chapter 3 (editor)
+use xxx
+using xxx
+list
+load
+( xxx)
+update
+empty-buffers
+block
+include xxx
+forget xxx
+marker xxx
+
+Chapter 4 (decisions)
+if
+=
+<>
+<
+>U<
+U>
+0=
+0<
+0>
+and
+or
+?dup
+abort" xx"
+
+Chapter 5 (fixed point)
+1+
+1-
+2+
+2-
+2*
+2/
+abs
+negate
+min
+max
+>r
+r>
+r@
+*/
+*/mod
+
+Chapter 6 (loops)
+do
+loop
++loop
+leave
+begin
+until
+while
+repeat
+again
+u.r
+page
+quit
+
+Chapter 7 (numbers)
+u.
+um*
+um/mod
+u<
+hex
+octal
+decimal
+<#
+#
+#s
+hold
+sign
+#>
+d.
+d.r
+d+
+d-
+dnegate
+dmax
+dmin
+d=
+d0=
+d<
+du<
+m+
+sm/rem
+fm/mod
+m*
+m*/
+
+Chapter 8 (variables, constants, arrays)
+variable xxx
+!
+@
+?
++!
+constant xxx
+2variable
+2constant
+2!
+2@
+fill
+erase
+c!
+c@
+
+Chapter 9 (under the hood)
+' xxx
+[']
+exit
+quit
+here
+pad
+sp@
+s0
+tib
+#tib
+base
+h
+>in
+
+Chapter 10 (IO)
+type
+-trailing
+cmove
+cmove>
+move
+key
+accept
+word
+>number
+count
+compare
+
+
+Chapter 11 (extending compiler)
+does>
+immediate
+postpone xxx
+literal
+[
+]
+
+----------------------------------------------------------------------
+Now lets make a reduced list of words I hope to tackle....
