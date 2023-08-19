@@ -172,11 +172,39 @@ defwordimm "then"
     ret
 
 
+defwordimm "br"
+    call read_word
+    mov dx, buffer
+    call dictfind
+    cmp bx, 0
+    jz .missing
+
+    push bx
+    mov ax, do_br
+    call write_call
+
+    pop bx
+    add bx, 3
+    mov ax, bx
+    call write_word16
+    ret
+.missing:
+    echo "{br:Nope}"
+    ret
+
+do_br:
+    pop bx
+    mov bx, [bx]
+    jmp bx
+    ret
+
+
 dictionary: dw lastlink
 
 
 start:
     mov bp, 0xf800 ; allows 2k for call stack
+    ;mov bp, 0xf000 ; allows 4k for call stack
     call cls
 .loop:
     call read_word
@@ -332,6 +360,7 @@ builtin: dw builtin_data
 builtin_data:
     incbin "src/predefined.f"
     incbin "src/regression.f"
+    incbin "src/play.f"
     db 0
 
 ;;; Read char from input
@@ -464,7 +493,7 @@ write_call:
     mov al, 0xe8 ; x86 encoding for "call"
     call write_byte
     pop ax
-    sub ax, [here]
+    sub ax, [here] ; make it relative
     sub ax, 2
     call write_word16
     ret

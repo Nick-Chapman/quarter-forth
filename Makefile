@@ -21,6 +21,6 @@ _build/%.img: src/%.asm Makefile
 	@echo Assembling $<
 	@nasm -o $@ $<
 
-_build/kernel.img : src/predefined.f src/regression.f
+_build/kernel.img : $(wildcard src/*.f)
 
 _build: ; @mkdir -p $@
