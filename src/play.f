@@ -21,3 +21,13 @@ words
 
 : execute_if_not_zero dup if execute exit then drop ;
 create interpret ! ' ! execute_if_not_zero ! interpret
+
+: star 42 emit ;
+: cr 13 emit ;
+: space 32 emit ;
+: spaces dup if space 1 - br spaces then drop ;
+: stars dup if star 1 - br stars then drop ;
+: margin cr 30 spaces ;
+: blip margin star ;
+: bar margin 5 stars ;
+: F bar blip bar blip blip cr ;

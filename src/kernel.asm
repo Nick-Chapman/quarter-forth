@@ -275,6 +275,13 @@ _words:
     call print_newline
     ret
 
+
+defword "emit"
+    POP ax
+    call print_char
+    ret
+
+
 dictionary: dw lastlink
 
 
