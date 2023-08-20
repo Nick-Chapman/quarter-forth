@@ -255,6 +255,25 @@ defword "compile" ;; compile call to execution token on top of stack
     call write_call
     ret
 
+
+defword "words"
+_words:
+    mov bx, [dictionary]
+.loop:
+    mov cl, [bx+2]
+    and cl, 0x7f
+    mov ch, 0
+    mov di, bx
+    sub di, cx
+    call print_string_n
+    mov al, ' '
+    call print_char
+    mov bx, [bx] ; traverse link
+    cmp bx, 0
+    jnz .loop
+    call print_newline
+    ret
+
 dictionary: dw lastlink
 
 
@@ -607,6 +626,26 @@ print_string:
 .done:
     pop ax
     pop di
+    ret
+
+;;; Print counted string.
+;;; in: CL=length, DI=string
+print_string_n:
+    push cx
+    push ax
+    push di
+.loop:
+    cmp cl, 0 ; no more chars
+    je .done
+    mov al, [di]
+    call print_char
+    inc di
+    dec cl
+    jmp .loop
+.done:
+    pop ax
+    pop di
+    pop cx
     ret
 
 ;;; Print newline to output

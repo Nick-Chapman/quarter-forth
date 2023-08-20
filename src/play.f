@@ -14,3 +14,5 @@ create dub ' dup compile ' + compile ' exit compile
 create quad ' dub compile ' dub compile ' exit compile
 
 5 quad 20 expect
+
+words
