@@ -10,9 +10,11 @@
 0 test-exit 222 expect
 1 test-exit 111 expect
 
-create dub ' dup compile, ' + compile, ' exit compile,
-create quad ' dub compile, ' dub compile, ' exit compile,
+create ! ' ' compile, ' compile, compile, ' exit compile,
 
-5 quad 20 expect
+create *2 ! dup ! + ! exit
+create *4 ! *2 ! *2 ! exit
+
+5 *4 20 expect
 
 words
