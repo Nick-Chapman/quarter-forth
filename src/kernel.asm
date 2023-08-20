@@ -199,6 +199,25 @@ do_br:
     ret
 
 
+defwordimm "'"
+    call read_word
+    mov dx, buffer
+    call dictfind
+    cmp bx, 0
+    jz .missing
+    add bx, 3
+    PUSH bx
+    ret
+.missing:
+    echo "{br:Nope}"
+    ret
+
+defword "execute"
+    POP bx
+    jmp bx
+    ret
+
+
 dictionary: dw lastlink
 
 
@@ -611,11 +630,13 @@ cls:
     ret
 
 
+buffer: times 64 db 0 ;; must be before size check. why??
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 4       ;; Number of sectors the bootloader loads
+%assign S 5       ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A
@@ -625,8 +646,6 @@ cls:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; buffer & here
-
-buffer: times 64 db 0
 
 here: dw here_start
 here_start: ; persistent heap
