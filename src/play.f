@@ -18,3 +18,6 @@ create *4 ! *2 ! *2 ! exit
 5 *4 20 expect
 
 words
+
+: execute_if_not_zero dup if execute exit then drop ;
+create interpret ! ' ! execute_if_not_zero ! interpret

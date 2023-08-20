@@ -209,7 +209,8 @@ defwordimm "'"
     PUSH bx
     ret
 .missing:
-    echo "{br:Nope}"
+    echo "{tick:Nope}"
+    PUSH bx
     ret
 
 defword "execute"
@@ -697,7 +698,7 @@ buffer: times 64 db 0 ;; must be before size check. why??
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 5       ;; Number of sectors the bootloader loads
+%assign S 6       ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A
