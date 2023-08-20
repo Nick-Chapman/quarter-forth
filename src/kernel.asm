@@ -218,8 +218,48 @@ defword "execute"
     ret
 
 
+defword "create"
+create:
+    call read_word
+    mov di, buffer
+    call create_entry
+    ret
+
+;;; Create dictionary entry for new word, in DI=word-name, uses BX
+create_entry:
+    push di
+    call strlen ; -> AX
+    pop di
+
+    push ax ; save length
+    call write_string
+
+    mov ax, [dictionary]
+    mov bx, [here]
+    mov [dictionary], bx
+    call write_word16 ; link
+
+    pop ax ; restore length
+    call write_byte
+    ret
+
+
+defword "exit"
+exit:
+    pop bx ; and ignore
+    ret
+
+
+defword "compile" ;; compile call to execution token on top of stack
+    POP ax
+    call write_call
+    ret
+
 dictionary: dw lastlink
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; start
 
 start:
     mov bp, 0xf800 ; allows 2k for call stack
@@ -392,9 +432,7 @@ interactive_read_char:
 
 
 colon_intepreter:
-    call read_word
-    mov di, buffer
-    call create_entry
+    call create
 .loop:
     call read_word
     mov dx, buffer
@@ -443,7 +481,9 @@ colon_intepreter:
     call compile_lit_number
     jmp .loop
 .semi:
-    call write_ret
+    ;;call write_ret ;; optimization!
+    mov ax, exit
+    call write_call
     ret
 
 .missing:
@@ -470,24 +510,6 @@ do_lit:
     add bx, 2
     jmp bx
 
-
-;;; Create dictionary entry for new word, in DI=word-name, uses BX
-create_entry:
-    push di
-    call strlen ; -> AX
-    pop di
-
-    push ax ; save length
-    call write_string
-
-    mov ax, [dictionary]
-    mov bx, [here]
-    mov [dictionary], bx
-    call write_word16 ; link
-
-    pop ax ; restore length
-    call write_byte
-    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Write to [here]
@@ -517,10 +539,10 @@ write_call:
     call write_word16
     ret
 
-write_ret:
-    mov al, 0xc3 ; x86 encoding for "ret"
-    call write_byte
-    ret
+;write_ret:
+;    mov al, 0xc3 ; x86 encoding for "ret"
+;    call write_byte
+;    ret
 
 ;;; Write byte to [here], in AL=byte, uses BX
 write_byte:
