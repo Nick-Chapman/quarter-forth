@@ -250,7 +250,7 @@ exit:
     ret
 
 
-defword "compile" ;; compile call to execution token on top of stack
+    defword "compile," ;; compile call to execution token on top of stack
     POP ax
     call write_call
     ret
