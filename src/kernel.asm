@@ -199,7 +199,7 @@ do_br:
     ret
 
 
-defwordimm "'"
+defword "'" ;; should be immediate
     call read_word
     mov dx, buffer
     call dictfind
@@ -446,6 +446,11 @@ builtin: dw builtin_data
 builtin_data:
     incbin "src/predefined.f"
     incbin "src/regression.f"
+    ;;incbin "src/starting-forth-F.f" ;; needs comments and do loop
+    incbin "src/my-letter-F.f"
+    ;;incbin "src/my-interpret-wip.f"
+    ;;incbin "src/bracket-compile.f"
+    ;;incbin "src/bits.f"
     incbin "src/play.f"
     db 0
 

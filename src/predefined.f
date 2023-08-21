@@ -12,3 +12,7 @@
 
 : min       over over > if swap then drop ;
 : max       over over < if swap then drop ;
+
+: cr        13 emit ;
+: space     32 emit ;
+: spaces    dup if space 1 - br spaces then drop ;

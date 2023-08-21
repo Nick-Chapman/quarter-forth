@@ -1,4 +1,5 @@
-: expect    over = invert if hey . then drop ;
+: spin spin ;
+: expect    over = invert if hey . spin then drop ;
 
 3 square square 81 expect
 6 fact 720 expect
