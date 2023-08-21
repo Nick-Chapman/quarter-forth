@@ -173,8 +173,8 @@ defwordimm "then"
 
 
 defwordimm "br"
-    call read_word
-    mov dx, buffer
+    call parse_word
+    POP dx
     call dictfind
     cmp bx, 0
     jz .missing
@@ -202,8 +202,8 @@ do_br:
 defword "'" ;; should be immediate?
 tick:
     ;;echo "{'}"
-    call read_word
-    mov dx, buffer
+    call parse_word
+    POP dx
     call dictfind
     cmp bx, 0
     jz .missing
@@ -224,20 +224,15 @@ defword "execute"
 
 defword "create"
 create:
-    ;;echo "{create}"
-    call read_word
-    ;;echo "{create2}"
-    ;;mov di, buffer
-    ;;call print_string
-    ;;echo "{create3}"
-    mov di, buffer
+    call parse_word
+    POP di
     call create_entry
     ret
 
 
 defword "constant" ;; tried to write this definition in forth; but so far failed :(
-    call read_word
-    mov di, buffer
+    call parse_word
+    POP di
     call create_entry
     mov ax, do_lit
     call write_call
@@ -336,6 +331,19 @@ defword "!" ;; store
     mov [bx], ax
     ret
 
+defword "dictionary-pointer"
+    mov bx, dictionary
+    PUSH bx
+    ret
+
+defword "parse-word"
+parse_word:
+    call internal_read_word
+    mov ax, buffer
+    PUSH ax
+    ret
+
+
 dictionary: dw lastlink
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -346,9 +354,9 @@ start:
     ;mov bp, 0xf000 ; allows 4k for call stack
     call cls
 .loop:
-    call read_word
+    call parse_word
+    POP dx
 
-    mov dx, buffer
     call try_parse_as_number
     jnz .nan
     PUSH ax
@@ -460,9 +468,9 @@ strlen:
 .ret:
     ret
 
-;;; Read word from keyboard into buffer memory
+;;; Read word from keyboard into buffer memory -- prefer parse_word
 ;;; [uses AX,DI]
-read_word:
+internal_read_word:
     mov di, buffer
 .skip:
     call [read_char]
@@ -521,8 +529,8 @@ interactive_read_char:
 colon_intepreter:
     call create
 .loop:
-    call read_word
-    mov dx, buffer
+    call parse_word
+    POP dx
 
     mov di, dx
     call is_semi

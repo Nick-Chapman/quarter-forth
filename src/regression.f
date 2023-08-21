@@ -46,3 +46,6 @@ variable eggs
 
 e e e e eggs @ 4 expect
 e e e eggs @ 7 expect
+
+7 square 49 expect
+9 ' square execute 81 expect
