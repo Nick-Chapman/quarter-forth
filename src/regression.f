@@ -39,3 +39,10 @@ b @ 22 expect
 33 a !
 a @ 33 expect
 b @ 22 expect
+
+
+variable eggs
+: e 1 eggs +! ;
+
+e e e e eggs @ 4 expect
+e e e eggs @ 7 expect

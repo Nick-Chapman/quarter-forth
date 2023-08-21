@@ -1,26 +1,10 @@
 
-// predefined
 
 immediate
+\ comment
+( comments )
 
 ----------------------------------------------------------------------
-
-lit
-literal
-
-comments
-
-!
-@
-
-cr
-here
-allot
-
-constant
-variable
-
-number
 
 parse-word
 find-word
@@ -28,9 +12,18 @@ find-word
 : create    parse-word ,dictionary-header ;
 : '         parse-word lookup-word ;
 
+literal (need immediate)
+
+, (as non prim)
+constant (as non prim)
+if/then (as non prim)
+
+number?
 
 state
+[
+]
 
-: : ... ;
+colon compiler in forth
 
 [']

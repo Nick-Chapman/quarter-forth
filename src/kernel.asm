@@ -319,8 +319,8 @@ comma:
     call write_word16
     ret
 
-defword "here"
-    mov bx, [here]
+defword "here-pointer"
+    mov bx, here
     PUSH bx
     ret
 
@@ -499,12 +499,14 @@ builtin: dw builtin_data
 builtin_data:
     incbin "src/predefined.f"
     incbin "src/regression.f"
-    ;;incbin "src/starting-forth-F.f" ;; needs comments and do loop
     incbin "src/my-letter-F.f"
+    incbin "src/play.f"
+
+    ;;incbin "src/starting-forth-F.f" ;; needs comments and do loop
     ;;incbin "src/my-interpret-wip.f"
     ;;incbin "src/bracket-compile.f"
     ;;incbin "src/bits.f"
-    incbin "src/play.f"
+
     db 0
 
 ;;; Read char from input

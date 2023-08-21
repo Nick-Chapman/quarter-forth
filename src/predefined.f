@@ -17,7 +17,12 @@
 : space     32 emit ;
 : spaces    dup if space 1 - br spaces then drop ;
 
+: here      here-pointer @ ;
+: allot     here-pointer @ + here-pointer ! ;
+: cell      2 ;
+: cells     cell * ;
+
 : variable  here 0 , constant ;
 
 : ?         @ . ;
-: 1+!       dup @ 1 + swap ! ;
+: +!        swap over @ + swap ! ;
