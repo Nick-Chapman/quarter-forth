@@ -147,7 +147,8 @@ defword ":"
 
 defwordimm "if"
     mov ax, do_if
-    call write_call
+    PUSH ax
+    call _compile_comma
     mov ax, [here]
     PUSH ax
     mov ax, 0
@@ -173,15 +174,18 @@ defwordimm "then"
 
 
 defwordimm "br"
-    call parse_word
-    POP dx
-    call dictfind
+    call _word
+
+    call _find
+    POP bx
+
     cmp bx, 0
     jz .missing
 
     push bx
     mov ax, do_br
-    call write_call
+    PUSH ax
+    call _compile_comma
 
     pop bx
     add bx, 3
@@ -202,9 +206,10 @@ do_br:
 defword "'" ;; should be immediate?
 tick:
     ;;echo "{'}"
-    call parse_word
-    POP dx
-    call dictfind
+    call _word
+    call _find
+
+    POP bx
     cmp bx, 0
     jz .missing
     add bx, 3
@@ -224,21 +229,23 @@ defword "execute"
 
 defword "create"
 create:
-    call parse_word
+    call _word
     POP di
     call create_entry
     ret
 
 
 defword "constant" ;; tried to write this definition in forth; but so far failed :(
-    call parse_word
+    call _word
     POP di
     call create_entry
-    mov ax, do_lit
-    call write_call
-    call comma
+    mov ax, _lit
+    PUSH ax
+    call _compile_comma
+    call _comma
     mov ax, exit
-    call write_call
+    PUSH ax
+    call _compile_comma
     ret
 
 ;;; Create dictionary entry for new word, in DI=word-name, uses BX
@@ -267,9 +274,10 @@ exit:
 
 
 defword "compile," ;; compile call to execution token on top of stack -- immediate?
+_compile_comma:
     ;;echo "{compile,}"
     POP ax
-    call write_call
+    call internal_write_call ;; TODO: inline
     ret
 
 
@@ -299,7 +307,7 @@ defword "emit"
 
 
 defword "lit"
-do_lit:
+_lit:
     pop bx
     mov ax, [bx]
     PUSH ax
@@ -308,7 +316,7 @@ do_lit:
 
 
 defword "," ;; immediate?
-comma:
+_comma:
     ;;echo "{,}"
     POP ax
     call write_word16
@@ -336,11 +344,71 @@ defword "dictionary-pointer"
     PUSH bx
     ret
 
-defword "parse-word"
-parse_word:
-    call internal_read_word
+defword "word"
+_word:
+    call internal_read_word ;; TODO inline
     mov ax, buffer
     PUSH ax
+    ret
+
+defword "find"
+_find:
+    POP dx
+    call internal_dictfind ;; TODO: inline
+    PUSH bx
+    ret
+
+defword "immediate?"
+    call _word
+    call _find
+    POP bx
+    cmp bx, 0
+    jz .missing
+    PUSH bx
+    call _test_immediate_flag
+    ret
+.missing:
+    echo "{immediate?:Nope}"
+    PUSH bx
+    ret
+
+
+defword "test-immediate-flag"
+_test_immediate_flag:
+    POP bx
+    mov al, [bx+2]
+    cmp al, 0x80
+    ja .yes
+    jmp .no
+.yes:
+    mov ax, 0xffff ; true
+    PUSH ax
+    ret
+.no:
+    mov ax, 0 ; false
+    PUSH ax
+    ret
+
+
+defword "immediate!"
+    call _word
+    call _find
+    POP bx
+    cmp bx, 0
+    jz .missing
+    PUSH bx
+    call _set_immediate_flag
+    ret
+.missing:
+    echo "{immediate!:Nope}"
+    ret
+
+defword "set-immediate-flag"
+_set_immediate_flag:
+    POP bx
+    mov al, [bx+2]
+    xor al, 0x80
+    mov [bx+2], al
     ret
 
 
@@ -354,17 +422,19 @@ start:
     ;mov bp, 0xf000 ; allows 4k for call stack
     call cls
 .loop:
-    call parse_word
+    call _word
     POP dx
 
     call try_parse_as_number
+
     jnz .nan
     PUSH ax
     jmp .loop
 
 .nan:
-    mov dx, buffer
-    call dictfind
+    PUSH dx
+    call _find
+    POP bx
 
     cmp bx, 0
     jz .missing
@@ -382,6 +452,11 @@ start:
 ;;; [in DX=string-to-be-tested, out Z=yes-number, DX:AX=number]
 ;;; [uses BL, SI, BX, CX]
 try_parse_as_number:
+    push dx
+    call .run
+    pop dx
+    ret
+.run:
     mov si, dx
     mov ax, 0
     mov bh, 0
@@ -411,7 +486,7 @@ try_parse_as_number:
 ;;; Lookup word in dictionary, return entry if found or 0 otherwise
 ;;; [in DX=sought-name, out BX=entry/0]
 ;;; [uses SI, DI, BX, CX]
-dictfind:
+internal_dictfind:
     mov di, dx
     call strlen ; ax=len
     mov bx, [dictionary]
@@ -468,7 +543,7 @@ strlen:
 .ret:
     ret
 
-;;; Read word from keyboard into buffer memory -- prefer parse_word
+;;; Read word from keyboard into buffer memory -- prefer _word
 ;;; [uses AX,DI]
 internal_read_word:
     mov di, buffer
@@ -529,7 +604,7 @@ interactive_read_char:
 colon_intepreter:
     call create
 .loop:
-    call parse_word
+    call _word
     POP dx
 
     mov di, dx
@@ -539,8 +614,10 @@ colon_intepreter:
     call try_parse_as_number
     jz .number
 
-    mov dx, buffer
-    call dictfind
+    PUSH dx
+    call _find
+    POP bx
+
     cmp bx, 0
     jz .missing
 
@@ -552,15 +629,21 @@ colon_intepreter:
     ;mov ax, ']'
     ;call print_char
 
-    mov al, [bx+2] ; see size; in prep for ading immediate bit
-    cmp al, 0x80
-    ja .immediate
+    ;mov al, [bx+2] ; see size; in prep for ading immediate bit
+    ;cmp al, 0x80
+    ;ja .immediate
+    PUSH bx
+    call _test_immediate_flag
+    POP ax
+    cmp ax, 0
+    jnz .immediate
 
     ;mov ax, 'x'
     ;call print_char
     add bx, 3
     mov ax, bx
-    call write_call
+    PUSH ax
+    call _compile_comma
     jmp .loop
 
 .immediate:
@@ -578,7 +661,8 @@ colon_intepreter:
 .semi:
     ;;call write_ret ;; optimization!
     mov ax, exit
-    call write_call
+    PUSH ax
+    call _compile_comma
     ret
 
 .missing:
@@ -592,8 +676,9 @@ is_semi:
 
 compile_lit_number:
     push ax ; save lit value
-    mov ax, do_lit
-    call write_call
+    mov ax, _lit
+    PUSH ax
+    call _compile_comma
     pop ax ; restore lit value
     call write_word16
     ret
@@ -617,7 +702,7 @@ write_string:
     ret
 
 ;;; in AX=absolute-address-to-call
-write_call:
+internal_write_call:
     push ax
     mov al, 0xe8 ; x86 encoding for "call"
     call write_byte
@@ -767,7 +852,7 @@ buffer: times 64 db 0 ;; must be before size check. why??
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 6       ;; Number of sectors the bootloader loads
+%assign S 8       ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A

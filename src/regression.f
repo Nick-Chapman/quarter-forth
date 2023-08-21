@@ -40,7 +40,6 @@ b @ 22 expect
 a @ 33 expect
 b @ 22 expect
 
-
 variable eggs
 : e 1 eggs +! ;
 
@@ -49,3 +48,16 @@ e e e eggs @ 7 expect
 
 7 square 49 expect
 9 ' square execute 81 expect
+
+: sq br square 1 + ;
+7 sq 49 expect
+
+immediate? square false expect
+immediate? dup false expect
+immediate? if true expect
+
+immediate! square
+immediate? square true expect
+
+immediate! square
+immediate? square false expect
