@@ -199,7 +199,9 @@ do_br:
     ret
 
 
-defword "'" ;; should be immediate
+defword "'" ;; should be immediate?
+tick:
+    ;;echo "{'}"
     call read_word
     mov dx, buffer
     call dictfind
@@ -213,6 +215,7 @@ defword "'" ;; should be immediate
     PUSH bx
     ret
 
+
 defword "execute"
     POP bx
     jmp bx
@@ -221,9 +224,26 @@ defword "execute"
 
 defword "create"
 create:
+    ;;echo "{create}"
+    call read_word
+    ;;echo "{create2}"
+    ;;mov di, buffer
+    ;;call print_string
+    ;;echo "{create3}"
+    mov di, buffer
+    call create_entry
+    ret
+
+
+defword "constant" ;; tried to write this definition in forth; but so far failed :(
     call read_word
     mov di, buffer
     call create_entry
+    mov ax, do_lit
+    call write_call
+    call comma
+    mov ax, exit
+    call write_call
     ret
 
 ;;; Create dictionary entry for new word, in DI=word-name, uses BX
@@ -251,7 +271,8 @@ exit:
     ret
 
 
-    defword "compile," ;; compile call to execution token on top of stack
+defword "compile," ;; compile call to execution token on top of stack -- immediate?
+    ;;echo "{compile,}"
     POP ax
     call write_call
     ret
@@ -282,8 +303,29 @@ defword "emit"
     ret
 
 
-dictionary: dw lastlink
+defword "lit"
+do_lit:
+    pop bx
+    mov ax, [bx]
+    PUSH ax
+    add bx, 2
+    jmp bx
 
+
+defword "," ;; immediate?
+comma:
+    ;;echo "{,}"
+    POP ax
+    call write_word16
+    ret
+
+defword "here"
+    mov bx, [here]
+    PUSH bx
+    ret
+
+
+dictionary: dw lastlink
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; start
@@ -535,13 +577,6 @@ compile_lit_number:
     call write_word16
     ret
 
-do_lit:
-    pop bx
-    mov ax, [bx]
-    PUSH ax
-    add bx, 2
-    jmp bx
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Write to [here]
@@ -589,6 +624,7 @@ write_word16:
     mov [bx], ax
     add word [here], 2
     ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Print to output
