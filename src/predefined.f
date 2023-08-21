@@ -18,3 +18,6 @@
 : spaces    dup if space 1 - br spaces then drop ;
 
 : variable  here 0 , constant ;
+
+: ?         @ . ;
+: 1+!       dup @ 1 + swap ! ;
