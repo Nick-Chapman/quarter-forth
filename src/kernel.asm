@@ -324,6 +324,17 @@ defword "here"
     PUSH bx
     ret
 
+defword "@" ;; fetch
+    POP bx
+    mov ax, [bx]
+    PUSH ax
+    ret
+
+defword "!" ;; store
+    POP bx
+    POP ax
+    mov [bx], ax
+    ret
 
 dictionary: dw lastlink
 

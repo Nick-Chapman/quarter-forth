@@ -16,3 +16,5 @@
 : cr        13 emit ;
 : space     32 emit ;
 : spaces    dup if space 1 - br spaces then drop ;
+
+: variable  here 0 , constant ;

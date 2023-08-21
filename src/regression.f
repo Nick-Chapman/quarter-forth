@@ -28,3 +28,14 @@ true invert false expect
 5 2 - 3 expect
 3 4 * 12 expect
 4 3 * 12 expect
+
+variable a
+variable b
+
+11 a !
+22 b !
+a @ 11 expect
+b @ 22 expect
+33 a !
+a @ 33 expect
+b @ 22 expect

@@ -9,3 +9,34 @@
 : test-exit if 111 exit then 222 ;
 0 test-exit 222 expect
 1 test-exit 111 expect
+
+
+: [']
+
+: constant create ['] lit compile, , ;
+
+42 constant life
+
+: constant
+    create
+    ' lit compile,
+    ,
+    ' exit compile,
+    ;
+
+33 constant foo
+
+create constant
+` create ` ` ` lit ` , ` ` ` exit ` exit
+
+
+: ` ' compile, ;
+
+create life ` lit 42 , ` exit
+
+life .
+life life + .
+
+341 constant pi
+
+pi pi + .
