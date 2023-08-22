@@ -185,7 +185,7 @@ defwordimm "br"
     POP bx
 
     cmp bx, 0
-    jz .missing
+    jz missing
 
     push bx
     mov ax, do_br
@@ -197,9 +197,7 @@ defwordimm "br"
     mov ax, bx
     call write_word16
     ret
-.missing:
-    echo "{br:Nope}"
-    ret
+
 
 do_br:
     pop bx
@@ -216,12 +214,8 @@ tick:
 
     POP bx
     cmp bx, 0
-    jz .missing
+    jz missing
     add bx, 3
-    PUSH bx
-    ret
-.missing:
-    echo "{tick:Nope}"
     PUSH bx
     ret
 
@@ -370,13 +364,9 @@ defword "immediate?"
     call _find
     POP bx
     cmp bx, 0
-    jz .missing
+    jz missing
     PUSH bx
     call _test_immediate_flag
-    ret
-.missing:
-    echo "{immediate?:Nope}"
-    PUSH bx
     ret
 
 
@@ -402,12 +392,9 @@ defword "immediate!"
     call _find
     POP bx
     cmp bx, 0
-    jz .missing
+    jz missing
     PUSH bx
     call _set_immediate_flag
-    ret
-.missing:
-    echo "{immediate!:Nope}"
     ret
 
 defword "set-immediate-flag"
@@ -444,14 +431,16 @@ start:
     POP bx
 
     cmp bx, 0
-    jz .missing
+    jz missing
     ;; execute code at bx+3
     add bx, 3
     call bx
     jmp .loop
-.missing:
-    echo "{Nope}"
-    jmp .loop
+
+missing:
+    echo "{missing}"
+.spin:
+    jmp .spin
 
 
 
@@ -626,7 +615,7 @@ colon_intepreter:
     POP bx
 
     cmp bx, 0
-    jz .missing
+    jz missing
 
     ;mov ax, '['
     ;call print_char
@@ -672,9 +661,6 @@ colon_intepreter:
     call _compile_comma
     ret
 
-.missing:
-    echo "{:Nope}"
-    jmp .loop
 
 is_semi:
     cmp word [di], ";"
