@@ -146,7 +146,7 @@ defwordimm "[']"
     call __comma ;; Is this right?
     ret
 
-;;; defwordimm "if"                ; now coded in forth
+;;; defwordimm "if" ; now in forth
 ;;;     call _lit
 ;;;     dw _0branch
 ;;;     call _compile_comma
@@ -170,7 +170,7 @@ _0branch:
     mov bx, [bx]
     jmp bx ; branch to target
 
-;;; defwordimm "then"   ; now defined in forth
+;;; defwordimm "then" ; now in forth
 ;;;     POP bx
 ;;;     mov ax, [here]
 ;;;     mov word [bx], ax
@@ -195,17 +195,16 @@ _branch:
     mov bx, [bx]
     jmp bx
 
-;;; TODO : write this is forth
-defword "constant"
-    call _create
-    mov ax, _lit
-    PUSH ax
-    call _compile_comma
-    call __comma
-    mov ax, _exit
-    PUSH ax
-    call _compile_comma
-    ret
+;;; defword "constant" ; now in forth
+;;;     call _create
+;;;     call _lit
+;;;     dw _lit
+;;;     call _compile_comma
+;;;     call __comma
+;;;     call _lit
+;;;     dw _exit
+;;;     call _compile_comma
+;;;     ret
 
 ;;; Create dictionary entry for new word, in DI=word-name, uses BX
 internal_create_entry:
@@ -409,7 +408,7 @@ start:
 .loop:
     call t_word
     POP dx
-    call try_parse_as_number ;; TODO: code (number?) in forth
+    call try_parse_as_number
     jnz .nan
     PUSH ax
     jmp .loop
@@ -430,7 +429,7 @@ missing:
 ;;; Try to parse a string as a number
 ;;; [in DX=string-to-be-tested, out Z=yes-number, DX:AX=number]
 ;;; [uses BL, SI, BX, CX]
-try_parse_as_number:
+try_parse_as_number: ; TODO: code in forth
     push dx
     call .run
     pop dx

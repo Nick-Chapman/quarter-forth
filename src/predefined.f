@@ -24,6 +24,7 @@
 : space     32 emit ;
 : spaces    dup if space 1 - br spaces then drop ;
 
+: constant  create lit ['] lit compile, , lit ['] exit compile, ;
 : variable  here @ 0 , constant ;
 
 : ?         @ . ;
