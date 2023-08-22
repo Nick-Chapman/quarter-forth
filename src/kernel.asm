@@ -140,15 +140,15 @@ defword "drop"
 defword ":"
     jmp colon_intepreter
 
-defword "0branch,"
-_0branch_comma
-    mov ax, _0branch
-    PUSH ax
-    call _compile_comma
+defwordimm "[']"
+    call _tick
+    call _comma
     ret
 
-;;; defword "if"                ; now coded in forth
-;;;     call _0branch_comma
+;;; defwordimm "if"                ; now coded in forth
+;;;     call _lit
+;;;     dw _0branch
+;;;     call _compile_comma
 ;;;     call _here
 ;;;     call _fetch
 ;;;     call _lit
@@ -325,7 +325,7 @@ _word_find:
     ret
 
 defword "'" ;; should be immediate? NO
-tick:
+_tick:
     call _word_find
     POP bx
     add bx, 3 ;; TODO: factor this +3 pattern to get XT
