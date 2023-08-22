@@ -1,15 +1,4 @@
 
-latest (expose/rename dictionary)
-immediate^
-immediate (set immediate on latest)
-
-if (forth) -- makeit work
-
-comments
-
-----------------------------------------------------------------------
-
-immediate
 \ comment
 ( comments )
 

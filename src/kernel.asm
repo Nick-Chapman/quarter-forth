@@ -307,11 +307,6 @@ defword "!" ;; store
     mov [bx], ax
     ret
 
-defword "dictionary-pointer"
-    mov bx, dictionary
-    PUSH bx
-    ret
-
 ;;defword "word"
 t_word: ;; t for transient
     call internal_read_word ;; TODO inline
@@ -383,6 +378,16 @@ _test_immediate_flag:
     PUSH ax
     ret
 
+defword "latest"
+_latest:
+    mov bx, [dictionary]
+    PUSH bx
+    ret
+
+defword "immediate"
+    call _latest
+    call _flip_immediate_flag
+    ret
 
 defword "immediate^"
     call _word_find
