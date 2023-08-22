@@ -146,16 +146,21 @@ defword ":"
 
 
 defwordimm "if"
-    mov ax, do_if
+    mov ax, _0branch
     PUSH ax
     call _compile_comma
-    mov ax, [here]
-    PUSH ax
+
+    call _here_pointer
+    call _fetch
+
     mov ax, 0
-    call write_word16
+    PUSH ax
+    call _comma
+
     ret
 
-do_if:
+defword "0branch"
+_0branch:
     pop bx
     POP cx
     cmp cx, 0
@@ -203,7 +208,7 @@ do_br:
     ret
 
 
-defword "'" ;; should be immediate?
+defword "'" ;; should be immediate? NO
 tick:
     ;;echo "{'}"
     call _word
@@ -323,11 +328,13 @@ _comma:
     ret
 
 defword "here-pointer"
+_here_pointer:
     mov bx, here
     PUSH bx
     ret
 
 defword "@" ;; fetch
+_fetch:
     POP bx
     mov ax, [bx]
     PUSH ax

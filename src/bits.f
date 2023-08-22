@@ -40,3 +40,18 @@ life life + .
 341 constant pi
 
 pi pi + .
+
+
+
+: create ['] ' ' ,compile
+immediate! [']
+
+: if        ['] 0branch compile, here-pointer @ 0 , ;
+immediate! if
+
+
+immediate! '
+
+: xif        ' 0branch compile, here 0 , ;
+immediate! if
+immediate! xif

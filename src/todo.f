@@ -1,4 +1,17 @@
 
+commit
+strict find
+
+here-pointer as here
+latest (expose/rename dictionary)
+immediate^
+immediate (set immediate on latest)
+
+if (forth) -- makeit work
+
+comments
+
+----------------------------------------------------------------------
 
 immediate
 \ comment

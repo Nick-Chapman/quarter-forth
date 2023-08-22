@@ -1,4 +1,9 @@
 
+: here      here-pointer @ ;
+: allot     here-pointer @ + here-pointer ! ;
+: cell      2 ;
+: cells     cell * ;
+
 : false     0 ;
 : true      65535 ;
 : invert    true swap if drop false then ;
@@ -16,11 +21,6 @@
 : cr        13 emit ;
 : space     32 emit ;
 : spaces    dup if space 1 - br spaces then drop ;
-
-: here      here-pointer @ ;
-: allot     here-pointer @ + here-pointer ! ;
-: cell      2 ;
-: cells     cell * ;
 
 : variable  here 0 , constant ;
 
