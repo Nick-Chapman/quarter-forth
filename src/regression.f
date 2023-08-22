@@ -56,8 +56,8 @@ immediate? square false expect
 immediate? dup false expect
 immediate? if true expect
 
-immediate! square
+immediate^ square
 immediate? square true expect
 
-immediate! square
+immediate^ square
 immediate? square false expect

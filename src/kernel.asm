@@ -144,20 +144,22 @@ defword "drop"
 defword ":"
     jmp colon_intepreter
 
-
-defwordimm "if"
+defword "0branch,"
+_0branch_comma
     mov ax, _0branch
     PUSH ax
     call _compile_comma
-
-    call _here
-    call _fetch
-
-    mov ax, 0
-    PUSH ax
-    call _comma
-
     ret
+
+;;; defword "if"                ; now coded in forth
+;;;     call _0branch_comma
+;;;     call _here
+;;;     call _fetch
+;;;     call _lit
+;;;     dw 0
+;;;     call _comma
+;;;     call _exit
+;;;     ret
 
 defword "0branch"
 _0branch:
@@ -207,7 +209,7 @@ defword "constant" ;; tried to write this definition in forth; but so far failed
     PUSH ax
     call _compile_comma
     call _comma
-    mov ax, exit
+    mov ax, _exit
     PUSH ax
     call _compile_comma
     ret
@@ -232,7 +234,7 @@ internal_create_entry:
 
 
 defword "exit"
-exit:
+_exit:
     pop bx ; and ignore
     ret
 
@@ -382,13 +384,13 @@ _test_immediate_flag:
     ret
 
 
-defword "immediate!"
+defword "immediate^"
     call _word_find
-    call _set_immediate_flag
+    call _flip_immediate_flag
     ret
 
-defword "set-immediate-flag"
-_set_immediate_flag:
+defword "flip-immediate-flag"
+_flip_immediate_flag:
     POP bx
     mov al, [bx+2]
     xor al, 0x80
@@ -629,7 +631,7 @@ colon_intepreter:
     jmp .loop
 .semi:
     ;;call write_ret ;; optimization!
-    mov ax, exit
+    mov ax, _exit
     PUSH ax
     call _compile_comma
     ret

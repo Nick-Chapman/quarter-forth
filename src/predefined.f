@@ -3,6 +3,9 @@
 : cell      2 ;
 : cells     cell * ;
 
+: if 0branch, here @ 0 , ;
+immediate^ if
+
 : false     0 ;
 : true      65535 ;
 : invert    true swap if drop false then ;
