@@ -177,17 +177,13 @@ defwordimm "then"
     mov word [bx], ax
     ret
 
-
 defwordimm "br"
     call _word
-
     call _find
+
     POP bx
-
-    cmp bx, 0
-    jz missing
-
     push bx
+
     mov ax, do_br
     PUSH ax
     call _compile_comma
@@ -210,11 +206,14 @@ defword "'" ;; should be immediate? NO
 tick:
     ;;echo "{'}"
     call _word
-    call _find
 
+    call _find
     POP bx
     cmp bx, 0
     jz missing
+    PUSH bx
+
+    POP bx
     add bx, 3
     PUSH bx
     ret
@@ -356,16 +355,14 @@ defword "find"
 _find:
     POP dx
     call internal_dictfind ;; TODO: inline
+    cmp bx, 0
+    jz missing
     PUSH bx
     ret
 
 defword "immediate?"
     call _word
     call _find
-    POP bx
-    cmp bx, 0
-    jz missing
-    PUSH bx
     call _test_immediate_flag
     ret
 
@@ -390,10 +387,6 @@ _test_immediate_flag:
 defword "immediate!"
     call _word
     call _find
-    POP bx
-    cmp bx, 0
-    jz missing
-    PUSH bx
     call _set_immediate_flag
     ret
 
@@ -427,11 +420,10 @@ start:
 
 .nan:
     PUSH dx
-    call _find
-    POP bx
 
-    cmp bx, 0
-    jz missing
+    call _find
+
+    POP bx
     ;; execute code at bx+3
     add bx, 3
     call bx
@@ -609,26 +601,10 @@ colon_intepreter:
 
     call try_parse_as_number
     jz .number
-
     PUSH dx
+
     call _find
-    POP bx
 
-    cmp bx, 0
-    jz missing
-
-    ;mov ax, '['
-    ;call print_char
-    ;mov ax, 0
-    ;mov al, [bx+2] ; see size; in prep for ading immediate bit
-    ;call print_number
-    ;mov ax, ']'
-    ;call print_char
-
-    ;mov al, [bx+2] ; see size; in prep for ading immediate bit
-    ;cmp al, 0x80
-    ;ja .immediate
-    PUSH bx
     call _test_immediate_flag
     POP ax
     cmp ax, 0
