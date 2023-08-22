@@ -19,7 +19,6 @@ org 0x500
     add bp, 2
 %endmacro
 
-
 %define lastlink 0
 
 %macro defword 1
@@ -35,7 +34,6 @@ db (%%link - %%name)
 db ((%%link - %%name) | 0x80)
 %define lastlink %%link
 %endmacro
-
 
 %macro echo 1
     jmp %%after
@@ -53,7 +51,6 @@ db ((%%link - %%name) | 0x80)
     call print_string
 %endmacro
 
-
 defword "hello"
     echo "{Hello!}"
     ret
@@ -65,7 +62,6 @@ defword "bye"
 defword "hey"
     echo "{Hey!}"
     ret
-
 
 defword "+"
     POP bx
@@ -181,29 +177,24 @@ _0branch:
 
 defwordimm "br"
     call _word_find
-
     POP bx
     push bx
-
-    mov ax, do_br
+    mov ax, _branch
     PUSH ax
     call _compile_comma
-
     pop bx
     add bx, 3
     mov ax, bx
     call write_word16
     ret
 
-
-do_br:
+_branch:
     pop bx
     mov bx, [bx]
     jmp bx
-    ret
 
 ;;; TODO : write this is forth
-defword "constant" ;; tried to write this definition in forth; but so far failed :(
+defword "constant"
     call _create
     mov ax, _lit
     PUSH ax
@@ -219,33 +210,27 @@ internal_create_entry:
     push di
     call strlen ; -> AX
     pop di
-
     push ax ; save length
     call write_string
-
     mov ax, [dictionary]
     mov bx, [here]
     mov [dictionary], bx
     call write_word16 ; link
-
     pop ax ; restore length
     call write_byte
     ret
-
 
 defword "exit"
 _exit:
     pop bx ; and ignore
     ret
 
-
-defword "compile," ;; compile call to execution token on top of stack -- immediate?
+;;; compile call to execution token on top of stack
+defword "compile,"
 _compile_comma:
-    ;;echo "{compile,}"
     POP ax
     call internal_write_call ;; TODO: inline
     ret
-
 
 defword "words"
 _words:
@@ -265,12 +250,10 @@ _words:
     call print_newline
     ret
 
-
 defword "emit"
     POP ax
     call print_char
     ret
-
 
 defword "lit"
 _lit:
@@ -280,10 +263,9 @@ _lit:
     add bx, 2
     jmp bx
 
-
-defword "," ;; immediate?
+;;; write a 16-bit word into the heap ; TODO: move this into forth
+defword ","
 _comma:
-    ;;echo "{,}"
     POP ax
     call write_word16
     ret
@@ -294,14 +276,15 @@ _here:
     PUSH bx
     ret
 
-defword "@" ;; fetch
+defword "@"
 _fetch:
     POP bx
     mov ax, [bx]
     PUSH ax
     ret
 
-defword "!" ;; store
+defword "!"
+_store:
     POP bx
     POP ax
     mov [bx], ax
@@ -344,23 +327,19 @@ _word_find:
 defword "'" ;; should be immediate? NO
 tick:
     call _word_find
-
     POP bx
-    add bx, 3
+    add bx, 3 ;; TODO: factor this +3 pattern to get XT
     PUSH bx
     ret
 
 defword "execute"
     POP bx
     jmp bx
-    ret
-
 
 defword "immediate?"
     call _word_find
     call _test_immediate_flag
     ret
-
 
 defword "test-immediate-flag"
 _test_immediate_flag:
@@ -402,7 +381,6 @@ _flip_immediate_flag:
     mov [bx+2], al
     ret
 
-
 dictionary: dw lastlink
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -410,23 +388,17 @@ dictionary: dw lastlink
 
 start:
     mov bp, 0xf800 ; allows 2k for call stack
-    ;mov bp, 0xf000 ; allows 4k for call stack
     call cls
 .loop:
     call t_word
     POP dx
-
-    call try_parse_as_number
-
+    call try_parse_as_number ;; TODO: code (number?) in forth
     jnz .nan
     PUSH ax
     jmp .loop
-
 .nan:
     PUSH dx
-
     call t_find
-
     POP bx
     ;; execute code at bx+3
     add bx, 3
@@ -437,8 +409,6 @@ missing:
     echo "{missing}"
 .spin:
     jmp .spin
-
-
 
 ;;; Try to parse a string as a number
 ;;; [in DX=string-to-be-tested, out Z=yes-number, DX:AX=number]
@@ -474,7 +444,6 @@ try_parse_as_number:
     cmp bl, 0 ; return NO
     ret
 
-
 ;;; Lookup word in dictionary, return entry if found or 0 otherwise
 ;;; [in DX=sought-name, out BX=entry/0]
 ;;; [uses SI, DI, BX, CX]
@@ -502,7 +471,6 @@ internal_dictfind:
     cmp bx, 0
     jnz .loop
     ret ; BX=0 - not found
-
 
 ;;; Compare n bytes at two pointers
 ;;; [in CX=n, SI/DI=pointers-to-things-to-compare, out Z=same]
@@ -556,7 +524,6 @@ internal_read_word:
     mov byte [di], 0 ; add null terminator
     ret
 
-
 read_char: dw startup_read_char
 
 startup_read_char:
@@ -592,45 +559,31 @@ interactive_read_char:
     int 0x16
     ret
 
-
-colon_intepreter:
+colon_intepreter: ; TODO: move this towards forth style
     call _create
 .loop:
     call t_word
     POP dx
-
     mov di, dx
     call is_semi
     jz .semi
-
     call try_parse_as_number
     jz .number
     PUSH dx
-
     call t_find
-
     call _test_immediate_flag
     POP ax
     cmp ax, 0
     jnz .immediate
-
-    ;mov ax, 'x'
-    ;call print_char
     add bx, 3
     mov ax, bx
     PUSH ax
     call _compile_comma
     jmp .loop
-
 .immediate:
-    ;mov ax, 'i'
-    ;call print_char
-    ; echo_n "{IMM}"
-    ;; execute code at bx+3
     add bx, 3
     call bx
     jmp .loop
-
 .number:
     call compile_lit_number
     jmp .loop
@@ -641,11 +594,9 @@ colon_intepreter:
     call _compile_comma
     ret
 
-
 is_semi:
     cmp word [di], ";"
     ret
-
 
 compile_lit_number:
     push ax ; save lit value
@@ -655,7 +606,6 @@ compile_lit_number:
     pop ax ; restore lit value
     call write_word16
     ret
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Write to [here]
@@ -703,7 +653,6 @@ write_word16:
     mov [bx], ax
     add word [here], 2
     ret
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Print to output
@@ -809,7 +758,6 @@ print_char:
     mov al, 13 ; CR
     jmp .raw
 
-
 ;;; Clear screen
 cls:
     push ax
@@ -831,7 +779,6 @@ buffer: times 64 db 0 ;; must be before size check. why??
 %if R>A
 %error "Kernel too big!" required=R, allowed=A (#sectors=S)
 %endif
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; buffer & here
