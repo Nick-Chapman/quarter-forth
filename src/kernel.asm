@@ -173,11 +173,11 @@ _0branch:
     mov bx, [bx]
     jmp bx ; branch to target
 
-defwordimm "then"
-    POP bx
-    mov ax, [here]
-    mov word [bx], ax
-    ret
+;;; defwordimm "then"   ; now defined in forth
+;;;     POP bx
+;;;     mov ax, [here]
+;;;     mov word [bx], ax
+;;;     ret
 
 defwordimm "br"
     call _word_find

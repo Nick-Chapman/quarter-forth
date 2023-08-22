@@ -3,7 +3,8 @@
 : cell      2 ;
 : cells     cell * ;
 
-: if        0branch, here @ 0 , ; immediate
+: if        0branch, here @ 0 , ;   immediate
+: then      here @ swap ! ;         immediate
 
 : false     0 ;
 : true      65535 ;
