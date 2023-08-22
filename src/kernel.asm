@@ -178,8 +178,7 @@ defwordimm "then"
     ret
 
 defwordimm "br"
-    call _word
-    call _find
+    call _word_find
 
     POP bx
     push bx
@@ -201,42 +200,9 @@ do_br:
     jmp bx
     ret
 
-
-defword "'" ;; should be immediate? NO
-tick:
-    ;;echo "{'}"
-    call _word
-
-    call _find
-    POP bx
-    cmp bx, 0
-    jz missing
-    PUSH bx
-
-    POP bx
-    add bx, 3
-    PUSH bx
-    ret
-
-
-defword "execute"
-    POP bx
-    jmp bx
-    ret
-
-
-defword "create"
-create:
-    call _word
-    POP di
-    call create_entry
-    ret
-
-
+;;; TODO : write this is forth
 defword "constant" ;; tried to write this definition in forth; but so far failed :(
-    call _word
-    POP di
-    call create_entry
+    call _create
     mov ax, _lit
     PUSH ax
     call _compile_comma
@@ -247,7 +213,7 @@ defword "constant" ;; tried to write this definition in forth; but so far failed
     ret
 
 ;;; Create dictionary entry for new word, in DI=word-name, uses BX
-create_entry:
+internal_create_entry:
     push di
     call strlen ; -> AX
     pop di
@@ -344,15 +310,15 @@ defword "dictionary-pointer"
     PUSH bx
     ret
 
-defword "word"
-_word:
+;;defword "word"
+t_word: ;; t for transient
     call internal_read_word ;; TODO inline
     mov ax, buffer
-    PUSH ax
+    PUSH ax ;; transient buffer; for _find/create
     ret
 
-defword "find"
-_find:
+;;defword "find"
+t_find: ;; t for transient
     POP dx
     call internal_dictfind ;; TODO: inline
     cmp bx, 0
@@ -360,9 +326,41 @@ _find:
     PUSH bx
     ret
 
+;;defword "dictionary," ;; expose when solve transient problem
+t_dictionary_comma:
+    POP di
+    call internal_create_entry ;; TODO inline
+    ret
+
+defword "create"
+_create:
+    call t_word
+    call t_dictionary_comma
+    ret
+
+defword "word-find"
+_word_find:
+    call t_word
+    call t_find
+    ret
+
+defword "'" ;; should be immediate? NO
+tick:
+    call _word_find
+
+    POP bx
+    add bx, 3
+    PUSH bx
+    ret
+
+defword "execute"
+    POP bx
+    jmp bx
+    ret
+
+
 defword "immediate?"
-    call _word
-    call _find
+    call _word_find
     call _test_immediate_flag
     ret
 
@@ -385,8 +383,7 @@ _test_immediate_flag:
 
 
 defword "immediate!"
-    call _word
-    call _find
+    call _word_find
     call _set_immediate_flag
     ret
 
@@ -409,7 +406,7 @@ start:
     ;mov bp, 0xf000 ; allows 4k for call stack
     call cls
 .loop:
-    call _word
+    call t_word
     POP dx
 
     call try_parse_as_number
@@ -421,7 +418,7 @@ start:
 .nan:
     PUSH dx
 
-    call _find
+    call t_find
 
     POP bx
     ;; execute code at bx+3
@@ -590,9 +587,9 @@ interactive_read_char:
 
 
 colon_intepreter:
-    call create
+    call _create
 .loop:
-    call _word
+    call t_word
     POP dx
 
     mov di, dx
@@ -603,7 +600,7 @@ colon_intepreter:
     jz .number
     PUSH dx
 
-    call _find
+    call t_find
 
     call _test_immediate_flag
     POP ax
