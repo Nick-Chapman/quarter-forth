@@ -64,6 +64,7 @@ defword "hey"
     ret
 
 defword "+"
+_add:
     POP bx
     POP ax
     add ax, bx
@@ -142,7 +143,7 @@ defword ":"
 
 defwordimm "[']"
     call _tick
-    call _comma
+    call __comma ;; Is this right?
     ret
 
 ;;; defwordimm "if"                ; now coded in forth
@@ -185,7 +186,8 @@ defwordimm "br"
     pop bx
     add bx, 3
     mov ax, bx
-    call write_word16
+    PUSH ax
+    call __comma
     ret
 
 _branch:
@@ -199,7 +201,7 @@ defword "constant"
     mov ax, _lit
     PUSH ax
     call _compile_comma
-    call _comma
+    call __comma
     mov ax, _exit
     PUSH ax
     call _compile_comma
@@ -215,7 +217,8 @@ internal_create_entry:
     mov ax, [dictionary]
     mov bx, [here]
     mov [dictionary], bx
-    call write_word16 ; link
+    PUSH ax
+    call __comma ; link
     pop ax ; restore length
     call write_byte
     ret
@@ -265,10 +268,24 @@ _lit:
 
 ;;; write a 16-bit word into the heap ; TODO: move this into forth
 defword ","
-_comma:
+__comma:
     POP ax
-    call write_word16
+    mov bx, [here]
+    mov [bx], ax
+    add word [here], 2
     ret
+    ;; version using more primitive steps... (bit excessive)
+    ;; call _here
+    ;; call _fetch
+    ;; call _store
+    ;; call _lit
+    ;; dw 2
+    ;; call _here
+    ;; call _fetch
+    ;; call _add
+    ;; call _here
+    ;; call _store
+    ;; ret
 
 defword "here"
 _here:
@@ -604,7 +621,8 @@ compile_lit_number:
     PUSH ax
     call _compile_comma
     pop ax ; restore lit value
-    call write_word16
+    PUSH ax
+    call __comma
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -632,7 +650,8 @@ internal_write_call:
     pop ax
     sub ax, [here] ; make it relative
     sub ax, 2
-    call write_word16
+    PUSH ax
+    call __comma
     ret
 
 ;write_ret:
@@ -645,13 +664,6 @@ write_byte:
     mov bx, [here]
     mov [bx], al
     inc word [here]
-    ret
-
-;;; Write word16 to [here], in AX=word16, uses BX
-write_word16:
-    mov bx, [here]
-    mov [bx], ax
-    add word [here], 2
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

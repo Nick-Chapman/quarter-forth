@@ -1,27 +1,17 @@
 
-\ comment
 ( comments )
-
-----------------------------------------------------------------------
-
-parse-word
-find-word
-
-: create    parse-word ,dictionary-header ;
-: '         parse-word lookup-word ;
 
 literal (need immediate)
 
 , (as non prim)
 constant (as non prim)
-if/then (as non prim)
 
 number?
+
+['] (I am still confused)
 
 state
 [
 ]
 
 colon compiler in forth
-
-[']

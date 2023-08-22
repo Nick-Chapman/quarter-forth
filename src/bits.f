@@ -55,3 +55,8 @@ immediate! '
 : xif        ' 0branch compile, here 0 , ;
 immediate! if
 immediate! xif
+
+
+: postpone  lit ' , compile, ; immediate
+
+: if        postpone 0branch here @ 0 , ;   immediate
