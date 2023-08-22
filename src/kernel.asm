@@ -150,7 +150,7 @@ defwordimm "if"
     PUSH ax
     call _compile_comma
 
-    call _here_pointer
+    call _here
     call _fetch
 
     mov ax, 0
@@ -286,8 +286,8 @@ _comma:
     call write_word16
     ret
 
-defword "here-pointer"
-_here_pointer:
+defword "here"
+_here:
     mov bx, here
     PUSH bx
     ret

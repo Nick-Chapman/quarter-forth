@@ -1,6 +1,5 @@
 
-: here      here-pointer @ ;
-: allot     here-pointer @ + here-pointer ! ;
+: allot     here @ + here ! ;
 : cell      2 ;
 : cells     cell * ;
 
@@ -22,7 +21,7 @@
 : space     32 emit ;
 : spaces    dup if space 1 - br spaces then drop ;
 
-: variable  here 0 , constant ;
+: variable  here @ 0 , constant ;
 
 : ?         @ . ;
 : +!        swap over @ + swap ! ;
