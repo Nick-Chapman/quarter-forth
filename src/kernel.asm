@@ -409,10 +409,21 @@ _literal:
     call __comma
     ret
 
-dictionary: dw lastlink
+
+defwordimm "("
+.loop:
+    call t_word
+    POP di
+    cmp word [di], ")"
+    jz .close
+    jmp .loop
+.close:
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; start
+
+dictionary: dw lastlink
 
 start:
     mov bp, 0xf800 ; allows 2k for call stack

@@ -1,4 +1,6 @@
 
+( Large letter F )
+
 : star      42 emit ;
 : stars     dup if star 1 - br stars then drop ;
 : margin    cr 30 spaces ;
