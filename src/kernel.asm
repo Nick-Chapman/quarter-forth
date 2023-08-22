@@ -7,6 +7,8 @@ org 0x500
 ;;; Register Usage
 ;;; BP - Parameter Stack
 
+param_stack_base equ 0xf800  ; allows 2k for call stack
+
 ;;; Push to parameter stack
 %macro PUSH 1
     sub bp, 2
@@ -17,6 +19,7 @@ org 0x500
 %macro POP 1
     mov %1, [bp]
     add bp, 2
+    call check_ps_underflow
 %endmacro
 
 %define lastlink 0
@@ -36,20 +39,35 @@ db ((%%link - %%name) | 0x80)
 %endmacro
 
 %macro echo 1
+    push di
     jmp %%after
 %%message: db %1, 13, 0
 %%after:
     mov di, %%message
     call print_string
+    pop di
 %endmacro
 
 %macro echo_n 1
+    push di
     jmp %%after
 %%message: db %1, 0
 %%after:
     mov di, %%message
     call print_string
+    pop di
 %endmacro
+
+
+check_ps_underflow:
+    cmp bp, param_stack_base
+    ja .underflow
+    ret
+.underflow:
+    echo "{stack underflow}"
+.spin:
+    jmp .spin
+
 
 defword "hello"
     echo "{Hello!}"
@@ -110,7 +128,9 @@ isEq:
 defword "."
     POP ax
     call print_number
-    call print_newline
+    ;;call print_newline
+    mov al, ' '
+    call print_char
     ret
 
 defword "dup"
@@ -426,7 +446,7 @@ defwordimm "("
 dictionary: dw lastlink
 
 start:
-    mov bp, 0xf800 ; allows 2k for call stack
+    mov bp, param_stack_base
     call cls
 .loop:
     call t_word
@@ -726,15 +746,15 @@ print_string:
     inc di
     jmp .loop
 .done:
-    pop ax
     pop di
+    pop ax
     ret
 
 ;;; Print counted string.
 ;;; in: CL=length, DI=string
 print_string_n:
-    push cx
     push ax
+    push cx
     push di
 .loop:
     cmp cl, 0 ; no more chars
@@ -745,9 +765,9 @@ print_string_n:
     dec cl
     jmp .loop
 .done:
-    pop ax
     pop di
     pop cx
+    pop ax
     ret
 
 ;;; Print newline to output
