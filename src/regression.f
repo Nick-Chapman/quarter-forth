@@ -29,6 +29,22 @@ true invert false expect
 3 4 * 12 expect
 4 3 * 12 expect
 
+10
+: life literal ;
+life life + 20 expect
+
+11
+create life literal ' exit compile,
+life life + 22 expect
+
+12
+constant life
+life life + 24 expect
+
+
+10 3 + constant lucky
+lucky lucky + 26 expect
+
 variable a
 variable b
 

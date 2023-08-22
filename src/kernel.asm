@@ -397,6 +397,18 @@ _flip_immediate_flag:
     mov [bx+2], al
     ret
 
+defwordimm "literal" ;; TODO like to move to forth (but needed by colon_intepreter)
+_literal:
+    POP ax
+    push ax ; save lit value
+    mov ax, _lit
+    PUSH ax
+    call _compile_comma
+    pop ax ; restore lit value
+    PUSH ax
+    call __comma
+    ret
+
 dictionary: dw lastlink
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -601,7 +613,8 @@ colon_intepreter: ; TODO: move this towards forth style
     call bx
     jmp .loop
 .number:
-    call compile_lit_number
+    PUSH ax
+    call _literal
     jmp .loop
 .semi:
     ;;call write_ret ;; optimization!
@@ -612,16 +625,6 @@ colon_intepreter: ; TODO: move this towards forth style
 
 is_semi:
     cmp word [di], ";"
-    ret
-
-compile_lit_number:
-    push ax ; save lit value
-    mov ax, _lit
-    PUSH ax
-    call _compile_comma
-    pop ax ; restore lit value
-    PUSH ax
-    call __comma
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
