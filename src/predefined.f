@@ -1,10 +1,11 @@
 
-: allot     here @ + here ! ;
+: here      here-pointer @ ;
+: allot     here + here-pointer ! ;
 : cell      2 ;
 : cells     cell * ;
 
-: if        lit ['] 0branch compile, here @ 0 , ;   immediate
-: then      here @ swap ! ;                         immediate
+: if        lit ['] 0branch compile, here 0 , ;   immediate
+: then      here swap ! ;                         immediate
 
 : false     0 ;
 : true      65535 ;
@@ -25,7 +26,7 @@
 : spaces    dup if space 1 - br spaces then drop ;
 
 : constant  create lit ['] lit compile, , lit ['] exit compile, ;
-: variable  here @ 0 , constant ;
+: variable  here 0 , constant ;
 
 : ?         @ . ;
 : +!        swap over @ + swap ! ;

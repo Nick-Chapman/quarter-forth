@@ -1,14 +1,9 @@
 
 ( comments )
 
-literal (need immediate)
-
-, (as non prim)
-constant (as non prim)
+literal (more useful than lit?)
 
 number?
-
-['] (I am still confused)
 
 state
 [

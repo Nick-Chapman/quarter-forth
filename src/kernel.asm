@@ -150,7 +150,7 @@ defwordimm "[']"
 ;;;     call _lit
 ;;;     dw _0branch
 ;;;     call _compile_comma
-;;;     call _here
+;;;     call _here_pointer
 ;;;     call _fetch
 ;;;     call _lit
 ;;;     dw 0
@@ -274,20 +274,20 @@ __comma:
     add word [here], 2
     ret
     ;; version using more primitive steps... (bit excessive)
-    ;; call _here
+    ;; call _here_pointer
     ;; call _fetch
     ;; call _store
     ;; call _lit
     ;; dw 2
-    ;; call _here
+    ;; call _here_pointer
     ;; call _fetch
     ;; call _add
-    ;; call _here
+    ;; call _here_pointer
     ;; call _store
     ;; ret
 
-defword "here"
-_here:
+defword "here-pointer"
+_here_pointer:
     mov bx, here
     PUSH bx
     ret
