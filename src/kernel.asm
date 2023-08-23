@@ -29,7 +29,7 @@ db ((%%link - %%name - 1) | 0x80) ; dont include null in count
 %%message: db %1, 0
 %%after:
     mov di, %%message
-    call print_string
+    call internal_print_string
     pop di
 %endmacro
 
@@ -96,6 +96,10 @@ defword "expect-failed"
     print "Expect failed, got: "
     ret
 
+defword "todo" ;; TODO: need strings so we can avoid these specific messages
+    print "TODO: "
+    ret
+
 defword "crash"
 _crash:
     print "**We have crashed!"
@@ -110,6 +114,7 @@ defword "startup-is-complete" ;; TODO: candidate for hidden word
     mov byte [is_startup_complete], 1
     ret
 
+defword "crash-only-during-startup"
 _crash_only_during_startup:
     cmp byte [is_startup_complete], 0
     jz _crash
@@ -297,7 +302,7 @@ _words:
     mov di, bx
     sub di, cx
     dec di ; null
-    call print_string
+    call internal_print_string
     mov al, ' '
     call print_char
     mov bx, [bx] ; traverse link
@@ -380,7 +385,7 @@ t_find: ;; t for transient
 .missing:
     print "**No such word: "
     POP di
-    call print_string
+    call internal_print_string
     nl
     call _crash_only_during_startup
     mov ax, _missing-3 ;; hack to get from the code pointer to the entry pointer
@@ -444,14 +449,14 @@ _test_immediate_flag:
     PUSH ax
     ret
 
-defword "latest"
-_latest:
+defword "latest-entry"
+_latest_entry:
     mov bx, [dictionary]
     PUSH bx
     ret
 
 defword "immediate"
-    call _latest
+    call _latest_entry
     call _flip_immediate_flag
     ret
 
@@ -490,6 +495,25 @@ defwordimm "("
     jmp .loop
 .close:
     ret
+
+
+defword "entry->name"
+_entry_name: ;; TODO: use this in dictfind
+    POP bx
+    mov cl, [bx+2]
+    and cl, 0x7f
+    mov di, bx
+    sub di, cx
+    dec di ; subtract 1 more for the null
+    PUSH di
+    ret
+
+defword "print-string"
+_print_string:
+    POP dx
+    call internal_print_string
+    ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; start
@@ -737,6 +761,7 @@ startup_read_char:
 builtin: dw builtin_data
 builtin_data:
     incbin "src/predefined.f"
+    incbin "src/unimplemented.f"
     incbin "src/regression.f"
     incbin "src/my-letter-F.f"
     incbin "src/start.f"
@@ -787,7 +812,7 @@ print_number:
 
 ;;; Print null-terminated string.
 ;;; in: DI=string
-print_string:
+internal_print_string:
     push ax
     push di
 .loop:
@@ -850,7 +875,7 @@ buffer: times 64 db 0 ;; must be before size check. why??
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 9       ;; Number of sectors the bootloader loads
+%assign S 10       ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A
