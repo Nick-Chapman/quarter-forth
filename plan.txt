@@ -294,3 +294,38 @@ Misc:
 
 String
     ." xxx"
+
+----------------------------------------------------------------------
+Wed Aug 23 2023
+
+So much todo. What order to tackle?
+
+parse buffer - making interactive use more fun
+switch from strict to sloppy failures when predefs and regressions have run
+
+.s
+
+check: if, then
+do loop -- make F example work using original code
+
+fix "create"
+recode varable to use create
+move "constant" back into asm
+(stop using my current def of ['] which is not right)
+make sure have correct def for literal
+
+create X
+X here expect
+
+: variable create 0 , ;
+: constant create , does> @ ;
+
+r> r>
+
+postpone, does>
+
+make asm interpreter and colon-compiler more forthy.
+separate number factor
+unify with state flag
+allowing defintion of [ and ]
+move towards real forth defintion

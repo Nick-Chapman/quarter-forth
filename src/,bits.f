@@ -10,7 +10,6 @@
 0 test-exit 222 expect
 1 test-exit 111 expect
 
-
 : [']
 
 : constant create ['] lit compile, , ;
@@ -29,7 +28,6 @@
 create constant
 ` create ` ` ` lit ` , ` ` ` exit ` exit
 
-
 : ` ' compile, ;
 
 create life ` lit 42 , ` exit
@@ -41,14 +39,11 @@ life life + .
 
 pi pi + .
 
-
-
 : create ['] ' ' ,compile
 immediate! [']
 
 : if        ['] 0branch compile, here-pointer @ 0 , ;
 immediate! if
-
 
 immediate! '
 
@@ -56,7 +51,25 @@ immediate! '
 immediate! if
 immediate! xif
 
-
 : postpone  lit ' , compile, ; immediate
 
 : if        postpone 0branch here @ 0 , ;   immediate
+
+
+( bracket compile )
+( should be immediate )
+create [compile] ' ' compile, ' compile, compile, ' exit compile,
+
+: [compile] ' compile, ;
+
+create *2 [compile] dup [compile] + [compile] exit
+create *4 [compile] *2 [compile] *2 [compile] exit
+
+5 *4 20 expect
+
+
+: skip parse-word drop ;
+: skip create ;
+: )
+: ( skip br ( ;
+( ignore me please ) hello
