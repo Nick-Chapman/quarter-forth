@@ -331,3 +331,14 @@ move towards real forth defintion
 
 qemu -- start maximized -- but how?
 is it possible to quit qemu from inside forth?
+
+----------------------------------------------------------------------
+Wed Aug 23 20:56:03 2023
+
+null terminated strings
+access to name of latest word
+expose print-string
+
+unimplemented standard words
+
+strings (null terminated) for messages

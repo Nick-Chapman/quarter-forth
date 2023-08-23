@@ -10,16 +10,16 @@ org 0x500
 %define lastlink 0
 
 %macro defword 1
-%%name: db %1
+%%name: db %1, 0 ; null
 %%link: dw lastlink
-db (%%link - %%name)
+db (%%link - %%name - 1) ; dont include null in count
 %define lastlink %%link
 %endmacro
 
 %macro defwordimm 1
-%%name: db %1
+%%name: db %1, 0 ; null
 %%link: dw lastlink
-db ((%%link - %%name) | 0x80)
+db ((%%link - %%name - 1) | 0x80) ; dont include null in count
 %define lastlink %%link
 %endmacro
 
@@ -296,7 +296,8 @@ _words:
     mov ch, 0
     mov di, bx
     sub di, cx
-    call print_counted_string
+    dec di ; null
+    call print_string
     mov al, ' '
     call print_char
     mov bx, [bx] ; traverse link
@@ -529,7 +530,7 @@ try_parse_as_number: ; TODO: code in forth
     mov bl, [si]
     cmp bl, 0 ; null
     jnz .continue
-    ;; reached null-terminator; every char was a digit; return YES
+    ;; reached null; every char was a digit; return YES
     ret
 .continue:
     mul cx ; [ax = ax*10]
@@ -561,7 +562,9 @@ internal_dictfind:
     ;; length matches; compare names
     mov si, dx ; si=sought name
     mov di, bx
-    sub di, ax ; di=this entry name
+    sub di, ax
+    dec di ; subtract 1 more for the null
+    ;; now di=this entry name
     mov cx, ax ; length
     push ax
     call cmp_n
@@ -660,6 +663,8 @@ write_string:
     dec cx
     jmp .loop
 .done:
+    mov ax, 0
+    call write_byte ; null
     ret
 
 ;;; in AX=absolute-address-to-call
@@ -705,7 +710,7 @@ internal_read_word:
     call read_char
     jmp .loop
 .done:
-    mov byte [di], 0 ; add null terminator
+    mov byte [di], 0 ; null
     ret
 
 read_char:
@@ -794,26 +799,6 @@ print_string:
     jmp .loop
 .done:
     pop di
-    pop ax
-    ret
-
-;;; Print counted string.
-;;; in: CL=length, DI=string
-print_counted_string:
-    push ax
-    push cx
-    push di
-.loop:
-    cmp cl, 0 ; no more chars
-    je .done
-    mov al, [di]
-    call print_char
-    inc di
-    dec cl
-    jmp .loop
-.done:
-    pop di
-    pop cx
     pop ax
     ret
 
