@@ -7,5 +7,3 @@
 : blip      margin star ;
 : bar       margin 5 stars ;
 : F         bar blip bar blip blip cr ;
-
-F

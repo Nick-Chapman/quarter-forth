@@ -298,12 +298,11 @@ String
 ----------------------------------------------------------------------
 Wed Aug 23 2023
 
-So much todo. What order to tackle?
-
 parse buffer - making interactive use more fun
-switch from strict to sloppy failures when predefs and regressions have run
 
 .s
+
+hidden words
 
 check: if, then
 do loop -- make F example work using original code
@@ -320,7 +319,7 @@ X here expect
 : variable create 0 , ;
 : constant create , does> @ ;
 
-r> r>
+>r r>
 
 postpone, does>
 
@@ -329,3 +328,6 @@ separate number factor
 unify with state flag
 allowing defintion of [ and ]
 move towards real forth defintion
+
+qemu -- start maximized -- but how?
+is it possible to quit qemu from inside forth?

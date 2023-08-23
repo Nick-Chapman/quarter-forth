@@ -4,23 +4,8 @@ org 0x500
 
     jmp start
 
-;;; Register Usage
-;;; BP - Parameter Stack
-
-param_stack_base equ 0xf800  ; allows 2k for call stack
-
-;;; Push to parameter stack
-%macro PUSH 1
-    sub bp, 2
-    mov [bp], %1
-%endmacro
-
-;;; Pop from parameter stack
-%macro POP 1
-    mov %1, [bp]
-    add bp, 2
-    call check_ps_underflow
-%endmacro
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Macros...
 
 %define lastlink 0
 
@@ -38,17 +23,7 @@ db ((%%link - %%name) | 0x80)
 %define lastlink %%link
 %endmacro
 
-%macro echo 1
-    push di
-    jmp %%after
-%%message: db %1, 13, 0
-%%after:
-    mov di, %%message
-    call print_string
-    pop di
-%endmacro
-
-%macro echo_n 1
+%macro print 1
     push di
     jmp %%after
 %%message: db %1, 0
@@ -58,27 +33,86 @@ db ((%%link - %%name) | 0x80)
     pop di
 %endmacro
 
+%macro nl 0
+    call print_newline
+%endmacro
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Parameter stack -- register BP
+
+param_stack_base equ 0xf800  ; allows 2k for call stack
+
+init_param_stack:
+    mov bp, param_stack_base
+    ret
+
+%macro PUSH 1 ; TODO: rename pspush?
+    sub bp, 2
+    mov [bp], %1
+%endmacro
+
+%macro POP 1
+    mov %1, [bp]
+    add bp, 2
+    call check_ps_underflow
+%endmacro
 
 check_ps_underflow:
     cmp bp, param_stack_base
     ja .underflow
     ret
 .underflow:
-    echo "{stack underflow}"
-.spin:
-    jmp .spin
+    print "stack underflow."
+    nl
+    jmp _crash
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Words start here...
+;;; Convension to use "_" prefixed labels for asm entry to forth words
+;;; Taking arguments & return result using the parameter-stack
 
-defword "hello"
-    echo "{Hello!}"
+echo_enabled: dw 0
+
+defword "echo-enabled" ; ( -- addr )
+    mov bx, echo_enabled
+    PUSH bx
     ret
 
-defword "bye"
-    echo "{Bye!}"
+defword "echo-off"
+echo_off:
+    mov byte [echo_enabled], 0
     ret
 
-defword "hey"
-    echo "{Hey!}"
+defword "echo-on"
+    mov byte [echo_enabled], 1
+    ret
+
+defword "welcome"
+    print "Welcome to Nick's Forth-like thing..."
+    nl
+    ret
+
+defword "expect-failed"
+    print "Expect failed, got: "
+    ret
+
+defword "crash"
+_crash:
+    print "**We have crashed!"
+    nl
+.loop:
+    call echo_off
+    call read_char ; avoiding tight loop which spins laptop fans
+    jmp .loop
+
+is_startup_complete: dw 0
+defword "startup-is-complete" ;; TODO: candidate for hidden word
+    mov byte [is_startup_complete], 1
+    ret
+
+_crash_only_during_startup:
+    cmp byte [is_startup_complete], 0
+    jz _crash
     ret
 
 defword "+"
@@ -128,7 +162,6 @@ isEq:
 defword "."
     POP ax
     call print_number
-    ;;call print_newline
     mov al, ' '
     call print_char
     ret
@@ -263,7 +296,7 @@ _words:
     mov ch, 0
     mov di, bx
     sub di, cx
-    call print_string_n
+    call print_counted_string
     mov al, ' '
     call print_char
     mov bx, [bx] ; traverse link
@@ -333,14 +366,31 @@ t_word: ;; t for transient
     PUSH ax ;; transient buffer; for _find/create
     ret
 
-;;defword "find"
+;;defword "find" -- TODO: make a standard compliant findx
 t_find: ;; t for transient
     POP dx
+    PUSH dx
     call internal_dictfind ;; TODO: inline
     cmp bx, 0
-    jz missing
+    jz .missing
+    POP dx
     PUSH bx
     ret
+.missing:
+    print "**No such word: "
+    POP di
+    call print_string
+    nl
+    call _crash_only_during_startup
+    mov ax, _missing-3 ;; hack to get from the code pointer to the entry pointer
+    PUSH ax
+    ret
+
+_missing:
+    print "**Missing**"
+    nl
+    ret
+
 
 ;;defword "dictionary," ;; expose when solve transient problem
 t_dictionary_comma:
@@ -443,10 +493,8 @@ defwordimm "("
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; start
 
-dictionary: dw lastlink
-
 start:
-    mov bp, param_stack_base
+    call init_param_stack
     call cls
 .loop:
     call t_word
@@ -463,11 +511,6 @@ start:
     add bx, 3
     call bx
     jmp .loop
-
-missing:
-    echo "{missing}"
-.spin:
-    jmp .spin
 
 ;;; Try to parse a string as a number
 ;;; [in DX=string-to-be-tested, out Z=yes-number, DX:AX=number]
@@ -562,62 +605,6 @@ strlen:
 .ret:
     ret
 
-;;; Read word from keyboard into buffer memory -- prefer _word
-;;; [uses AX,DI]
-internal_read_word:
-    mov di, buffer
-.skip:
-    call [read_char]
-    call print_char ; echo
-    cmp al, 0x21
-    jb .skip ; skip leading white-space
-.loop:
-    cmp al, 0x21
-    jb .done ; stop at white-space
-    mov [di], al
-    inc di
-    call [read_char]
-    call print_char ; echo
-    jmp .loop
-.done:
-    mov byte [di], 0 ; add null terminator
-    ret
-
-read_char: dw startup_read_char
-
-startup_read_char:
-    mov bx, [builtin]
-    mov al, [bx]
-    cmp al, 0
-    jz .interactive
-    inc word [builtin]
-    ret
-.interactive:
-    mov word [read_char], interactive_read_char
-    jmp interactive_read_char
-
-builtin: dw builtin_data
-builtin_data:
-    incbin "src/predefined.f"
-    incbin "src/regression.f"
-    incbin "src/my-letter-F.f"
-    incbin "src/play.f"
-
-    ;;incbin "src/starting-forth-F.f" ;; needs comments and do loop
-    ;;incbin "src/my-interpret-wip.f"
-    ;;incbin "src/bracket-compile.f"
-    ;;incbin "src/bits.f"
-
-    db 0
-
-;;; Read char from input
-;;; [out AL=char-read]
-;;; [uses AX]
-interactive_read_char:
-    mov ah, 0
-    int 0x16
-    ret
-
 colon_intepreter: ; TODO: move this towards forth style
     call _create
 .loop:
@@ -700,6 +687,66 @@ write_byte:
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Reading input...
+
+;;; Read word from keyboard into buffer memory -- prefer _word
+;;; [uses AX,DI]
+internal_read_word:
+    mov di, buffer
+.skip:
+    call read_char
+    cmp al, 0x21
+    jb .skip ; skip leading white-space
+.loop:
+    cmp al, 0x21
+    jb .done ; stop at white-space
+    mov [di], al
+    inc di
+    call read_char
+    jmp .loop
+.done:
+    mov byte [di], 0 ; add null terminator
+    ret
+
+read_char:
+    call [read_char_indirection]
+    cmp byte [echo_enabled], 0
+    jz .ret
+    call print_char ; echo
+.ret:
+    ret
+
+read_char_indirection: dw startup_read_char
+
+startup_read_char:
+    mov bx, [builtin]
+    mov al, [bx]
+    cmp al, 0
+    jz .interactive
+    inc word [builtin]
+    ret
+.interactive:
+    mov word [read_char_indirection], interactive_read_char
+    jmp interactive_read_char
+
+builtin: dw builtin_data
+builtin_data:
+    incbin "src/predefined.f"
+    incbin "src/regression.f"
+    incbin "src/my-letter-F.f"
+    incbin "src/start.f"
+    incbin "src/play.f"
+    db 0
+
+;;; Read char from input
+;;; [out AL=char-read]
+;;; [uses AX]
+interactive_read_char:
+    mov ah, 0
+    int 0x16
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Print to output
 
 ;;; Print number in decimal format.
@@ -752,7 +799,7 @@ print_string:
 
 ;;; Print counted string.
 ;;; in: CL=length, DI=string
-print_string_n:
+print_counted_string:
     push ax
     push cx
     push di
@@ -818,7 +865,7 @@ buffer: times 64 db 0 ;; must be before size check. why??
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 8       ;; Number of sectors the bootloader loads
+%assign S 9       ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A
@@ -828,5 +875,6 @@ buffer: times 64 db 0 ;; must be before size check. why??
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; buffer & here
 
+dictionary: dw lastlink
 here: dw here_start
 here_start: ; persistent heap

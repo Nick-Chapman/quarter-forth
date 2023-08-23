@@ -1,5 +1,8 @@
-: spin spin ;
-: expect    over = invert if hey . spin then drop ;
+
+: expect    over = invert if expect-failed . cr crash then drop ;
+
+( For debugging, turn on echo... )
+( echo-on )
 
 3 square square 81 expect
 6 fact 720 expect

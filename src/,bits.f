@@ -73,3 +73,9 @@ create *4 [compile] *2 [compile] *2 [compile] exit
 : )
 : ( skip br ( ;
 ( ignore me please ) hello
+
+
+( myinterpret wip )
+: execute_if_not_zero dup if execute exit then drop ;
+create interpret ! ' ! execute_if_not_zero ! interpret
+
