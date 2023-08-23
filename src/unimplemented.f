@@ -43,7 +43,6 @@
 : and           my-entry literal not-yet ; immediate
 : base          my-entry literal not-yet ; immediate
 : begin         my-entry literal not-yet ; immediate
-: bl            my-entry literal not-yet ; immediate
 : c!            my-entry literal not-yet ; immediate
 : c,            my-entry literal not-yet ; immediate
 : c@            my-entry literal not-yet ; immediate

@@ -14,7 +14,8 @@
 ( Output )
 
 : cr        13 emit ;
-: space     32 emit ;
+: bl        32 ;
+: space     bl emit ;
 : spaces    dup if space 1 - br spaces then drop ;
 : ?         @ . ;
 

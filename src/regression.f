@@ -46,6 +46,10 @@ here 7 allot    here 7 - x
 1 2 true  swap-if-false  2 x 1 x
 1 2 false swap-if-false  1 x 2 x
 
+( Output )
+
+bl 32 x
+
 ( Immediacy )
 
 immediate? here     false x
