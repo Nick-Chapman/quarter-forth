@@ -199,7 +199,7 @@ defword "drop"
 defword ":"
     jmp colon_intepreter
 
-defwordimm "[']"
+defwordimm "x[']" ; x: This definition is bogus
     call _tick
     call __comma ;; Is this right?
     ret
@@ -254,7 +254,7 @@ _branch:
     jmp bx
 
 ;;; defword "constant" ; now in forth
-;;;     call _create
+;;;     call _x_create
 ;;;     call _lit
 ;;;     dw _lit
 ;;;     call _compile_comma
@@ -404,8 +404,8 @@ t_dictionary_comma:
     call internal_create_entry ;; TODO inline
     ret
 
-defword "create"
-_create:
+defword "x-create" ; "x" because this definition is bogus
+_x_create:
     call t_word
     call t_dictionary_comma
     ret
@@ -633,7 +633,7 @@ strlen:
     ret
 
 colon_intepreter: ; TODO: move this towards forth style
-    call _create
+    call _x_create
 .loop:
     call t_word
     POP dx
@@ -875,7 +875,7 @@ buffer: times 64 db 0 ;; must be before size check. why??
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 10       ;; Number of sectors the bootloader loads
+%assign S 22       ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A

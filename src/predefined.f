@@ -4,7 +4,7 @@
 : cell      2 ;
 : cells     cell * ;
 
-: if        lit ['] 0branch compile, here 0 , ;   immediate
+: if        lit x['] 0branch compile, here 0 , ;   immediate
 : then      here swap ! ;                         immediate
 
 : false     0 ;
@@ -25,7 +25,7 @@
 : space     32 emit ;
 : spaces    dup if space 1 - br spaces then drop ;
 
-: constant  create lit ['] lit compile, , lit ['] exit compile, ;
+: constant  x-create lit x['] lit compile, , lit x['] exit compile, ;
 : variable  here 0 , constant ;
 
 : ?         @ . ;

@@ -37,7 +37,7 @@ true invert false expect
 life life + 20 expect
 
 11
-create life literal ' exit compile,
+x-create life literal ' exit compile,
 life life + 22 expect
 
 12
