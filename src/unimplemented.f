@@ -1,12 +1,4 @@
 
-(
-Here is the list of standard words we implemented so far:
-
-    ! ' ( * + +! - , . : < = > @ constant cr drop dup emit execute exit if immediate invert literal max min over spaces swap then variable
-
-)
-
-
 : my-entry latest-entry ; immediate
 : not-yet entry->name todo print-string cr crash-only-during-startup ;
 
@@ -48,7 +40,6 @@ Here is the list of standard words we implemented so far:
 : accept        my-entry literal not-yet ; immediate
 : align         my-entry literal not-yet ; immediate
 : aligned       my-entry literal not-yet ; immediate
-: allot         my-entry literal not-yet ; immediate
 : and           my-entry literal not-yet ; immediate
 : base          my-entry literal not-yet ; immediate
 : begin         my-entry literal not-yet ; immediate
@@ -57,7 +48,6 @@ Here is the list of standard words we implemented so far:
 : c,            my-entry literal not-yet ; immediate
 : c@            my-entry literal not-yet ; immediate
 : cell+         my-entry literal not-yet ; immediate
-: cells         my-entry literal not-yet ; immediate
 : char          my-entry literal not-yet ; immediate
 : char+         my-entry literal not-yet ; immediate
 : chars         my-entry literal not-yet ; immediate
@@ -73,7 +63,6 @@ Here is the list of standard words we implemented so far:
 : fill          my-entry literal not-yet ; immediate
 : find          my-entry literal not-yet ; immediate
 : fm/mod        my-entry literal not-yet ; immediate
-: here          my-entry literal not-yet ; immediate
 : hold          my-entry literal not-yet ; immediate
 : i             my-entry literal not-yet ; immediate
 : j             my-entry literal not-yet ; immediate

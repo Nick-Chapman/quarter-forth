@@ -79,3 +79,14 @@ create *4 [compile] *2 [compile] *2 [compile] exit
 : execute_if_not_zero dup if execute exit then drop ;
 create interpret ! ' ! execute_if_not_zero ! interpret
 
+
+
+
+11 x-create life literal ' exit compile,
+life life + 22 x
+
+12 constant life
+life life + 24 x
+
+10 3 + constant lucky
+lucky lucky + 26 x

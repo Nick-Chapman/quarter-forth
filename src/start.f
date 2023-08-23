@@ -1,5 +1,5 @@
 cr
-words
+( words )
 F
 cr
 welcome
