@@ -172,12 +172,14 @@ defword "."
     ret
 
 defword "dup"
+_dup:
     POP ax
     PUSH ax
     PUSH ax
     ret
 
 defword "swap"
+_swap:
     POP bx
     POP ax
     PUSH bx
@@ -185,6 +187,7 @@ defword "swap"
     ret
 
 defword "over"
+_over:
     POP ax
     POP bx
     PUSH bx
@@ -282,26 +285,24 @@ _store:
     mov [bx], ax
     ret
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; heap...
+
+;;;defword "c," ;; TODO: check standard & test
+_write_byte:
+    POP al
+    call internal_write_byte ;; TODO: inline
+    ret
+
 ;;; write a 16-bit word into the heap ; TODO: move this into forth
 defword ","
-__comma:
+_comma:
     POP ax
     mov bx, [here]
     mov [bx], ax
     add word [here], 2
     ret
-    ;; version using more primitive steps... (bit excessive)
-    ;; call _here_pointer
-    ;; call _fetch
-    ;; call _store
-    ;; call _lit
-    ;; dw 2
-    ;; call _here_pointer
-    ;; call _fetch
-    ;; call _add
-    ;; call _here_pointer
-    ;; call _store
-    ;; ret
 
 defword "entry->name"
 _entry_name: ;; TODO: use this in dictfind
@@ -411,42 +412,94 @@ _flip_immediate_flag:
 ;;; compile,
 
 ;;; compile call to execution token on top of stack
-defword "compile,"
-_compile_comma:
-    POP ax
-    call internal_write_call ;; TODO: inline
+defword "compile," ; ( absolute-address-to-call -- )
+_write_call:
+    call _abs_to_rel
+    call _write_call_byte
+    call _comma
     ret
 
-;;; in AX=absolute-address-to-call
-internal_write_call:
-    push ax
-    mov al, 0xe8 ; x86 encoding for "call"
-    call write_byte
-    pop ax
+_write_call_byte:
+    ;;mov al, 0xe8 ; x86 encoding for "call"
+    ;;PUSH ax
+    call _lit
+    dw 0xe8
+    call _write_byte
+    ret
+
+_abs_to_rel: ; ( addr-abs -> addr-rel )
+    POP ax
     sub ax, [here] ; make it relative
-    sub ax, 2
+    sub ax, 3      ; to the end of the 3 byte instruction
     PUSH ax
-    call __comma
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Dictionary entries & find
 
-;;; TODO: forth this
-;;; Create dictionary entry for new word, in DI=word-name, uses BX
-internal_create_entry:
-    push di
-    call internal_strlen ; -> AX
-    pop di
-    push ax ; save length
-    call write_string
+defword "strlen" ; ( name-addr -- n )
+_strlen:
+    POP di
+    call internal_strlen ;; INLINE
+    PUSH ax
+    ret
+
+;;; Compute length of a null-terminated string
+;;; [in DI=string; out AX=length]
+;;; [consumes DI; uses BL]
+internal_strlen:
+    mov ax, 0
+.loop:
+    mov bl, [di]
+    cmp bl, 0
+    jz .ret
+    inc ax
+    inc di
+    jmp .loop
+.ret:
+    ret
+
+defword "create-entry" ; ( name-addr -- )
+_create_entry:
+    call _dup           ; ( a a )
+    call _strlen        ; ( a n )
+    call _swap          ; ( n a )
+    call _over          ; ( n a n )
+    call _write_string  ; ( n )
+    call _write_link    ; ( n )
+    call _write_byte
+    ret
+
+_write_link:
     mov ax, [dictionary]
     mov bx, [here]
     mov [dictionary], bx
     PUSH ax
-    call __comma ; link
-    pop ax ; restore length
-    call write_byte
+    call _comma ; link
+    ret
+
+;;; Write string to [here]
+_write_string:
+    POP cx ; length
+    POP di ; string
+.loop:
+    cmp cx, 0
+    jz .done
+    mov ax, [di]
+    call internal_write_byte
+    inc di
+    dec cx
+    jmp .loop
+.done:
+    mov ax, 0
+    call internal_write_byte ; null
+    ret
+
+;;; Write byte to [here], in AL=byte, uses BX
+internal_write_byte:
+    mov bx, [here]
+    mov [bx], al
+    inc word [here]
     ret
 
 ;;defword "find" -- TODO: make a standard compliant findx
@@ -479,7 +532,9 @@ _missing:
 ;;; [uses SI, DI, BX, CX]
 internal_dictfind:
     mov di, dx
-    call internal_strlen ; ax=len
+    PUSH di
+    call _strlen ; ax=len
+    POP ax
     mov bx, [dictionary]
 .loop:
     mov cl, [bx+2]
@@ -503,21 +558,6 @@ internal_dictfind:
     cmp bx, 0
     jnz .loop
     ret ; BX=0 - not found
-
-;;; Compute length of a null-terminated string
-;;; [in DI=string; out AX=length]
-;;; [consumes DI; uses BL]
-internal_strlen:
-    mov ax, 0
-.loop:
-    mov bl, [di]
-    cmp bl, 0
-    jz .ret
-    inc ax
-    inc di
-    jmp .loop
-.ret:
-    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; word
@@ -570,15 +610,14 @@ defwordimm "[char]"
 
 defword "constant"
     call t_word
-    POP di
-    call internal_create_entry
+    call _create_entry
     call _lit
     dw _lit
-    call _compile_comma
-    call __comma
+    call _write_call
+    call _comma
     call _lit
     dw _exit
-    call _compile_comma
+    call _write_call
     ret
 
 defword "word-find"
@@ -603,10 +642,10 @@ _literal:
     push ax ; save lit value
     mov ax, _lit
     PUSH ax
-    call _compile_comma
+    call _write_call
     pop ax ; restore lit value
     PUSH ax
-    call __comma
+    call _comma
     ret
 
 defword "print-string"
@@ -621,12 +660,12 @@ defwordimm "br"
     push bx
     mov ax, _branch
     PUSH ax
-    call _compile_comma
+    call _write_call
     pop bx
     add bx, 3
     mov ax, bx
     PUSH ax
-    call __comma
+    call _comma
     ret
 
 _branch:
@@ -641,8 +680,7 @@ defword ":"
 
 colon_intepreter: ; TODO: move this towards forth style
     call t_word
-    POP di
-    call internal_create_entry
+    call _create_entry
 .loop:
     call t_word
     POP dx
@@ -660,7 +698,7 @@ colon_intepreter: ; TODO: move this towards forth style
     add bx, 3
     mov ax, bx
     PUSH ax
-    call _compile_comma
+    call _write_call
     jmp .loop
 .immediate:
     add bx, 3
@@ -674,7 +712,7 @@ colon_intepreter: ; TODO: move this towards forth style
     ;;call write_ret ;; optimization!
     mov ax, _exit
     PUSH ax
-    call _compile_comma
+    call _write_call
     ret
 
 is_semi:
@@ -760,32 +798,6 @@ cmp_n:
     ret ; NZ - diff
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Write to [here]
-
-;;; Write string to [here], in DI=string, AX=length, consumes DI; use CX
-write_string:
-    mov cx, ax
-.loop:
-    cmp cx, 0
-    jz .done
-    mov ax, [di]
-    call write_byte
-    inc di
-    dec cx
-    jmp .loop
-.done:
-    mov ax, 0
-    call write_byte ; null
-    ret
-
-;;; Write byte to [here], in AL=byte, uses BX
-write_byte:
-    mov bx, [here]
-    mov [bx], al
-    inc word [here]
-    ret
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Reading input...
 
 read_char:
@@ -815,7 +827,7 @@ builtin_data:
     incbin "src/unimplemented.f"
     incbin "src/regression.f"
     incbin "src/my-letter-F.f"
-    ;incbin "src/dump.f"
+    incbin "src/dump.f"
     incbin "src/start.f"
     incbin "src/play.f"
     db 0

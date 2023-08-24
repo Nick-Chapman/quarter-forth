@@ -125,3 +125,16 @@ defwordimm "if" ; now in forth
 ;;;     mov ax, [here]
 ;;;     mov word [bx], ax
 ;;;     ret
+
+    ;; version using more primitive steps... (bit excessive)
+    ;; call _here_pointer
+    ;; call _fetch
+    ;; call _store
+    ;; call _lit
+    ;; dw 2
+    ;; call _here_pointer
+    ;; call _fetch
+    ;; call _add
+    ;; call _here_pointer
+    ;; call _store
+    ;; ret
