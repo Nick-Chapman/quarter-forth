@@ -48,7 +48,12 @@ here 7 allot    here 7 - x
 
 ( Output )
 
-bl 32 x
+bl          32 x
+char *      42 x
+char hi     104 x
+
+: hi [char] h [char] i ;
+hi 105 x 99 104
 
 ( Immediacy )
 

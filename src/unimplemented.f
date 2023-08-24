@@ -47,7 +47,6 @@
 : c,            my-entry literal not-yet ; immediate
 : c@            my-entry literal not-yet ; immediate
 : cell+         my-entry literal not-yet ; immediate
-: char          my-entry literal not-yet ; immediate
 : char+         my-entry literal not-yet ; immediate
 : chars         my-entry literal not-yet ; immediate
 : count         my-entry literal not-yet ; immediate
@@ -101,5 +100,4 @@
 : xor           my-entry literal not-yet ; immediate
 : [             my-entry literal not-yet ; immediate
 : [']           my-entry literal not-yet ; immediate
-: [char]        my-entry literal not-yet ; immediate
 : ]             my-entry literal not-yet ; immediate

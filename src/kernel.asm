@@ -316,6 +316,23 @@ defword "emit"
     call print_char
     ret
 
+defword "char"
+    call t_word
+    POP bx
+    mov ah, 0
+    mov al, [bx]
+    PUSH ax
+    ret
+
+defwordimm "[char]"
+    call t_word
+    POP bx
+    mov ah, 0
+    mov al, [bx]
+    PUSH ax
+    call _literal
+    ret
+
 defword "lit"
 _lit:
     pop bx
