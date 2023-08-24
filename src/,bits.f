@@ -101,3 +101,27 @@ lucky lucky + 26 x
 
 ( : constant  x-create lit x['] lit compile, , lit x['] exit compile, ; )
 ( : variable  here 0 , constant ; )
+
+;defwordimm "x[']" ; x: This definition is bogus
+;    call _tick
+;    call __comma ;; Is this right?
+;    ret
+
+
+defwordimm "if" ; now in forth
+    call _lit
+    dw _0branch
+    call _compile_comma
+    call _here_pointer
+    call _fetch
+    call _lit
+    dw 0
+    call __comma
+    call _exit
+    ret
+
+;;; defwordimm "then" ; now in forth
+;;;     POP bx
+;;;     mov ax, [here]
+;;;     mov word [bx], ax
+;;;     ret

@@ -8,8 +8,8 @@
 
 ( Control flow )
 
-( : if        lit x['] 0branch compile, here 0 , ;  immediate )
-: then      here swap ! ;                         immediate
+: if        0branch, here cell allot ; immediate
+: then      here swap !              ; immediate
 
 ( Output )
 

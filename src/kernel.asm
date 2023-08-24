@@ -199,21 +199,10 @@ defword "drop"
 defword ":"
     jmp colon_intepreter
 
-;defwordimm "x[']" ; x: This definition is bogus
-;    call _tick
-;    call __comma ;; Is this right?
-;    ret
-
-defwordimm "if" ; now in forth
+defword "0branch,"
     call _lit
     dw _0branch
     call _compile_comma
-    call _here_pointer
-    call _fetch
-    call _lit
-    dw 0
-    call __comma
-    call _exit
     ret
 
 defword "0branch"
@@ -227,12 +216,6 @@ _0branch:
 .no:
     mov bx, [bx]
     jmp bx ; branch to target
-
-;;; defwordimm "then" ; now in forth
-;;;     POP bx
-;;;     mov ax, [here]
-;;;     mov word [bx], ax
-;;;     ret
 
 defwordimm "br"
     call _word_find
