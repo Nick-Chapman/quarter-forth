@@ -90,3 +90,14 @@ life life + 24 x
 
 10 3 + constant lucky
 lucky lucky + 26 x
+
+;; defword "x-create" ; "x" because this definition is bogus
+;; _x_create:
+;;     call t_word
+;;     POP di
+;;     call internal_create_entry
+;;     ret
+
+
+( : constant  x-create lit x['] lit compile, , lit x['] exit compile, ; )
+( : variable  here 0 , constant ; )

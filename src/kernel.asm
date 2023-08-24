@@ -199,22 +199,22 @@ defword "drop"
 defword ":"
     jmp colon_intepreter
 
-defwordimm "x[']" ; x: This definition is bogus
-    call _tick
-    call __comma ;; Is this right?
-    ret
+;defwordimm "x[']" ; x: This definition is bogus
+;    call _tick
+;    call __comma ;; Is this right?
+;    ret
 
-;;; defwordimm "if" ; now in forth
-;;;     call _lit
-;;;     dw _0branch
-;;;     call _compile_comma
-;;;     call _here_pointer
-;;;     call _fetch
-;;;     call _lit
-;;;     dw 0
-;;;     call _comma
-;;;     call _exit
-;;;     ret
+defwordimm "if" ; now in forth
+    call _lit
+    dw _0branch
+    call _compile_comma
+    call _here_pointer
+    call _fetch
+    call _lit
+    dw 0
+    call __comma
+    call _exit
+    ret
 
 defword "0branch"
 _0branch:
@@ -253,16 +253,6 @@ _branch:
     mov bx, [bx]
     jmp bx
 
-;;; defword "constant" ; now in forth
-;;;     call _x_create
-;;;     call _lit
-;;;     dw _lit
-;;;     call _compile_comma
-;;;     call __comma
-;;;     call _lit
-;;;     dw _exit
-;;;     call _compile_comma
-;;;     ret
 
 ;;; Create dictionary entry for new word, in DI=word-name, uses BX
 internal_create_entry:
@@ -414,17 +404,17 @@ _missing:
     nl
     ret
 
-
-;;defword "dictionary," ;; expose when solve transient problem
-t_dictionary_comma:
-    POP di
-    call internal_create_entry ;; TODO inline
-    ret
-
-defword "x-create" ; "x" because this definition is bogus
-_x_create:
+defword "constant"
     call t_word
-    call t_dictionary_comma
+    POP di
+    call internal_create_entry
+    call _lit
+    dw _lit
+    call _compile_comma
+    call __comma
+    call _lit
+    dw _exit
+    call _compile_comma
     ret
 
 defword "word-find"
@@ -650,7 +640,9 @@ strlen:
     ret
 
 colon_intepreter: ; TODO: move this towards forth style
-    call _x_create
+    call t_word
+    POP di
+    call internal_create_entry
 .loop:
     call t_word
     POP dx

@@ -8,7 +8,7 @@
 
 ( Control flow )
 
-: if        lit x['] 0branch compile, here 0 , ;  immediate
+( : if        lit x['] 0branch compile, here 0 , ;  immediate )
 : then      here swap ! ;                         immediate
 
 ( Output )
@@ -21,8 +21,7 @@
 
 ( Definitions )
 
-: constant  x-create lit x['] lit compile, , lit x['] exit compile, ;
-: variable  here 0 , constant ;
+: variable  here cell allot constant ;
 
 ( Bools )
 
