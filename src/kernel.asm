@@ -205,10 +205,6 @@ defword "drop"
     POP ax
     ret
 
-defword ":"
-    jmp colon_intepreter
-
-
 defwordimm "[']"
     call _word_find
     POP ax
@@ -229,52 +225,9 @@ _0branch:
     mov bx, [bx]
     jmp bx ; branch to target
 
-defwordimm "br"
-    call _word_find
-    POP bx
-    push bx
-    mov ax, _branch
-    PUSH ax
-    call _compile_comma
-    pop bx
-    add bx, 3
-    mov ax, bx
-    PUSH ax
-    call __comma
-    ret
-
-_branch:
-    pop bx
-    mov bx, [bx]
-    jmp bx
-
-
-;;; Create dictionary entry for new word, in DI=word-name, uses BX
-internal_create_entry:
-    push di
-    call strlen ; -> AX
-    pop di
-    push ax ; save length
-    call write_string
-    mov ax, [dictionary]
-    mov bx, [here]
-    mov [dictionary], bx
-    PUSH ax
-    call __comma ; link
-    pop ax ; restore length
-    call write_byte
-    ret
-
 defword "exit"
 _exit:
     pop bx ; and ignore
-    ret
-
-;;; compile call to execution token on top of stack
-defword "compile,"
-_compile_comma:
-    POP ax
-    call internal_write_call ;; TODO: inline
     ret
 
 defword "words"
@@ -301,23 +254,6 @@ defword "emit"
     call print_char
     ret
 
-defword "char"
-    call t_word
-    POP bx
-    mov ah, 0
-    mov al, [bx]
-    PUSH ax
-    ret
-
-defwordimm "[char]"
-    call t_word
-    POP bx
-    mov ah, 0
-    mov al, [bx]
-    PUSH ax
-    call _literal
-    ret
-
 defword "lit"
 _lit:
     pop bx
@@ -325,6 +261,26 @@ _lit:
     PUSH ax
     add bx, 2
     jmp bx
+
+defword "here-pointer"
+_here_pointer:
+    mov bx, here
+    PUSH bx
+    ret
+
+defword "@"
+_fetch:
+    POP bx
+    mov ax, [bx]
+    PUSH ax
+    ret
+
+defword "!"
+_store:
+    POP bx
+    POP ax
+    mov [bx], ax
+    ret
 
 ;;; write a 16-bit word into the heap ; TODO: move this into forth
 defword ","
@@ -347,78 +303,53 @@ __comma:
     ;; call _store
     ;; ret
 
-defword "here-pointer"
-_here_pointer:
-    mov bx, here
-    PUSH bx
+defword "entry->name"
+_entry_name: ;; TODO: use this in dictfind
+    POP bx
+    mov ch, 0
+    mov cl, [bx+2]
+    and cl, 0x7f
+    mov di, bx
+    sub di, cx
+    dec di ; subtract 1 more for the null
+    PUSH di
     ret
 
-defword "@"
-_fetch:
+defword "c@"
+_c_at:
     POP bx
-    mov ax, [bx]
+    mov ah, 0
+    mov al, [bx]
     PUSH ax
     ret
 
-defword "!"
-_store:
-    POP bx
+defword ".h" ; print byte in hex
+_dot_h:
     POP ax
-    mov [bx], ax
+    mov ah, 0
+    push ax
+    push ax
+    ;mov al, '['
+    ;call print_char
+    ;; hi nibble
+    pop di
+    and di, 0xf0
+    shr di, 4
+    mov al, [.hex+di]
+    call print_char
+    ;; lo nibble
+    pop di
+    and di, 0xf
+    mov al, [.hex+di]
+    call print_char
+    ;mov al, ']'
+    ;call print_char
+    mov al, ' '
+    call print_char
     ret
+.hex db "0123456789abcdef"
 
-;;defword "word"
-t_word: ;; t for transient
-    call internal_read_word ;; TODO inline
-    mov ax, buffer
-    PUSH ax ;; transient buffer; for _find/create
-    ret
-
-;;defword "find" -- TODO: make a standard compliant findx
-t_find: ;; t for transient
-    POP dx
-    PUSH dx
-    call internal_dictfind ;; TODO: inline
-    cmp bx, 0
-    jz .missing
-    POP dx
-    PUSH bx
-    ret
-.missing:
-    print "**No such word: "
-    POP di
-    call internal_print_string
-    nl
-    call _crash_only_during_startup
-    mov ax, _missing-3 ;; hack to get from the code pointer to the entry pointer
-    PUSH ax
-    ret
-
-_missing:
-    print "**Missing**"
-    nl
-    ret
-
-defword "constant"
-    call t_word
-    POP di
-    call internal_create_entry
-    call _lit
-    dw _lit
-    call _compile_comma
-    call __comma
-    call _lit
-    dw _exit
-    call _compile_comma
-    ret
-
-defword "word-find"
-_word_find:
-    call t_word
-    call t_find
-    ret
-
-defword "'" ;; should be immediate? NO
+defword "'"
 _tick:
     call _word_find
     POP bx
@@ -475,16 +406,185 @@ _flip_immediate_flag:
     mov [bx+2], al
     ret
 
-defwordimm "literal"
-_literal:
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; compile,
+
+;;; compile call to execution token on top of stack
+defword "compile,"
+_compile_comma:
     POP ax
-    push ax ; save lit value
-    mov ax, _lit
-    PUSH ax
-    call _compile_comma
-    pop ax ; restore lit value
+    call internal_write_call ;; TODO: inline
+    ret
+
+;;; in AX=absolute-address-to-call
+internal_write_call:
+    push ax
+    mov al, 0xe8 ; x86 encoding for "call"
+    call write_byte
+    pop ax
+    sub ax, [here] ; make it relative
+    sub ax, 2
     PUSH ax
     call __comma
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Dictionary entries & find
+
+;;; TODO: forth this
+;;; Create dictionary entry for new word, in DI=word-name, uses BX
+internal_create_entry:
+    push di
+    call internal_strlen ; -> AX
+    pop di
+    push ax ; save length
+    call write_string
+    mov ax, [dictionary]
+    mov bx, [here]
+    mov [dictionary], bx
+    PUSH ax
+    call __comma ; link
+    pop ax ; restore length
+    call write_byte
+    ret
+
+;;defword "find" -- TODO: make a standard compliant findx
+t_find: ;; t for transient
+    POP dx
+    PUSH dx
+    call internal_dictfind ;; TODO: inline
+    cmp bx, 0
+    jz .missing
+    POP dx
+    PUSH bx
+    ret
+.missing:
+    print "**No such word: "
+    POP di
+    call internal_print_string
+    nl
+    call _crash_only_during_startup
+    mov ax, _missing-3 ;; hack to get from the code pointer to the entry pointer
+    PUSH ax
+    ret
+
+_missing:
+    print "**Missing**"
+    nl
+    ret
+
+;;; Lookup word in dictionary, return entry if found or 0 otherwise
+;;; [in DX=sought-name, out BX=entry/0]
+;;; [uses SI, DI, BX, CX]
+internal_dictfind:
+    mov di, dx
+    call internal_strlen ; ax=len
+    mov bx, [dictionary]
+.loop:
+    mov cl, [bx+2]
+    and cl, 0x7f
+    cmp al, cl ; 8bit length comapre
+    jnz .next
+    ;; length matches; compare names
+    mov si, dx ; si=sought name
+    mov di, bx
+    sub di, ax
+    dec di ; subtract 1 more for the null
+    ;; now di=this entry name
+    mov cx, ax ; length
+    push ax
+    call cmp_n
+    pop ax
+    jnz .next
+    ret ; BX=entry
+.next:
+    mov bx, [bx] ; traverse link
+    cmp bx, 0
+    jnz .loop
+    ret ; BX=0 - not found
+
+;;; Compute length of a null-terminated string
+;;; [in DI=string; out AX=length]
+;;; [consumes DI; uses BL]
+internal_strlen:
+    mov ax, 0
+.loop:
+    mov bl, [di]
+    cmp bl, 0
+    jz .ret
+    inc ax
+    inc di
+    jmp .loop
+.ret:
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; word
+
+;;defword "word"
+t_word: ;; t for transient
+    call internal_read_word ;; TODO inline
+    mov ax, buffer
+    PUSH ax ;; transient buffer; for _find/create
+    ret
+
+;;; Read word from keyboard into buffer memory -- prefer _word
+;;; [uses AX,DI]
+internal_read_word:
+    mov di, buffer
+.skip:
+    call read_char
+    cmp al, 0x21
+    jb .skip ; skip leading white-space
+.loop:
+    cmp al, 0x21
+    jb .done ; stop at white-space
+    mov [di], al
+    inc di
+    call read_char
+    jmp .loop
+.done:
+    mov byte [di], 0 ; null
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Uses t_word
+
+defword "char"
+    call t_word
+    POP bx
+    mov ah, 0
+    mov al, [bx]
+    PUSH ax
+    ret
+
+defwordimm "[char]"
+    call t_word
+    POP bx
+    mov ah, 0
+    mov al, [bx]
+    PUSH ax
+    call _literal
+    ret
+
+defword "constant"
+    call t_word
+    POP di
+    call internal_create_entry
+    call _lit
+    dw _lit
+    call _compile_comma
+    call __comma
+    call _lit
+    dw _exit
+    call _compile_comma
+    ret
+
+defword "word-find"
+_word_find:
+    call t_word
+    call t_find
     ret
 
 defwordimm "("
@@ -497,17 +597,16 @@ defwordimm "("
 .close:
     ret
 
-
-defword "entry->name"
-_entry_name: ;; TODO: use this in dictfind
-    POP bx
-    mov ch, 0
-    mov cl, [bx+2]
-    and cl, 0x7f
-    mov di, bx
-    sub di, cx
-    dec di ; subtract 1 more for the null
-    PUSH di
+defwordimm "literal"
+_literal:
+    POP ax
+    push ax ; save lit value
+    mov ax, _lit
+    PUSH ax
+    call _compile_comma
+    pop ax ; restore lit value
+    PUSH ax
+    call __comma
     ret
 
 defword "print-string"
@@ -516,39 +615,77 @@ _print_string:
     call internal_print_string
     ret
 
-defword "c@"
-_c_at:
+defwordimm "br"
+    call _word_find
     POP bx
-    mov ah, 0
-    mov al, [bx]
+    push bx
+    mov ax, _branch
     PUSH ax
+    call _compile_comma
+    pop bx
+    add bx, 3
+    mov ax, bx
+    PUSH ax
+    call __comma
     ret
 
-defword ".h" ; print byte in hex
-_dot_h:
+_branch:
+    pop bx
+    mov bx, [bx]
+    jmp bx
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+defword ":"
+    jmp colon_intepreter
+
+colon_intepreter: ; TODO: move this towards forth style
+    call t_word
+    POP di
+    call internal_create_entry
+.loop:
+    call t_word
+    POP dx
+    mov di, dx
+    call is_semi
+    jz .semi
+    call try_parse_as_number
+    jz .number
+    PUSH dx
+    call t_find
+    call _test_immediate_flag
     POP ax
-    mov ah, 0
-    push ax
-    push ax
-    ;mov al, '['
-    ;call print_char
-    ;; hi nibble
-    pop di
-    and di, 0xf0
-    shr di, 4
-    mov al, [.hex+di]
-    call print_char
-    ;; lo nibble
-    pop di
-    and di, 0xf
-    mov al, [.hex+di]
-    call print_char
-    ;mov al, ']'
-    ;call print_char
-    mov al, ' '
-    call print_char
+    cmp ax, 0
+    jnz .immediate
+    add bx, 3
+    mov ax, bx
+    PUSH ax
+    call _compile_comma
+    jmp .loop
+.immediate:
+    add bx, 3
+    call bx
+    jmp .loop
+.number:
+    PUSH ax
+    call _literal
+    jmp .loop
+.semi:
+    ;;call write_ret ;; optimization!
+    mov ax, _exit
+    PUSH ax
+    call _compile_comma
     ret
-.hex db "0123456789abcdef"
+
+is_semi:
+    cmp word [di], ";"
+    ret
+
+;write_ret:
+;    mov al, 0xc3 ; x86 encoding for "ret"
+;    call write_byte
+;    ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; start
@@ -606,36 +743,6 @@ try_parse_as_number: ; TODO: code in forth
     cmp bl, 0 ; return NO
     ret
 
-;;; Lookup word in dictionary, return entry if found or 0 otherwise
-;;; [in DX=sought-name, out BX=entry/0]
-;;; [uses SI, DI, BX, CX]
-internal_dictfind:
-    mov di, dx
-    call strlen ; ax=len
-    mov bx, [dictionary]
-.loop:
-    mov cl, [bx+2]
-    and cl, 0x7f
-    cmp al, cl ; 8bit length comapre
-    jnz .next
-    ;; length matches; compare names
-    mov si, dx ; si=sought name
-    mov di, bx
-    sub di, ax
-    dec di ; subtract 1 more for the null
-    ;; now di=this entry name
-    mov cx, ax ; length
-    push ax
-    call cmp_n
-    pop ax
-    jnz .next
-    ret ; BX=entry
-.next:
-    mov bx, [bx] ; traverse link
-    cmp bx, 0
-    jnz .loop
-    ret ; BX=0 - not found
-
 ;;; Compare n bytes at two pointers
 ;;; [in CX=n, SI/DI=pointers-to-things-to-compare, out Z=same]
 ;;; [consumes SI, DI, CX; uses AL]
@@ -651,63 +758,6 @@ cmp_n:
     ret ; Z - matches
 .ret:
     ret ; NZ - diff
-
-;;; Compute length of a null-terminated string
-;;; [in DI=string; out AX=length]
-;;; [consumes DI; uses BL]
-strlen:
-    mov ax, 0
-.loop:
-    mov bl, [di]
-    cmp bl, 0
-    jz .ret
-    inc ax
-    inc di
-    jmp .loop
-.ret:
-    ret
-
-colon_intepreter: ; TODO: move this towards forth style
-    call t_word
-    POP di
-    call internal_create_entry
-.loop:
-    call t_word
-    POP dx
-    mov di, dx
-    call is_semi
-    jz .semi
-    call try_parse_as_number
-    jz .number
-    PUSH dx
-    call t_find
-    call _test_immediate_flag
-    POP ax
-    cmp ax, 0
-    jnz .immediate
-    add bx, 3
-    mov ax, bx
-    PUSH ax
-    call _compile_comma
-    jmp .loop
-.immediate:
-    add bx, 3
-    call bx
-    jmp .loop
-.number:
-    PUSH ax
-    call _literal
-    jmp .loop
-.semi:
-    ;;call write_ret ;; optimization!
-    mov ax, _exit
-    PUSH ax
-    call _compile_comma
-    ret
-
-is_semi:
-    cmp word [di], ";"
-    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Write to [here]
@@ -728,23 +778,6 @@ write_string:
     call write_byte ; null
     ret
 
-;;; in AX=absolute-address-to-call
-internal_write_call:
-    push ax
-    mov al, 0xe8 ; x86 encoding for "call"
-    call write_byte
-    pop ax
-    sub ax, [here] ; make it relative
-    sub ax, 2
-    PUSH ax
-    call __comma
-    ret
-
-;write_ret:
-;    mov al, 0xc3 ; x86 encoding for "ret"
-;    call write_byte
-;    ret
-
 ;;; Write byte to [here], in AL=byte, uses BX
 write_byte:
     mov bx, [here]
@@ -754,25 +787,6 @@ write_byte:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Reading input...
-
-;;; Read word from keyboard into buffer memory -- prefer _word
-;;; [uses AX,DI]
-internal_read_word:
-    mov di, buffer
-.skip:
-    call read_char
-    cmp al, 0x21
-    jb .skip ; skip leading white-space
-.loop:
-    cmp al, 0x21
-    jb .done ; stop at white-space
-    mov [di], al
-    inc di
-    call read_char
-    jmp .loop
-.done:
-    mov byte [di], 0 ; null
-    ret
 
 read_char:
     call [read_char_indirection]
