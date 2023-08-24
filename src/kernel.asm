@@ -7,22 +7,6 @@ org 0x500
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Macros...
 
-%define lastlink 0
-
-%macro defword 1
-%%name: db %1, 0 ; null
-%%link: dw lastlink
-db (%%link - %%name - 1) ; dont include null in count
-%define lastlink %%link
-%endmacro
-
-%macro defwordimm 1
-%%name: db %1, 0 ; null
-%%link: dw lastlink
-db ((%%link - %%name - 1) | 0x80) ; dont include null in count
-%define lastlink %%link
-%endmacro
-
 %macro print 1
     push di
     jmp %%after
@@ -68,8 +52,26 @@ check_ps_underflow:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Words start here...
-;;; Convension to use "_" prefixed labels for asm entry to forth words
-;;; Taking arguments & return result using the parameter-stack
+;;; Use '_" prefix for words in forth-style ASM (args/return on parameter-stack)
+
+%define lastlink 0
+
+%macro defword 1
+%%name: db %1, 0 ; null
+%%link: dw lastlink
+db (%%link - %%name - 1) ; dont include null in count
+%define lastlink %%link
+%endmacro
+
+%macro defwordimm 1
+%%name: db %1, 0 ; null
+%%link: dw lastlink
+db ((%%link - %%name - 1) | 0x80) ; dont include null in count
+%define lastlink %%link
+%endmacro
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; echo-control, messages, startup, crash
 
 echo_enabled: dw 0
 
@@ -120,6 +122,86 @@ _crash_only_during_startup:
     jz _crash
     ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Output
+
+defword "emit" ; ( byte -- ) ; emit ascii char
+    POP ax
+    call print_char
+    ret
+
+defword "."
+    POP ax
+    call print_number
+    mov al, ' '
+    call print_char
+    ret
+
+defword ".h" ; ( byte -- ) ; emit as 2-digit hex
+_dot_h:
+    POP ax
+    mov ah, 0
+    push ax
+    push ax
+    ;; hi nibble
+    pop di
+    and di, 0xf0
+    shr di, 4
+    mov al, [.hex+di]
+    call print_char
+    ;; lo nibble
+    pop di
+    and di, 0xf
+    mov al, [.hex+di]
+    call print_char
+    mov al, ' '
+    call print_char
+    ret
+.hex db "0123456789abcdef"
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Stack manipulation
+
+defword "dup"
+_dup:
+    POP ax
+    PUSH ax
+    PUSH ax
+    ret
+
+defword "swap"
+_swap:
+    POP bx
+    POP ax
+    PUSH bx
+    PUSH ax
+    ret
+
+defword "over"
+_over:
+    POP ax
+    POP bx
+    PUSH bx
+    PUSH ax
+    PUSH bx
+    ret
+
+defword "rot" ; ( 1 2 3 -- 2 3 1 )
+    POP ax ;3
+    POP bx ;2
+    POP cx ;1
+    PUSH bx ;2
+    PUSH ax ;3
+    PUSH cx ;1
+    ret
+
+defword "drop"
+    POP ax
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Numerics...
+
 defword "+"
 _add:
     POP bx
@@ -164,57 +246,8 @@ isEq:
     PUSH ax
     ret
 
-defword "."
-    POP ax
-    call print_number
-    mov al, ' '
-    call print_char
-    ret
-
-defword "dup"
-_dup:
-    POP ax
-    PUSH ax
-    PUSH ax
-    ret
-
-defword "swap"
-_swap:
-    POP bx
-    POP ax
-    PUSH bx
-    PUSH ax
-    ret
-
-defword "over"
-_over:
-    POP ax
-    POP bx
-    PUSH bx
-    PUSH ax
-    PUSH bx
-    ret
-
-defword "rot" ; ( 1 2 3 -- 2 3 1 )
-    POP ax ;3
-    POP bx ;2
-    POP cx ;1
-    PUSH bx ;2
-    PUSH ax ;3
-    PUSH cx ;1
-    ret
-
-defword "drop"
-    POP ax
-    ret
-
-defwordimm "[']"
-    call _word_find
-    POP ax
-    add ax, 3
-    PUSH ax
-    call _literal
-    ret
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Control flow
 
 defword "0branch"
 _0branch:
@@ -233,43 +266,27 @@ _exit:
     pop bx ; and ignore
     ret
 
-defword "words"
-_words:
-    mov bx, [dictionary]
-.loop:
-    mov cl, [bx+2]
-    and cl, 0x7f
-    mov ch, 0
-    mov di, bx
-    sub di, cx
-    dec di ; null
-    call internal_print_string
-    mov al, ' '
-    call print_char
-    mov bx, [bx] ; traverse link
-    cmp bx, 0
-    jnz .loop
-    call print_newline
-    ret
-
-defword "emit"
-    POP ax
-    call print_char
-    ret
-
-defword "lit"
-_lit:
-    pop bx
-    mov ax, [bx]
+defwordimm "br"
+    call _word_find
+    POP bx
+    push bx
+    mov ax, _branch
     PUSH ax
-    add bx, 2
+    call _write_call
+    pop bx
+    add bx, 3
+    mov ax, bx
+    PUSH ax
+    call _comma
+    ret
+
+_branch:
+    pop bx
+    mov bx, [bx]
     jmp bx
 
-defword "here-pointer"
-_here_pointer:
-    mov bx, here
-    PUSH bx
-    ret
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Fetch and store
 
 defword "@"
 _fetch:
@@ -285,9 +302,22 @@ _store:
     mov [bx], ax
     ret
 
+defword "c@"
+_c_at:
+    POP bx
+    mov ah, 0
+    mov al, [bx]
+    PUSH ax
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; heap...
+
+defword "here-pointer"
+_here_pointer:
+    mov bx, here
+    PUSH bx
+    ret
 
 ;;;defword "c," ;; TODO: check standard & test
 _write_byte:
@@ -303,52 +333,6 @@ _comma:
     mov [bx], ax
     add word [here], 2
     ret
-
-defword "entry->name"
-_entry_name: ;; TODO: use this in dictfind
-    POP bx
-    mov ch, 0
-    mov cl, [bx+2]
-    and cl, 0x7f
-    mov di, bx
-    sub di, cx
-    dec di ; subtract 1 more for the null
-    PUSH di
-    ret
-
-defword "c@"
-_c_at:
-    POP bx
-    mov ah, 0
-    mov al, [bx]
-    PUSH ax
-    ret
-
-defword ".h" ; print byte in hex
-_dot_h:
-    POP ax
-    mov ah, 0
-    push ax
-    push ax
-    ;mov al, '['
-    ;call print_char
-    ;; hi nibble
-    pop di
-    and di, 0xf0
-    shr di, 4
-    mov al, [.hex+di]
-    call print_char
-    ;; lo nibble
-    pop di
-    and di, 0xf
-    mov al, [.hex+di]
-    call print_char
-    ;mov al, ']'
-    ;call print_char
-    mov al, ' '
-    call print_char
-    ret
-.hex db "0123456789abcdef"
 
 defword "'"
 _tick:
@@ -383,12 +367,6 @@ _test_immediate_flag:
     PUSH ax
     ret
 
-defword "latest-entry"
-_latest_entry:
-    mov bx, [dictionary]
-    PUSH bx
-    ret
-
 defword "immediate"
     call _latest_entry
     call _flip_immediate_flag
@@ -407,6 +385,45 @@ _flip_immediate_flag:
     mov [bx+2], al
     ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Literals
+
+defword "(lit)" ;; internal name
+_lit:
+    pop bx
+    mov ax, [bx]
+    PUSH ax
+    add bx, 2
+    jmp bx
+
+defwordimm "literal"
+_literal:
+    POP ax
+    push ax ; save lit value
+    mov ax, _lit
+    PUSH ax
+    call _write_call
+    pop ax ; restore lit value
+    PUSH ax
+    call _comma
+    ret
+
+defwordimm "[']"
+    call _word_find
+    POP ax
+    add ax, 3
+    PUSH ax
+    call _literal
+    ret
+
+defwordimm "[char]"
+    call t_word
+    POP bx
+    mov ah, 0
+    mov al, [bx]
+    PUSH ax
+    call _literal
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; compile,
@@ -436,6 +453,18 @@ _abs_to_rel: ; ( addr-abs -> addr-rel )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Dictionary entries & find
+
+defword "entry->name"
+_entry_name: ;; TODO: use this in dictfind
+    POP bx
+    mov ch, 0
+    mov cl, [bx+2]
+    and cl, 0x7f
+    mov di, bx
+    sub di, cx
+    dec di ; subtract 1 more for the null
+    PUSH di
+    ret
 
 defword "strlen" ; ( name-addr -- n )
 _strlen:
@@ -559,6 +588,32 @@ internal_dictfind:
     jnz .loop
     ret ; BX=0 - not found
 
+
+defword "latest-entry"
+_latest_entry:
+    mov bx, [dictionary]
+    PUSH bx
+    ret
+
+defword "words"
+_words:
+    mov bx, [dictionary]
+.loop:
+    mov cl, [bx+2]
+    and cl, 0x7f
+    mov ch, 0
+    mov di, bx
+    sub di, cx
+    dec di ; null
+    call internal_print_string
+    mov al, ' '
+    call print_char
+    mov bx, [bx] ; traverse link
+    cmp bx, 0
+    jnz .loop
+    call print_newline
+    ret
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; word
 
@@ -599,15 +654,6 @@ defword "char"
     PUSH ax
     ret
 
-defwordimm "[char]"
-    call t_word
-    POP bx
-    mov ah, 0
-    mov al, [bx]
-    PUSH ax
-    call _literal
-    ret
-
 defword "constant"
     call t_word
     call _create_entry
@@ -636,42 +682,11 @@ defwordimm "("
 .close:
     ret
 
-defwordimm "literal"
-_literal:
-    POP ax
-    push ax ; save lit value
-    mov ax, _lit
-    PUSH ax
-    call _write_call
-    pop ax ; restore lit value
-    PUSH ax
-    call _comma
-    ret
-
 defword "print-string"
 _print_string:
-    POP dx
+    POP di
     call internal_print_string
     ret
-
-defwordimm "br"
-    call _word_find
-    POP bx
-    push bx
-    mov ax, _branch
-    PUSH ax
-    call _write_call
-    pop bx
-    add bx, 3
-    mov ax, bx
-    PUSH ax
-    call _comma
-    ret
-
-_branch:
-    pop bx
-    mov bx, [bx]
-    jmp bx
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
