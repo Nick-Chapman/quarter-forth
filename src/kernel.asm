@@ -199,10 +199,13 @@ defword "drop"
 defword ":"
     jmp colon_intepreter
 
-defword "0branch,"
-    call _lit
-    dw _0branch
-    call _compile_comma
+
+defwordimm "[']"
+    call _word_find
+    POP ax
+    add ax, 3
+    PUSH ax
+    call _literal
     ret
 
 defword "0branch"
@@ -463,7 +466,7 @@ _flip_immediate_flag:
     mov [bx+2], al
     ret
 
-defwordimm "literal" ;; TODO like to move to forth (but needed by colon_intepreter)
+defwordimm "literal"
 _literal:
     POP ax
     push ax ; save lit value
@@ -474,7 +477,6 @@ _literal:
     PUSH ax
     call __comma
     ret
-
 
 defwordimm "("
 .loop:
@@ -490,6 +492,7 @@ defwordimm "("
 defword "entry->name"
 _entry_name: ;; TODO: use this in dictfind
     POP bx
+    mov ch, 0
     mov cl, [bx+2]
     and cl, 0x7f
     mov di, bx
@@ -504,6 +507,39 @@ _print_string:
     call internal_print_string
     ret
 
+defword "c@"
+_c_at:
+    POP bx
+    mov ah, 0
+    mov al, [bx]
+    PUSH ax
+    ret
+
+defword ".h" ; print byte in hex
+_dot_h:
+    POP ax
+    mov ah, 0
+    push ax
+    push ax
+    ;mov al, '['
+    ;call print_char
+    ;; hi nibble
+    pop di
+    and di, 0xf0
+    shr di, 4
+    mov al, [.hex+di]
+    call print_char
+    ;; lo nibble
+    pop di
+    and di, 0xf
+    mov al, [.hex+di]
+    call print_char
+    ;mov al, ']'
+    ;call print_char
+    mov al, ' '
+    call print_char
+    ret
+.hex db "0123456789abcdef"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; start
@@ -756,6 +792,7 @@ builtin_data:
     incbin "src/unimplemented.f"
     incbin "src/regression.f"
     incbin "src/my-letter-F.f"
+    ;incbin "src/dump.f"
     incbin "src/start.f"
     incbin "src/play.f"
     db 0
@@ -867,7 +904,7 @@ buffer: times 64 db 0 ;; must be before size check. why??
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 22       ;; Number of sectors the bootloader loads
+%assign S 23       ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A

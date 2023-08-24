@@ -8,8 +8,8 @@
 
 ( Control flow )
 
-: if        0branch, here cell allot ; immediate
-: then      here swap !              ; immediate
+: if        ['] 0branch compile, here 0 ,   ; immediate
+: then      here swap !                     ; immediate
 
 ( Output )
 
@@ -18,6 +18,9 @@
 : space     bl emit ;
 : spaces    dup if space 1 - br spaces then drop ;
 : ?         @ . ;
+
+: .hh ( a -- )
+dup c@ .h 1 + c@ .h ;
 
 ( Definitions )
 

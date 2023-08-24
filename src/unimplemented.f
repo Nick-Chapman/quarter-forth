@@ -1,6 +1,6 @@
 
 : my-entry latest-entry ; immediate
-: not-yet entry->name todo print-string cr crash-only-during-startup ;
+: not-yet entry->name todo print-string cr crash ; ( -only-during-startup ; )
 
 ( Would it be possible to combine the 3-word sequence "my-entry literal not-yet" ? )
 
@@ -45,7 +45,6 @@
 : begin         my-entry literal not-yet ; immediate
 : c!            my-entry literal not-yet ; immediate
 : c,            my-entry literal not-yet ; immediate
-: c@            my-entry literal not-yet ; immediate
 : cell+         my-entry literal not-yet ; immediate
 : char+         my-entry literal not-yet ; immediate
 : chars         my-entry literal not-yet ; immediate
@@ -86,7 +85,6 @@
 : sign          my-entry literal not-yet ; immediate
 : sm/rem        my-entry literal not-yet ; immediate
 : source        my-entry literal not-yet ; immediate
-: space         my-entry literal not-yet ; immediate
 : state         my-entry literal not-yet ; immediate
 : type          my-entry literal not-yet ; immediate
 : u.            my-entry literal not-yet ; immediate
@@ -99,5 +97,4 @@
 : word          my-entry literal not-yet ; immediate
 : xor           my-entry literal not-yet ; immediate
 : [             my-entry literal not-yet ; immediate
-: [']           my-entry literal not-yet ; immediate
 : ]             my-entry literal not-yet ; immediate

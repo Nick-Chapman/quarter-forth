@@ -133,3 +133,12 @@ e e e eggs @ 7 x
 
 : sq br square 1 + ;
 7 sq                    49 x
+
+
+( c@ )
+
+variable v
+0 2 - v ! ( set v to -2 )
+( c@ gets the bytes in little endian )
+v c@       254 x
+v c@ 1 +   255 x
