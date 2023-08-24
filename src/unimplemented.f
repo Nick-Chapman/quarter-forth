@@ -78,7 +78,6 @@
 : r@            my-entry literal not-yet ; immediate
 : recurse       my-entry literal not-yet ; immediate
 : repeat        my-entry literal not-yet ; immediate
-: rot           my-entry literal not-yet ; immediate
 : rshift        my-entry literal not-yet ; immediate
 : s"            my-entry literal not-yet ; immediate
 : s>d           my-entry literal not-yet ; immediate

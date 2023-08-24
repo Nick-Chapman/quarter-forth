@@ -192,6 +192,15 @@ defword "over"
     PUSH bx
     ret
 
+defword "rot" ; ( 1 2 3 -- 2 3 1 )
+    POP ax ;3
+    POP bx ;2
+    POP cx ;1
+    PUSH bx ;2
+    PUSH ax ;3
+    PUSH cx ;1
+    ret
+
 defword "drop"
     POP ax
     ret

@@ -21,6 +21,7 @@
 1 2 3 dup   3 x 3 x 2 x 1 x
 1 2 3 swap  2 x 3 x 1 x
 1 2 3 over  2 x 3 x 2 x 1 x
+1 2 3 rot   1 x 3 x 2 x
 
 ( Execution tokens )
 
