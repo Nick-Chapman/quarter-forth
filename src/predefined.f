@@ -1,15 +1,9 @@
 
 ( Heap )
 
-: here      here-pointer @ ;
 : allot     here + here-pointer ! ;
 : cell      2 ;
 : cells     cell * ;
-
-( Control flow )
-
-: if        ['] 0branch compile, here 0 ,   ; immediate
-: then      here swap !                     ; immediate
 
 ( Output )
 

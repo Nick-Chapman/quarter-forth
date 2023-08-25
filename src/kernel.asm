@@ -196,6 +196,7 @@ defword "rot" ; ( 1 2 3 -- 2 3 1 )
     ret
 
 defword "drop"
+_drop:
     POP ax
     ret
 
@@ -531,6 +532,14 @@ internal_write_byte:
     inc word [here]
     ret
 
+defword "find" ; ( string-addr -- 0|xt )
+_find:
+    POP dx
+    call internal_dictfind
+    PUSH bx
+    ret
+
+
 ;;defword "find" -- TODO: make a standard compliant findx
 t_find: ;; t for transient
     POP dx
@@ -617,7 +626,7 @@ _words:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; word
 
-;;defword "word"
+defword "word" ; ( " blank-deliminted-word " -- string-addr )
 t_word: ;; t for transient
     call internal_read_word ;; TODO inline
     mov ax, buffer
@@ -741,6 +750,25 @@ is_semi:
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; number literals
+
+defword "number?" ; ( string-addr -- number 1 | string-addr 0 )
+    call _dup
+    POP dx
+    call try_parse_as_number
+    jnz .nan
+    PUSH ax
+    call _swap
+    call _drop
+    mov ax, 1
+    PUSH ax
+    ret
+.nan:
+    mov ax, 0
+    PUSH ax
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; start
 
 start:
@@ -838,6 +866,8 @@ startup_read_char:
 
 builtin: dw builtin_data
 builtin_data:
+    incbin "src/early.f"
+    incbin "src/inter.f"
     incbin "src/predefined.f"
     incbin "src/unimplemented.f"
     incbin "src/regression.f"
@@ -954,7 +984,7 @@ buffer: times 64 db 0 ;; must be before size check. why??
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 23       ;; Number of sectors the bootloader loads
+%assign S 234      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A

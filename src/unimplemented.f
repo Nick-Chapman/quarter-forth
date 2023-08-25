@@ -58,7 +58,6 @@
 : environment?  my-entry literal not-yet ; immediate
 : evaluate      my-entry literal not-yet ; immediate
 : fill          my-entry literal not-yet ; immediate
-: find          my-entry literal not-yet ; immediate
 : fm/mod        my-entry literal not-yet ; immediate
 : hold          my-entry literal not-yet ; immediate
 : i             my-entry literal not-yet ; immediate
@@ -93,7 +92,6 @@
 : unloop        my-entry literal not-yet ; immediate
 : until         my-entry literal not-yet ; immediate
 : while         my-entry literal not-yet ; immediate
-: word          my-entry literal not-yet ; immediate
 : xor           my-entry literal not-yet ; immediate
 : [             my-entry literal not-yet ; immediate
 : ]             my-entry literal not-yet ; immediate
