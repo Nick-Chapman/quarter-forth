@@ -6,19 +6,25 @@
 
 word
 
-number? if
-br inter ( leave converted number on stack, and loop... )
-then
-
-find dup-if-not-zero if ( word is in the dictionary, execute it! )
-
-( TODO: print message when word is not defined -- instead of silently ignoring it )
-
-( [char] ! emit ) ( more debug )
-entry->xt execute
-
-then
+number? if ( leave converted number on stack, and loop... )
+( [char] # emit ) ( debug )
 br inter
+then
+
+find dup invert if
+
+( word not defined, so: message, skip and loop... )
+( TODO: the bad word is not correctly displayed. transient buffer? )
+warn-missing
+( [char] * emit ) ( debug )
+br inter
+
+then
+( otherwise word is in the dictionary, so execute it! )
+( [char] ! emit ) ( debug )
+entry->xt execute
+br inter
+
 ;
 
 ( enter the interpreter )

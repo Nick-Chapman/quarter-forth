@@ -546,11 +546,13 @@ t_find: ;; t for transient
     PUSH dx
     call internal_dictfind ;; TODO: inline
     cmp bx, 0
-    jz .missing
+    jz _warn_missing
     POP dx
     PUSH bx
     ret
-.missing:
+
+defword "warn-missing"
+_warn_missing:
     print "**No such word: "
     POP di
     call internal_print_string
