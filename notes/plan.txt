@@ -26,7 +26,6 @@ Next:
 - ".s" - non destructive show of stack (need to know stack base)
 - string support: ." s" (need key)
 - "type" - the name of the standard forth word to print a string
-- support () comments in forth -- (need key)
 - recode "words" in forth
 - improve dump.f for standard words see/dump
 - colon interpreter in forth

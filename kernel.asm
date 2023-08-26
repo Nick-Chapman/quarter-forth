@@ -91,7 +91,7 @@ cmp_n:
     ret ; NZ - diff
 
 ;;; Reading input...
-read_char:
+internal_read_char: ; -> AL
     call [read_char_indirection]
     cmp byte [echo_enabled], 0
     jz .ret
@@ -249,7 +249,7 @@ check_ps_underflow:
 internal_read_word:
     mov di, buffer
 .skip:
-    call read_char
+    call internal_read_char
     cmp al, 0x21
     jb .skip ; skip leading white-space
 .loop:
@@ -257,7 +257,7 @@ internal_read_word:
     jb .done ; stop at white-space
     mov [di], al
     inc di
-    call read_char
+    call internal_read_char
     jmp .loop
 .done:
     mov byte [di], 0 ; null
@@ -388,6 +388,12 @@ db ((%%link - %%name - 1) | 0x80) ; dont include null in count
 %define lastlink %%link
 %endmacro
 
+defword "key"
+    call internal_read_char
+    mov ah, 0
+    PUSH ax
+    ret
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; echo-control, messages, startup, crash
 
@@ -430,7 +436,7 @@ _crash:
     nl
 .loop:
     call echo_off
-    call read_char ; avoiding tight loop which spins laptop fans
+    call internal_read_char ; avoiding tight loop which spins laptop fans
     jmp .loop
 
 is_startup_complete: dw 0
@@ -928,16 +934,6 @@ defword "word-find"
 _word_find:
     call t_word
     call t_find
-    ret
-
-defwordimm "("
-.loop:
-    call t_word
-    POP di
-    cmp word [di], ")"
-    jz .close
-    jmp .loop
-.close:
     ret
 
 defword "print-string" ;; TODO: is this the standard word "type" ?
