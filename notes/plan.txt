@@ -3,13 +3,16 @@ Status:
 
 Recoded the forth (outer) interpreter in forth.
 
-Next:
-
+Done:
 - cleanup Makefile
 - just forth in sub dir
-- merge and strip comments to single embedded forth file
+- "mem" memory usage reporting (need expose sp address)
+
+
+Next:
 
 - assemble time size reporting
+- merge and strip comments to single embedded forth file
 - check return under/stack overflow
 - reorder asm: embedded text just before builtin words (idea: slide to recover space)
 - reorder asm: builtin words at end, so contiguous with run time words
@@ -20,7 +23,6 @@ Next:
 - macros/defs in prep to explore threaded interpreter
 - threaded interpreter: direct or indirect?
 
-- "mem" memory usage reporting (need expose sp address)
 - ".s" - non destructive show of stack (need to know stack base)
 - string support: ." s" (need key)
 - "type" - the name of the standard forth word to print a string
