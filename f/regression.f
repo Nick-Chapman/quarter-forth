@@ -1,7 +1,10 @@
 
 ( Expect... )
 
-: x         over = invert if expect-failed . cr crash then drop ;
+: x
+over = invert if
+s" Expect failed, got: " type . cr crash
+then drop ;
 
 ( For debugging, turn on echo... )
 ( echo-on )

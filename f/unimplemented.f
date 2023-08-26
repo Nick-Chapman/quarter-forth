@@ -1,6 +1,6 @@
 
 : my-entry latest-entry ; immediate
-: not-yet entry->name todo type cr crash ; ( -only-during-startup ; )
+: not-yet entry->name s" TODO: " type type cr crash ; ( -only-during-startup ; )
 
 ( Would it be possible to combine the 3-word sequence "my-entry literal not-yet" ? )
 

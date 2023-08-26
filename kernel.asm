@@ -413,18 +413,6 @@ defword "echo-on"
     mov byte [echo_enabled], 1
     ret
 
-defword "expect-failed"
-    print "Expect failed, got: "
-    ret
-
-defword "todo" ;; TODO: need strings so we can avoid these specific messages
-    print "TODO: "
-    ret
-
-defword "mes-bytes-available"
-    print "Bytes available: "
-    ret
-
 defword "crash"
 _crash:
     print "**We have crashed!"

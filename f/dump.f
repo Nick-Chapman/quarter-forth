@@ -2,8 +2,9 @@
 ( Tools for exploring mem and defs )
 
 : mem ( report bytes available )
-mes-bytes-available
-sp here - . cr
+sp here -
+s" Bytes available: " type
+. cr
 ;
 
 ( Dump colon definitions )
