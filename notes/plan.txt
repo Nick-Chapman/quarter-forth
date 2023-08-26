@@ -10,6 +10,9 @@ Done:
 - assemble time size reporting
 - reorder asm: builtin words at end, so contiguous with run time words
 - reorder asm: embedded text just before builtin words (idea: slide to recover space)
+- support () comments in forth -- (need key)
+- string support: ." s" (need key)
+- "type" - the name of the standard forth word to print a string
 
 Next:
 
@@ -24,14 +27,13 @@ Next:
 - threaded interpreter: direct or indirect?
 
 - ".s" - non destructive show of stack (need to know stack base)
-- string support: ." s" (need key)
-- "type" - the name of the standard forth word to print a string
 - recode "words" in forth
 - improve dump.f for standard words see/dump
 - colon interpreter in forth
 - state aware combined interpreter/colon-compiler in forth, support [, ]
 - "quit" - clear return stack and restart interpreter loop
 - "abort" - clear param stack and call quit
+- support nested parens in comments
 
 - parse buffer - can this be coded in forth? (need backspace detection!)
 - allow words to be marked as hidden

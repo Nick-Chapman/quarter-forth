@@ -413,11 +413,6 @@ defword "echo-on"
     mov byte [echo_enabled], 1
     ret
 
-defword "welcome"
-    print "Welcome to Nick's Forth-like thing..."
-    nl
-    ret
-
 defword "expect-failed"
     print "Expect failed, got: "
     ret
@@ -578,6 +573,12 @@ isEq:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Control flow
 
+defword "branch"
+_branch:
+    pop bx
+    mov bx, [bx]
+    jmp bx
+
 defword "0branch"
 _0branch:
     pop bx
@@ -608,11 +609,6 @@ defwordimm "br" ; TODO: better name: jump, tail, branch
     PUSH ax
     call _comma
     ret
-
-_branch: ; TODO: expose as "(branch)" ?
-    pop bx
-    mov bx, [bx]
-    jmp bx
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Fetch and store
@@ -653,7 +649,7 @@ _here_pointer:
     PUSH bx
     ret
 
-;;;defword "c," ;; TODO: check standard & test
+defword "c," ;; TODO: check standard & test
 _write_byte:
     POP al
     call internal_write_byte ;; TODO: inline
@@ -722,7 +718,7 @@ _flip_immediate_flag:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Literals
 
-defword "(lit)" ;; internal name
+defword "lit"
 _lit:
     pop bx
     mov ax, [bx]
@@ -936,8 +932,7 @@ _word_find:
     call t_find
     ret
 
-defword "print-string" ;; TODO: is this the standard word "type" ?
-_print_string:
+defword "type"
     POP di
     call internal_print_string
     ret
@@ -991,7 +986,7 @@ builtin_data:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 25      ;; Number of sectors the bootloader loads
+%assign S 26      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A

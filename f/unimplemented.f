@@ -1,6 +1,6 @@
 
 : my-entry latest-entry ; immediate
-: not-yet entry->name todo print-string cr crash ; ( -only-during-startup ; )
+: not-yet entry->name todo type cr crash ; ( -only-during-startup ; )
 
 ( Would it be possible to combine the 3-word sequence "my-entry literal not-yet" ? )
 
@@ -78,13 +78,11 @@
 : recurse       my-entry literal not-yet ; immediate
 : repeat        my-entry literal not-yet ; immediate
 : rshift        my-entry literal not-yet ; immediate
-: s"            my-entry literal not-yet ; immediate
 : s>d           my-entry literal not-yet ; immediate
 : sign          my-entry literal not-yet ; immediate
 : sm/rem        my-entry literal not-yet ; immediate
 : source        my-entry literal not-yet ; immediate
 : state         my-entry literal not-yet ; immediate
-: type          my-entry literal not-yet ; immediate
 : u.            my-entry literal not-yet ; immediate
 : u<            my-entry literal not-yet ; immediate
 : um*           my-entry literal not-yet ; immediate
