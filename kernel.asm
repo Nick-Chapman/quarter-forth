@@ -2,10 +2,215 @@
 BITS 16
 org 0x500
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; parameter stack macros
+
+%macro PUSH 1 ; TODO: rename pspush?
+    sub bp, 2
+    mov [bp], %1
+%endmacro
+
+%macro POP 1
+    mov %1, [bp]
+    add bp, 2
+    call check_ps_underflow
+%endmacro
+
     jmp start
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Macros...
+;;; ASM code...
+
+start:
+    call init_param_stack
+    call cls
+.loop:
+    call t_word
+    POP dx
+    call try_parse_as_number
+    jnz .nan
+    PUSH ax
+    jmp .loop
+.nan:
+    PUSH dx
+    call t_find
+    POP bx
+    ;; execute code at bx+3
+    add bx, 3
+    call bx
+    jmp .loop
+
+;;; Try to parse a string as a number
+;;; [in DX=string-to-be-tested, out Z=yes-number, DX:AX=number]
+;;; [uses BL, SI, BX, CX]
+try_parse_as_number: ; TODO: code in forth
+    push dx
+    call .run
+    pop dx
+    ret
+.run:
+    mov si, dx
+    mov ax, 0
+    mov bh, 0
+    mov cx, 10
+.loop:
+    mov bl, [si]
+    cmp bl, 0 ; null
+    jnz .continue
+    ;; reached null; every char was a digit; return YES
+    ret
+.continue:
+    mul cx ; [ax = ax*10]
+    ;; current char is a digit?
+    sub bl, '0'
+    jc .no
+    cmp bl, 10
+    jnc .no
+    ;; yes: accumulate digit
+    add ax, bx
+    inc si
+    jmp .loop
+.no:
+    cmp bl, 0 ; return NO
+    ret
+
+;;; Compare n bytes at two pointers
+;;; [in CX=n, SI/DI=pointers-to-things-to-compare, out Z=same]
+;;; [consumes SI, DI, CX; uses AL]
+cmp_n:
+.loop:
+    mov al, [si]
+    cmp al, [di]
+    jnz .ret
+    inc si
+    inc di
+    dec cx
+    jnz .loop
+    ret ; Z - matches
+.ret:
+    ret ; NZ - diff
+
+;;; Reading input...
+read_char:
+    call [read_char_indirection]
+    cmp byte [echo_enabled], 0
+    jz .ret
+    call print_char ; echo
+.ret:
+    ret
+
+read_char_indirection: dw startup_read_char
+
+startup_read_char:
+    mov bx, [builtin]
+    mov al, [bx]
+    cmp al, 0
+    jz .interactive
+    inc word [builtin]
+    ret
+.interactive:
+    mov word [read_char_indirection], interactive_read_char
+    jmp interactive_read_char
+
+;;; Read char from input
+;;; [out AL=char-read]
+;;; [uses AX]
+interactive_read_char:
+    mov ah, 0
+    int 0x16
+    ret
+
+;;; Print number in decimal format.
+;;; in: AX=number
+print_number:
+    push ax
+    push bx
+    push dx
+    call .go
+    pop dx
+    pop bx
+    pop ax
+    ret
+.go:
+    mov bx, 10
+.nest:
+    mov dx, 0
+    div bx ; ax=ax/10; dx=ax%10
+    cmp ax, 0 ; last digit?
+    jz .print_digit ; YES, so print it
+    ;; NO, deal with more significant digits first
+    push dx
+    call .nest
+    pop dx
+    ;; then drop to print this one
+.print_digit:
+    push ax
+    mov al, dl
+    add al, '0'
+    call print_char
+    pop ax
+    ret
+
+;;; Print null-terminated string.
+;;; in: DI=string
+internal_print_string:
+    push ax
+    push di
+.loop:
+    mov al, [di]
+    cmp al, 0 ; null?
+    je .done
+    call print_char
+    inc di
+    jmp .loop
+.done:
+    pop di
+    pop ax
+    ret
+
+;;; Print newline to output
+print_newline:
+    push ax
+    mov al, 13
+    call print_char
+    pop ax
+    ret
+
+;;; Print char to output; special case 13 as 10(NL);13(CR)
+;;; in: AL=char
+print_char:
+    push ax
+    push bx
+    call .go
+    pop bx
+    pop ax
+    ret
+.go:
+    cmp al, 13
+    jz .nl_cr
+    cmp al, 10
+    jz .nl_cr
+.raw:
+    mov ah, 0x0e ; Function: Teletype output
+    mov bh, 0
+    int 0x10
+    ret
+.nl_cr:
+    mov al, 10 ; NL
+    call .raw
+    mov al, 13 ; CR
+    jmp .raw
+
+;;; Clear screen
+cls:
+    push ax
+    mov ax, 0x0003 ; AH=0 AL=3 video mode 80x25
+    int 0x10
+    pop ax
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Macros: print/nl
 
 %macro print 1
     push di
@@ -30,17 +235,6 @@ init_param_stack:
     mov bp, param_stack_base
     ret
 
-%macro PUSH 1 ; TODO: rename pspush?
-    sub bp, 2
-    mov [bp], %1
-%endmacro
-
-%macro POP 1
-    mov %1, [bp]
-    add bp, 2
-    call check_ps_underflow
-%endmacro
-
 check_ps_underflow:
     cmp bp, param_stack_base
     ja .underflow
@@ -50,9 +244,133 @@ check_ps_underflow:
     nl
     jmp _crash
 
+;;; Read word from keyboard into buffer memory -- prefer _word
+;;; [uses AX,DI]
+internal_read_word:
+    mov di, buffer
+.skip:
+    call read_char
+    cmp al, 0x21
+    jb .skip ; skip leading white-space
+.loop:
+    cmp al, 0x21
+    jb .done ; stop at white-space
+    mov [di], al
+    inc di
+    call read_char
+    jmp .loop
+.done:
+    mov byte [di], 0 ; null
+    ret
+
+;;; Compute length of a null-terminated string
+;;; [in DI=string; out AX=length]
+;;; [consumes DI; uses BL]
+internal_strlen:
+    mov ax, 0
+.loop:
+    mov bl, [di]
+    cmp bl, 0
+    jz .ret
+    inc ax
+    inc di
+    jmp .loop
+.ret:
+    ret
+
+;;; Write byte to [here], in AL=byte, uses BX
+internal_write_byte:
+    mov bx, [here]
+    mov [bx], al
+    inc word [here]
+    ret
+
+colon_intepreter: ; TODO: move this towards forth style
+    call t_word
+    call _create_entry
+.loop:
+    call t_word
+    POP dx
+    mov di, dx
+    call is_semi
+    jz .semi
+    call try_parse_as_number
+    jz .number
+    PUSH dx
+    call t_find
+    call _test_immediate_flag
+    POP ax
+    cmp ax, 0
+    jnz .immediate
+    add bx, 3
+    mov ax, bx
+    PUSH ax
+    call _write_call
+    jmp .loop
+.immediate:
+    add bx, 3
+    call bx
+    jmp .loop
+.number:
+    PUSH ax
+    call _literal
+    jmp .loop
+.semi:
+    ;;call write_ret ;; optimization!
+    mov ax, _exit
+    PUSH ax
+    call _write_call
+    ret
+
+is_semi:
+    cmp word [di], ";"
+    ret
+
+;write_ret:
+;    mov al, 0xc3 ; x86 encoding for "ret"
+;    call write_byte
+;    ret
+
+;;; Lookup word in dictionary, return entry if found or 0 otherwise
+;;; [in DX=sought-name, out BX=entry/0]
+;;; [uses SI, DI, BX, CX]
+internal_dictfind:
+    mov di, dx
+    PUSH di
+    call _strlen ; ax=len
+    POP ax
+    mov bx, [dictionary]
+.loop:
+    mov cl, [bx+2]
+    and cl, 0x7f
+    cmp al, cl ; 8bit length comapre
+    jnz .next
+    ;; length matches; compare names
+    mov si, dx ; si=sought name
+    mov di, bx
+    sub di, ax
+    dec di ; subtract 1 more for the null
+    ;; now di=this entry name
+    mov cx, ax ; length
+    push ax
+    call cmp_n
+    pop ax
+    jnz .next
+    ret ; BX=entry
+.next:
+    mov bx, [bx] ; traverse link
+    cmp bx, 0
+    jnz .loop
+    ret ; BX=0 - not found
+
+
+%assign X ($-$$)
+;%warning X "- After ASM"
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Words start here...
-;;; Use '_" prefix for words in forth-style ASM (args/return on parameter-stack)
+;;; primitive word defs start here
+;;; Code in forth-style ASM (args/return on parameter-stack)
+;;; Use '_" prefix for labels
 
 %define lastlink 0
 
@@ -103,7 +421,7 @@ defword "todo" ;; TODO: need strings so we can avoid these specific messages
     ret
 
 defword "mes-bytes-available"
-    print "bytes available: "
+    print "Bytes available: "
     ret
 
 defword "crash"
@@ -271,7 +589,7 @@ _exit:
     pop bx ; and ignore
     ret
 
-defwordimm "br"
+defwordimm "br" ; TODO: better name: jump, tail, branch
     call _word_find
     POP bx
     push bx
@@ -285,7 +603,7 @@ defwordimm "br"
     call _comma
     ret
 
-_branch:
+_branch: ; TODO: expose as "(branch)" ?
     pop bx
     mov bx, [bx]
     jmp bx
@@ -318,10 +636,11 @@ _c_at:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; heap...
 
-defword "sp" ; ( -- a )
+defword "sp" ; ( -- a ) -- TODO: define variable macro/abstraction for this & more
     PUSH bp
     ret
 
+here: dw here_start
 defword "here-pointer"
 _here_pointer:
     mov bx, here
@@ -334,7 +653,7 @@ _write_byte:
     call internal_write_byte ;; TODO: inline
     ret
 
-;;; write a 16-bit word into the heap ; TODO: move this into forth
+;;; write a 16-bit word into the heap
 defword ","
 _comma:
     POP ax
@@ -482,21 +801,6 @@ _strlen:
     PUSH ax
     ret
 
-;;; Compute length of a null-terminated string
-;;; [in DI=string; out AX=length]
-;;; [consumes DI; uses BL]
-internal_strlen:
-    mov ax, 0
-.loop:
-    mov bl, [di]
-    cmp bl, 0
-    jz .ret
-    inc ax
-    inc di
-    jmp .loop
-.ret:
-    ret
-
 defword "create-entry" ; ( name-addr -- )
 _create_entry:
     call _dup           ; ( a a )
@@ -533,13 +837,6 @@ _write_string:
     call internal_write_byte ; null
     ret
 
-;;; Write byte to [here], in AL=byte, uses BX
-internal_write_byte:
-    mov bx, [here]
-    mov [bx], al
-    inc word [here]
-    ret
-
 defword "find" ; ( string-addr -- 0|xt )
 _find:
     POP dx
@@ -547,8 +844,7 @@ _find:
     PUSH bx
     ret
 
-
-;;defword "find" -- TODO: make a standard compliant findx
+;;defword "find" -- TODO: make a standard compliant find (almost, see above)
 t_find: ;; t for transient
     POP dx
     PUSH dx
@@ -570,43 +866,11 @@ _warn_missing:
     PUSH ax
     ret
 
+;;; not in dictionary
 _missing:
     print "**Missing**"
     nl
     ret
-
-;;; Lookup word in dictionary, return entry if found or 0 otherwise
-;;; [in DX=sought-name, out BX=entry/0]
-;;; [uses SI, DI, BX, CX]
-internal_dictfind:
-    mov di, dx
-    PUSH di
-    call _strlen ; ax=len
-    POP ax
-    mov bx, [dictionary]
-.loop:
-    mov cl, [bx+2]
-    and cl, 0x7f
-    cmp al, cl ; 8bit length comapre
-    jnz .next
-    ;; length matches; compare names
-    mov si, dx ; si=sought name
-    mov di, bx
-    sub di, ax
-    dec di ; subtract 1 more for the null
-    ;; now di=this entry name
-    mov cx, ax ; length
-    push ax
-    call cmp_n
-    pop ax
-    jnz .next
-    ret ; BX=entry
-.next:
-    mov bx, [bx] ; traverse link
-    cmp bx, 0
-    jnz .loop
-    ret ; BX=0 - not found
-
 
 defword "latest-entry"
 _latest_entry:
@@ -633,37 +897,12 @@ _words:
     call print_newline
     ret
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; word
-
-defword "word" ; ( " blank-deliminted-word " -- string-addr )
-t_word: ;; t for transient
+defword "word" ; ( " blank-deliminted-word " -- string-addr ) ; TODO: earlier
+t_word: ;; t for transient ; TODO loose t
     call internal_read_word ;; TODO inline
     mov ax, buffer
     PUSH ax ;; transient buffer; for _find/create
     ret
-
-;;; Read word from keyboard into buffer memory -- prefer _word
-;;; [uses AX,DI]
-internal_read_word:
-    mov di, buffer
-.skip:
-    call read_char
-    cmp al, 0x21
-    jb .skip ; skip leading white-space
-.loop:
-    cmp al, 0x21
-    jb .done ; stop at white-space
-    mov [di], al
-    inc di
-    call read_char
-    jmp .loop
-.done:
-    mov byte [di], 0 ; null
-    ret
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Uses t_word
 
 defword "char"
     call t_word
@@ -701,66 +940,14 @@ defwordimm "("
 .close:
     ret
 
-defword "print-string"
+defword "print-string" ;; TODO: is this the standard word "type" ?
 _print_string:
     POP di
     call internal_print_string
     ret
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 defword ":"
     jmp colon_intepreter
-
-colon_intepreter: ; TODO: move this towards forth style
-    call t_word
-    call _create_entry
-.loop:
-    call t_word
-    POP dx
-    mov di, dx
-    call is_semi
-    jz .semi
-    call try_parse_as_number
-    jz .number
-    PUSH dx
-    call t_find
-    call _test_immediate_flag
-    POP ax
-    cmp ax, 0
-    jnz .immediate
-    add bx, 3
-    mov ax, bx
-    PUSH ax
-    call _write_call
-    jmp .loop
-.immediate:
-    add bx, 3
-    call bx
-    jmp .loop
-.number:
-    PUSH ax
-    call _literal
-    jmp .loop
-.semi:
-    ;;call write_ret ;; optimization!
-    mov ax, _exit
-    PUSH ax
-    call _write_call
-    ret
-
-is_semi:
-    cmp word [di], ";"
-    ret
-
-;write_ret:
-;    mov al, 0xc3 ; x86 encoding for "ret"
-;    call write_byte
-;    ret
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; number literals
 
 defword "number?" ; ( string-addr -- number 1 | string-addr 0 )
     call _dup
@@ -778,102 +965,15 @@ defword "number?" ; ( string-addr -- number 1 | string-addr 0 )
     PUSH ax
     ret
 
+dictionary: dw lastlink
+
+%assign X ($-$$)
+;%warning X "- After Prim Words"
+
+buffer: times 64 db 0 ;; TODO: kill; just use here+N
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; start
-
-start:
-    call init_param_stack
-    call cls
-.loop:
-    call t_word
-    POP dx
-    call try_parse_as_number
-    jnz .nan
-    PUSH ax
-    jmp .loop
-.nan:
-    PUSH dx
-    call t_find
-    POP bx
-    ;; execute code at bx+3
-    add bx, 3
-    call bx
-    jmp .loop
-
-;;; Try to parse a string as a number
-;;; [in DX=string-to-be-tested, out Z=yes-number, DX:AX=number]
-;;; [uses BL, SI, BX, CX]
-try_parse_as_number: ; TODO: code in forth
-    push dx
-    call .run
-    pop dx
-    ret
-.run:
-    mov si, dx
-    mov ax, 0
-    mov bh, 0
-    mov cx, 10
-.loop:
-    mov bl, [si]
-    cmp bl, 0 ; null
-    jnz .continue
-    ;; reached null; every char was a digit; return YES
-    ret
-.continue:
-    mul cx ; [ax = ax*10]
-    ;; current char is a digit?
-    sub bl, '0'
-    jc .no
-    cmp bl, 10
-    jnc .no
-    ;; yes: accumulate digit
-    add ax, bx
-    inc si
-    jmp .loop
-.no:
-    cmp bl, 0 ; return NO
-    ret
-
-;;; Compare n bytes at two pointers
-;;; [in CX=n, SI/DI=pointers-to-things-to-compare, out Z=same]
-;;; [consumes SI, DI, CX; uses AL]
-cmp_n:
-.loop:
-    mov al, [si]
-    cmp al, [di]
-    jnz .ret
-    inc si
-    inc di
-    dec cx
-    jnz .loop
-    ret ; Z - matches
-.ret:
-    ret ; NZ - diff
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Reading input...
-
-read_char:
-    call [read_char_indirection]
-    cmp byte [echo_enabled], 0
-    jz .ret
-    call print_char ; echo
-.ret:
-    ret
-
-read_char_indirection: dw startup_read_char
-
-startup_read_char:
-    mov bx, [builtin]
-    mov al, [bx]
-    cmp al, 0
-    jz .interactive
-    inc word [builtin]
-    ret
-.interactive:
-    mov word [read_char_indirection], interactive_read_char
-    jmp interactive_read_char
+;;; Embedded string data
 
 builtin: dw builtin_data
 builtin_data:
@@ -888,113 +988,8 @@ builtin_data:
     incbin "f/play.f"
     db 0
 
-;;; Read char from input
-;;; [out AL=char-read]
-;;; [uses AX]
-interactive_read_char:
-    mov ah, 0
-    int 0x16
-    ret
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Print to output
-
-;;; Print number in decimal format.
-;;; in: AX=number
-print_number:
-    push ax
-    push bx
-    push dx
-    call .go
-    pop dx
-    pop bx
-    pop ax
-    ret
-.go:
-    mov bx, 10
-.nest:
-    mov dx, 0
-    div bx ; ax=ax/10; dx=ax%10
-    cmp ax, 0 ; last digit?
-    jz .print_digit ; YES, so print it
-    ;; NO, deal with more significant digits first
-    push dx
-    call .nest
-    pop dx
-    ;; then drop to print this one
-.print_digit:
-    push ax
-    mov al, dl
-    add al, '0'
-    call print_char
-    pop ax
-    ret
-
-;;; Print null-terminated string.
-;;; in: DI=string
-internal_print_string:
-    push ax
-    push di
-.loop:
-    mov al, [di]
-    cmp al, 0 ; null?
-    je .done
-    call print_char
-    inc di
-    jmp .loop
-.done:
-    pop di
-    pop ax
-    ret
-
-;;; Print newline to output
-print_newline:
-    push ax
-    mov al, 13
-    call print_char
-    pop ax
-    ret
-
-;;; Print char to output; special case 13 as 10(NL);13(CR)
-;;; in: AL=char
-print_char:
-    push ax
-    push bx
-    call .go
-    pop bx
-    pop ax
-    ret
-.go:
-    cmp al, 13
-    jz .nl_cr
-    cmp al, 10
-    jz .nl_cr
-.raw:
-    mov ah, 0x0e ; Function: Teletype output
-    mov bh, 0
-    int 0x10
-    ret
-.nl_cr:
-    mov al, 10 ; NL
-    call .raw
-    mov al, 13 ; CR
-    jmp .raw
-
-;;; Clear screen
-cls:
-    push ax
-    mov ax, 0x0003 ; AH=0 AL=3 video mode 80x25
-    int 0x10
-    pop ax
-    ret
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; buffer & here
-
-dictionary: dw lastlink
-here: dw here_start
-buffer: times 64 db 0 ;; must be before size check. why??
+%assign X ($-$$)
+;%warning X "- After Embedded"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Size check...

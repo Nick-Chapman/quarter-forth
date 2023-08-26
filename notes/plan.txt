@@ -7,17 +7,17 @@ Done:
 - cleanup Makefile
 - just forth in sub dir
 - "mem" memory usage reporting (need expose sp address)
-
+- assemble time size reporting
+- reorder asm: builtin words at end, so contiguous with run time words
+- reorder asm: embedded text just before builtin words (idea: slide to recover space)
 
 Next:
 
-- assemble time size reporting
 - merge and strip comments to single embedded forth file
 - check return under/stack overflow
-- reorder asm: embedded text just before builtin words (idea: slide to recover space)
-- reorder asm: builtin words at end, so contiguous with run time words
 - refactor builtin words to be in forthy style where possible (and thus candidates for .f)
 - strip functionality of asm intepreter/colon-compiler: de-support numbers, immediate
+- find should return an XT (not an entry - 3 bytes to left)
 
 - relative offsets for branch, making code relocation easier.
 - macros/defs in prep to explore threaded interpreter
