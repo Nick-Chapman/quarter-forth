@@ -1,0 +1,120 @@
+
+Initially list of goal words to drive development.
+Mainly from starting-forth; a few from jones.
+
+Many numeric words which I am not interested in. Also many "2" and "c" (char) versions of ops which can wait. Also, editor/buffer stuff is out of scope for me.
+
+(later: turns out "c" words are quite important primitives!)
+
+
+Input
+    key (but not until I have char support)
+    word
+
+Output
+    cr
+    spaces
+    space
+    emit
+    .
+
+Numerics
+    +
+    -
+    *
+    /
+    /mod
+    mod
+    1+
+    1-
+    abs
+    negate
+    min
+    max
+
+Boolean
+    =
+    <>
+    <
+    0=
+    0<
+    0>
+    and
+    or
+    invert (jones)
+
+Stack-twiddling
+    swap
+    dup
+    over
+    rot
+    drop
+
+Dictionary
+    : xxx yyy ;
+    create
+    variable xxx
+    constant xxx
+
+Compiling, control-flow
+    if
+    then
+    else
+    do
+    loop
+    literal
+    [
+    ]
+    branch
+    0branch
+    state (jones)
+    ;
+
+Dictionary/Heap
+    latest (jones)
+    here
+    h (variable containing here pointer? - also known as cp?)
+    !
+    @
+    ?
+    +!
+    fill
+    erase
+    cell
+    cells
+    allot (shifts h?)
+
+    : ,   here ! cell allot ; (from chapter 9)
+
+Execution tokens
+    ' xxx
+    [']
+    execute
+    find (jones)
+    >cfa (jones)
+
+Internal state
+    sp@
+    s0
+
+Return Stack
+    >r
+    r>
+    r@
+
+Misc:
+    ( xxx)   ( comments! )
+    immediate
+    ?dup
+    abort" xx"
+    page
+    exit
+    quit
+    does>
+    postpone xxx
+    hidden (jones)
+    char (jones)
+    lit (jones)
+
+String
+    ." xxx"

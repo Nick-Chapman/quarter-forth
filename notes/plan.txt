@@ -1,0 +1,48 @@
+
+Status:
+
+Recoded the forth (outer) interpreter in forth.
+
+Next:
+
+- cleanup Makefile
+- just forth in sub dir
+- merge and strip comments to single embedded forth file
+
+- assemble time size reporting
+- check return under/stack overflow
+- reorder asm: embedded text just before builtin words (idea: slide to recover space)
+- reorder asm: builtin words at end, so contiguous with run time words
+- refactor builtin words to be in forthy style where possible (and thus candidates for .f)
+- strip functionality of asm intepreter/colon-compiler: de-support numbers, immediate
+
+- relative offsets for branch, making code relocation easier.
+- macros/defs in prep to explore threaded interpreter
+- threaded interpreter: direct or indirect?
+
+- "mem" memory usage reporting (need expose sp address)
+- ".s" - non destructive show of stack (need to know stack base)
+- string support: ." s" (need key)
+- "type" - the name of the standard forth word to print a string
+- support () comments in forth -- (need key)
+- recode "words" in forth
+- improve dump.f for standard words see/dump
+- colon interpreter in forth
+- state aware combined interpreter/colon-compiler in forth, support [, ]
+- "quit" - clear return stack and restart interpreter loop
+- "abort" - clear param stack and call quit
+
+- parse buffer - can this be coded in forth? (need backspace detection!)
+- allow words to be marked as hidden
+
+- support "else" (factor "ahead" - find posting on control flow imp in forth)
+- do/loop -- make F example work using original code
+- create
+    create X
+    X here expect
+
+- >r r>
+- postpone
+- does>
+
+- bye: is it possible to quit qemu from inside forth?
