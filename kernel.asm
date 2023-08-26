@@ -868,15 +868,15 @@ startup_read_char:
 
 builtin: dw builtin_data
 builtin_data:
-    incbin "src/early.f"
-    incbin "src/inter.f"
-    incbin "src/predefined.f"
-    incbin "src/unimplemented.f"
-    incbin "src/regression.f"
-    incbin "src/my-letter-F.f"
-    incbin "src/dump.f"
-    incbin "src/start.f"
-    incbin "src/play.f"
+    incbin "f/early.f"
+    incbin "f/inter.f"
+    incbin "f/predefined.f"
+    incbin "f/unimplemented.f"
+    incbin "f/regression.f"
+    incbin "f/my-letter-F.f"
+    incbin "f/dump.f"
+    incbin "f/start.f"
+    incbin "f/play.f"
     db 0
 
 ;;; Read char from input
