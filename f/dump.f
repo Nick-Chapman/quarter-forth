@@ -1,4 +1,11 @@
 
+( Tools for exploring mem and defs )
+
+: mem ( report bytes available )
+mes-bytes-available
+sp here - . cr
+;
+
 ( Dump colon definitions )
 
 : e8 14 16 * 8 + ;

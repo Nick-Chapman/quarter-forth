@@ -102,6 +102,10 @@ defword "todo" ;; TODO: need strings so we can avoid these specific messages
     print "TODO: "
     ret
 
+defword "mes-bytes-available"
+    print "bytes available: "
+    ret
+
 defword "crash"
 _crash:
     print "**We have crashed!"
@@ -313,6 +317,10 @@ _c_at:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; heap...
+
+defword "sp" ; ( -- a )
+    PUSH bp
+    ret
 
 defword "here-pointer"
 _here_pointer:
@@ -770,6 +778,7 @@ defword "number?" ; ( string-addr -- number 1 | string-addr 0 )
     PUSH ax
     ret
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; start
 
@@ -980,22 +989,22 @@ cls:
     ret
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; buffer & here
+
+dictionary: dw lastlink
+here: dw here_start
 buffer: times 64 db 0 ;; must be before size check. why??
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 234      ;; Number of sectors the bootloader loads
+%assign S 25      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A
 %error "Kernel too big!" required=R, allowed=A (#sectors=S)
 %endif
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; buffer & here
-
-dictionary: dw lastlink
-here: dw here_start
 here_start: ; persistent heap
