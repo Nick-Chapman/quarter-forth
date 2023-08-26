@@ -11,15 +11,17 @@ number? if ( leave converted number on stack, and loop... )
 br inter
 then
 
-find dup invert if
+dup find dup invert if
 
 ( word not defined, so: message, skip and loop... )
 ( TODO: the bad word is not correctly displayed. transient buffer? )
+drop
 warn-missing
 ( [char] * emit ) ( debug )
 br inter
 
 then
+swap drop
 ( otherwise word is in the dictionary, so execute it! )
 ( [char] ! emit ) ( debug )
 entry->xt execute
