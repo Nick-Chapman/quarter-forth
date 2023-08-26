@@ -20,9 +20,3 @@ This file contains stuff we need to code the interpreter in forth.
 : false     0 ;
 : true      65535 ;
 : invert    true swap if drop false then ;
-
-( Misc )
-
-: entry->xt 3 + ;
-
-( : dup-if-not-zero dup if dup then ; ) ( dont need this )

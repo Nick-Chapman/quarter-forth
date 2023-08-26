@@ -12,26 +12,13 @@ s" Bytes available: " type
 : e8 14 16 * 8 + ;
 : is-call e8 = ;
 
-: e-call
-[char] C emit
-[char] A emit
-[char] L emit
-[char] L emit
-space ;
-
-: xt->entry 3 - ;
-
-: print-name-of-xt
-xt->entry entry->name type
-;
-
 : @rel->abs
 dup @ + 2 +
 ;
 
 : dump-call
-( e-call )
-dup 1 + @rel->abs print-name-of-xt space
+( s" CALL " type )
+dup 1 + @rel->abs xt->name type space
 3 +
 ;
 

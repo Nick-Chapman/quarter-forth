@@ -13,6 +13,7 @@ Done:
 - support () comments in forth -- (need key)
 - string support: ." s" (need key)
 - "type" - the name of the standard forth word to print a string
+- find should return an XT (not an entry - 3 bytes to left)
 
 Next:
 
@@ -20,7 +21,6 @@ Next:
 - check return under/stack overflow
 - refactor builtin words to be in forthy style where possible (and thus candidates for .f)
 - strip functionality of asm intepreter/colon-compiler: de-support numbers, immediate
-- find should return an XT (not an entry - 3 bytes to left)
 
 - relative offsets for branch, making code relocation easier.
 - macros/defs in prep to explore threaded interpreter

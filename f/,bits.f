@@ -138,3 +138,13 @@ defwordimm "if" ; now in forth
     ;; call _here_pointer
     ;; call _store
     ;; ret
+
+
+
+' fact dump
+
+' lala
+dup .
+execute
+
+accept

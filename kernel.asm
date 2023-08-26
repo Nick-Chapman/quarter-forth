@@ -25,7 +25,7 @@ start:
     call init_param_stack
     call cls
 .loop:
-    call t_word
+    call _word
     POP dx
     call try_parse_as_number
     jnz .nan
@@ -33,10 +33,8 @@ start:
     jmp .loop
 .nan:
     PUSH dx
-    call t_find
+    call _safe_find
     POP bx
-    ;; execute code at bx+3
-    add bx, 3
     call bx
     jmp .loop
 
@@ -286,10 +284,10 @@ internal_write_byte:
     ret
 
 colon_intepreter: ; TODO: move this towards forth style
-    call t_word
+    call _word
     call _create_entry
 .loop:
-    call t_word
+    call _word
     POP dx
     mov di, dx
     call is_semi
@@ -297,18 +295,16 @@ colon_intepreter: ; TODO: move this towards forth style
     call try_parse_as_number
     jz .number
     PUSH dx
-    call t_find
+    call _safe_find
+    call _dup
     call _test_immediate_flag
     POP ax
     cmp ax, 0
     jnz .immediate
-    add bx, 3
-    mov ax, bx
-    PUSH ax
     call _write_call
     jmp .loop
 .immediate:
-    add bx, 3
+    POP bx
     call bx
     jmp .loop
 .number:
@@ -334,7 +330,7 @@ is_semi:
 ;;; Lookup word in dictionary, return entry if found or 0 otherwise
 ;;; [in DX=sought-name, out BX=entry/0]
 ;;; [uses SI, DI, BX, CX]
-internal_dictfind:
+internal_dictfind: ; (DX --> BX)
     mov di, dx
     PUSH di
     call _strlen ; ax=len
@@ -356,7 +352,8 @@ internal_dictfind:
     call cmp_n
     pop ax
     jnz .next
-    ret ; BX=entry
+    add bx, 3 ; entry->xt
+    ret ; BX=xt
 .next:
     mov bx, [bx] ; traverse link
     cmp bx, 0
@@ -585,16 +582,11 @@ _exit:
     ret
 
 defwordimm "br" ; TODO: better name: jump, tail, branch
-    call _word_find
-    POP bx
-    push bx
+    call _word
+    call _safe_find
     mov ax, _branch
     PUSH ax
     call _write_call
-    pop bx
-    add bx, 3
-    mov ax, bx
-    PUSH ax
     call _comma
     ret
 
@@ -654,10 +646,8 @@ _comma:
 
 defword "'"
 _tick:
-    call _word_find
-    POP bx
-    add bx, 3 ;; TODO: factor this +3 pattern to get XT
-    PUSH bx
+    call _word
+    call _safe_find
     ret
 
 defword "execute"
@@ -665,14 +655,15 @@ defword "execute"
     jmp bx
 
 defword "immediate?"
-    call _word_find
+    call _word
+    call _safe_find
     call _test_immediate_flag
     ret
 
-defword "test-immediate-flag"
+;defword "test-immediate-flag"
 _test_immediate_flag:
     POP bx
-    mov al, [bx+2]
+    mov al, [bx-1]
     cmp al, 0x80
     ja .yes
     jmp .no
@@ -690,17 +681,13 @@ defword "immediate"
     call _flip_immediate_flag
     ret
 
-defword "immediate^"
-    call _word_find
-    call _flip_immediate_flag
-    ret
-
 defword "flip-immediate-flag"
 _flip_immediate_flag:
     POP bx
-    mov al, [bx+2]
+    ;; size/flag byte -1 from xt
+    mov al, [bx-1]
     xor al, 0x80
-    mov [bx+2], al
+    mov [bx-1], al
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -727,15 +714,13 @@ _literal:
     ret
 
 defwordimm "[']"
-    call _word_find
-    POP ax
-    add ax, 3
-    PUSH ax
+    call _word
+    call _safe_find
     call _literal
     ret
 
 defwordimm "[char]"
-    call t_word
+    call _word
     POP bx
     mov ah, 0
     mov al, [bx]
@@ -772,16 +757,15 @@ _abs_to_rel: ; ( addr-abs -> addr-rel )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Dictionary entries & find
 
-defword "entry->name"
-_entry_name: ;; TODO: use this in dictfind
+defword "xt->name" ; ( xt -- string )
+_xt_name: ;; TODO: use this in dictfind
     POP bx
     mov ch, 0
-    mov cl, [bx+2]
+    mov cl, [bx-1] ; size byte -1 from xt
     and cl, 0x7f
-    mov di, bx
-    sub di, cx
-    dec di ; subtract 1 more for the null
-    PUSH di
+    sub bx, 4 ; (1) null, (2) link pointer, (1) size byte
+    sub bx, cx
+    PUSH bx
     ret
 
 defword "strlen" ; ( name-addr -- n )
@@ -827,22 +811,19 @@ _write_string:
     call internal_write_byte ; null
     ret
 
-defword "find" ; ( string-addr -- 0|xt )
+defword "find" ; ( string -- 0|xt )
 _find:
     POP dx
-    call internal_dictfind
+    call internal_dictfind ;; INLINE
     PUSH bx
     ret
 
-;;defword "find" -- TODO: make a standard compliant find (almost, see above)
-t_find: ;; t for transient
-    POP dx
-    PUSH dx
-    call internal_dictfind ;; TODO: inline
+_safe_find: ; ( string -> xt )
+    call _find
+    POP bx
+    PUSH bx
     cmp bx, 0
     jz _warn_missing
-    POP dx
-    PUSH bx
     ret
 
 defword "warn-missing"
@@ -852,7 +833,7 @@ _warn_missing:
     call internal_print_string
     nl
     call _crash_only_during_startup
-    mov ax, _missing-3 ;; hack to get from the code pointer to the entry pointer
+    mov ax, _missing
     PUSH ax
     ret
 
@@ -862,9 +843,10 @@ _missing:
     nl
     ret
 
-defword "latest-entry"
+defword "latest-entry" ; ( -- xt )
 _latest_entry:
     mov bx, [dictionary]
+    add bx, 3
     PUSH bx
     ret
 
@@ -888,14 +870,14 @@ _words:
     ret
 
 defword "word" ; ( " blank-deliminted-word " -- string-addr ) ; TODO: earlier
-t_word: ;; t for transient ; TODO loose t
+_word:
     call internal_read_word ;; TODO inline
     mov ax, buffer
     PUSH ax ;; transient buffer; for _find/create
     ret
 
 defword "char"
-    call t_word
+    call _word
     POP bx
     mov ah, 0
     mov al, [bx]
@@ -903,7 +885,7 @@ defword "char"
     ret
 
 defword "constant"
-    call t_word
+    call _word
     call _create_entry
     call _lit
     dw _lit
@@ -912,12 +894,6 @@ defword "constant"
     call _lit
     dw _exit
     call _write_call
-    ret
-
-defword "word-find"
-_word_find:
-    call t_word
-    call t_find
     ret
 
 defword "type"

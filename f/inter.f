@@ -24,7 +24,7 @@ then
 swap drop
 ( otherwise word is in the dictionary, so execute it! )
 ( [char] ! emit ) ( debug )
-entry->xt execute
+execute
 br inter
 
 ;
