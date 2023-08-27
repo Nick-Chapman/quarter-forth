@@ -945,8 +945,9 @@ buffer: times 64 db 0 ;; TODO: kill; just use here+N
 
 builtin: dw builtin_data
 builtin_data:
-    incbin "f/early.f"
-    incbin "f/inter.f"
+    incbin "f/comments.f"
+    incbin "f/string-literals.f"
+    incbin "f/interpreter.f"
     incbin "f/predefined.f"
     incbin "f/unimplemented.f"
     incbin "f/regression.f"

@@ -1,7 +1,13 @@
 
-( Code own simple interpreter )
+( define top-level interpreter in forth, and enter it... )
 
-: inter
+: cr 13 emit ;
+: warn-missing ( string -- )
+s" ** No such word: " type type cr
+crash-only-during-startup
+;
+
+: interpreter ( This is traditionaly & confusingly known as "quit" )
 
 word ( s: name )
 
@@ -9,23 +15,23 @@ dup find dup if ( s: name xt )
 ( word is in the dictionary, so execute it, and loop... )
 swap drop ( s: xt )
 execute
-br inter
+br interpreter
 then
 drop ( s: name )
 
 number? if ( leave converted number on the stack, and loop... )
-br inter
+br interpreter
 then ( s: name )
 
 ( word not defined, so message, skip and loop... )
 warn-missing
-br inter
+br interpreter
 
 ;
+interpreter ( enter! )
 
-( enter the interpreter )
-inter
 
+( define colon-compiler in forth; replacing : )
 
 : compile-or-execute ( xt -- )
 dup test-immediate-flag if
@@ -52,7 +58,7 @@ then ( s: name )
 ( word not defined ) warn-missing br compiling
 ;
 
-( Redefine colon compiler )
+( Redefine : here )
 : :
 word create-entry compiling
 ;
