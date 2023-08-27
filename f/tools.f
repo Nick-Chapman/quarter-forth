@@ -16,40 +16,30 @@ s" Bytes available: " type
 dup @ + 2 +
 ;
 
-: dump-call
-( s" CALL " type )
-dup 1 + @rel->abs xt->name type space
-3 +
-;
+: dis ( a -- )
+dup c@ is-call invert if
 
-: dump1  c@ .h ;
+dup ( a a )
+c@ .h
+1 + br dis
 
-: dump-next ( a -- a' )
-dup c@ is-call if dump-call exit then
-dup 0 + dump1
-1 +
-;
+then dup ( a a )
+1 + @rel->abs xt->name ( a name )
+dup ( a name name )
+type space ( a name )
+s" exit" s= invert if ( NOT RIGHT - may stop too early )
+3 + br dis
 
-: dump
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-dump-next
-drop
+then
 cr
 ;
+
+: x-see ( xt -- )
+s" : " type
+dup xt->name type
+s"    " type
+dis
+;
+
+: see
+word find x-see ; immediate

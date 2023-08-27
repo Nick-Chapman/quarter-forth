@@ -46,8 +46,9 @@ type cr ;
 : nip ( a b -- b )
 swap drop ;
 
-: checked-find ( replaces safe-find in kernel )
-dup find dup ( str xt xt )
+: old-find find ;
+: find ( replaces safe-find in kernel )
+dup old-find dup ( str xt xt )
 if ( str xt )
 nip exit
 then ( str 0 )
@@ -55,4 +56,4 @@ drop warn-missing
 ;
 
 ( Tick )
-: ' word safe-find ;
+: ' word find ;
