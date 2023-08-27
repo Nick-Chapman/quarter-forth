@@ -15,6 +15,7 @@ Done:
 - "type" - the name of the standard forth word to print a string
 - find should return an XT (not an entry - 3 bytes to left)
 - interpreter: check dict before number? allow numbers to be re-defined !
+- colon interpreter in forth
 
 Next:
 
@@ -27,7 +28,6 @@ Next:
 - ".s" - non destructive show of stack (need to know stack base)
 - recode "words" in forth
 - improve dump.f for standard words see/dump
-- colon interpreter in forth
 - state aware combined interpreter/colon-compiler in forth, support [, ]
 - "quit" - clear return stack and restart interpreter loop
 - "abort" - clear param stack and call quit

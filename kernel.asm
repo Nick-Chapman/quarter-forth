@@ -100,7 +100,7 @@ try_parse_as_number: ; TODO: code in forth
 ;;; Compare n bytes at two pointers
 ;;; [in CX=n, SI/DI=pointers-to-things-to-compare, out Z=same]
 ;;; [consumes SI, DI, CX; uses AL]
-cmp_n:
+internal_cmp_n: ;; CX/SI/DI --> Z
 .loop:
     mov al, [si]
     cmp al, [di]
@@ -357,7 +357,7 @@ internal_dictfind: ; (DX --> BX)
     ;; now di=this entry name
     mov cx, ax ; length
     push ax
-    call cmp_n
+    call internal_cmp_n
     pop ax
     jnz .next
     add bx, 3 ; entry->xt
@@ -654,13 +654,13 @@ defword "execute"
     POP bx
     jmp bx
 
-defword "immediate?"
+defword "immediate?" ;; TODO: dont expose this...
     call _word
     call _safe_find
     call _test_immediate_flag
     ret
 
-;defword "test-immediate-flag"
+defword "test-immediate-flag" ;; but this, renamed as immediate?
 _test_immediate_flag:
     POP bx
     mov al, [bx-1]
@@ -903,6 +903,29 @@ defword "type"
     call internal_print_string
     ret
 
+defword "s="
+    ;; call _over
+    ;; call _over
+    ;; print "{"
+    ;; POP di
+    ;; call internal_print_string
+    ;; print " =?= "
+    ;; POP di
+    ;; call internal_print_string
+    ;; print "}"
+    call _dup
+    call _strlen
+    POP cx
+    POP SI
+    POP DI
+    call internal_cmp_n ;; TODO: define/use a non-lengthed string compare
+    mov ax, 0 ; default no
+    jnz .no
+    mov ax, 1
+.no:
+    PUSH ax
+    ret
+
 defword ":"
     jmp colon_intepreter
 
@@ -952,7 +975,7 @@ builtin_data:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 26      ;; Number of sectors the bootloader loads
+%assign S 27      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A
