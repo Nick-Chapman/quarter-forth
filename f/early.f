@@ -19,12 +19,6 @@ Above we define here/if/then, and use to define comment handling.
 This file contains stuff we need to code the interpreter in forth.
 )
 
-( Bools )
-
-: false     0 ;
-: true      65535 ;
-: invert    true swap if drop false then ;
-
 ( Strings )
 
 : collect-string

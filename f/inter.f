@@ -7,23 +7,20 @@
 word
 
 number? if ( leave converted number on stack, and loop... )
-( [char] # emit ) ( debug )
 br inter
 then
 
-dup find dup invert if
+dup find dup if ( s: name xt )
 
+( word is in the dictionary, so execute it! )
+swap drop
+execute
+br inter
+
+then
 ( word not defined, so: message, skip and loop... )
 drop
 warn-missing
-( [char] * emit ) ( debug )
-br inter
-
-then
-swap drop
-( otherwise word is in the dictionary, so execute it! )
-( [char] ! emit ) ( debug )
-execute
 br inter
 
 ;

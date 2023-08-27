@@ -21,6 +21,10 @@ dup c@ .h 1 + c@ .h ;
 
 ( Bools )
 
+: false     0 ;
+: true      65535 ;
+: invert    true swap if drop false then ;
+
 : >         swap < ;
 
 ( Numbers )
