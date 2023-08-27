@@ -965,7 +965,7 @@ builtin_data:
     incbin "f/unimplemented.f"
     incbin "f/regression.f"
     incbin "f/my-letter-F.f"
-    incbin "f/dump.f"
+    incbin "f/tools.f"
     incbin "f/start.f"
     incbin "f/play.f"
     db 0
