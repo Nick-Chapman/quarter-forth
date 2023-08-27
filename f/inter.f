@@ -2,24 +2,22 @@
 ( Code own simple interpreter )
 
 : inter
-( [char] ~ emit ) ( some simple debug to prove we are in this interpreter )
 
-word
-
-number? if ( leave converted number on stack, and loop... )
-br inter
-then
+word ( s: name )
 
 dup find dup if ( s: name xt )
-
-( word is in the dictionary, so execute it! )
-swap drop
+( word is in the dictionary, so execute it, and loop... )
+swap drop ( s: xt )
 execute
 br inter
-
 then
-( word not defined, so: message, skip and loop... )
-drop
+drop ( s: name )
+
+number? if ( leave converted number on the stack, and loop... )
+br inter
+then ( s: name )
+
+( word not defined, so message, skip and loop... )
 warn-missing
 br inter
 

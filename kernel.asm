@@ -808,7 +808,7 @@ _write_string:
     call internal_write_byte ; null
     ret
 
-defword "find" ; ( string -- 0|xt )
+defword "find" ; ( string -- 0|xt ) -- This is non standard!
 _find:
     POP dx
     call internal_dictfind ;; INLINE
@@ -906,7 +906,7 @@ defword "type"
 defword ":"
     jmp colon_intepreter
 
-defword "number?" ; ( string-addr -- number 1 | string-addr 0 )
+defword "number?" ; ( string -- number 1 | string 0 )
     call _dup
     POP dx
     call try_parse_as_number
