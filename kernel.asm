@@ -2,20 +2,6 @@
 BITS 16
 org 0x500
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; parameter stack macros
-
-%macro PUSH 1 ; TODO: rename pspush?
-    sub bp, 2
-    mov [bp], %1
-%endmacro
-
-%macro POP 1
-    mov %1, [bp]
-    add bp, 2
-    call check_ps_underflow
-%endmacro
-
     jmp start
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -33,6 +19,31 @@ org 0x500
 
 %macro nl 0
     call print_newline
+%endmacro
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; parameter stack macros
+
+%macro PUSH 1 ; TODO: rename pspush?
+    sub bp, 2
+    mov [bp], %1
+%endmacro
+
+check_ps_underflow:
+    cmp bp, param_stack_base
+    jb .ok
+    sub bp, 2
+    mov word [bp], 0
+    print "stack underflow."
+    nl
+    call _crash_only_during_startup
+.ok:
+    ret
+
+%macro POP 1
+    call check_ps_underflow
+    mov %1, [bp]
+    add bp, 2
 %endmacro
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -240,15 +251,6 @@ param_stack_base equ 0xf800  ; allows 2k for call stack
 init_param_stack:
     mov bp, param_stack_base
     ret
-
-check_ps_underflow:
-    cmp bp, param_stack_base
-    ja .underflow
-    ret
-.underflow:
-    print "stack underflow."
-    nl
-    jmp _crash
 
 ;;; Read word from keyboard into buffer memory -- prefer _word
 ;;; [uses AX,DI]
@@ -975,7 +977,7 @@ builtin_data:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 27      ;; Number of sectors the bootloader loads
+%assign S 29      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A
