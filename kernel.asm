@@ -854,25 +854,6 @@ _latest_entry:
     PUSH bx
     ret
 
-defword "words"
-_words:
-    mov bx, [dictionary]
-.loop:
-    mov cl, [bx+2]
-    and cl, 0x7f
-    mov ch, 0
-    mov di, bx
-    sub di, cx
-    dec di ; null
-    call internal_print_string
-    mov al, ' '
-    call print_char
-    mov bx, [bx] ; traverse link
-    cmp bx, 0
-    jnz .loop
-    call print_newline
-    ret
-
 defword "word" ; ( " blank-deliminted-word " -- string-addr ) ; TODO: earlier
 _word:
     call internal_read_word ;; TODO inline
@@ -966,6 +947,7 @@ builtin_data:
     incbin "f/regression.f"
     incbin "f/my-letter-F.f"
     incbin "f/tools.f"
+    incbin "f/words.f"
     incbin "f/start.f"
     incbin "f/play.f"
     db 0

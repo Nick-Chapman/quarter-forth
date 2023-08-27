@@ -17,6 +17,7 @@ Done:
 - interpreter: check dict before number? allow numbers to be re-defined !
 - colon interpreter in forth
 - improve dump.f for standard words see/dump
+- recode "words" in forth
 
 Next:
 
@@ -27,7 +28,6 @@ Next:
 - relative offsets for branch, making code relocation easier.
 
 - ".s" - non destructive show of stack (need to know stack base)
-- recode "words" in forth
 - state aware combined interpreter/colon-compiler in forth, support [, ]
 - "quit" - clear return stack and restart interpreter loop
 - "abort" - clear param stack and call quit
