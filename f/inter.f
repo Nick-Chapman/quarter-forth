@@ -14,7 +14,6 @@ then
 dup find dup invert if
 
 ( word not defined, so: message, skip and loop... )
-( TODO: the bad word is not correctly displayed. transient buffer? )
 drop
 warn-missing
 ( [char] * emit ) ( debug )

@@ -57,7 +57,7 @@ char *      42 x
 char hi     104 x
 
 : hi [char] h [char] i ;
-hi 105 x 99 104
+hi 105 x 104 x
 
 ( Immediacy )
 

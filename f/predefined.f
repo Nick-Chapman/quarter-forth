@@ -7,7 +7,6 @@
 
 ( Output )
 
-: cr        13 emit ;
 : bl        32 ;
 : space     bl emit ;
 : spaces    dup if space 1 - br spaces then drop ;
@@ -33,22 +32,23 @@ dup c@ .h 1 + c@ .h ;
 
 : +!        swap over @ + swap ! ;
 
-( Strings )
-
-: collect-string
-key dup [char] " = if exit
-then c, br collect-string
-;
-
-: s"
-( make a branch slot )          ['] branch compile, here 0 ,
-( note where string starts )    here swap
-( collect the string chars )    collect-string drop ( the closing " )
-( add a null )                  0 c,
-( fill in the branch slot )     here swap !
-( push string at runtime )      ['] lit compile, ,
-; immediate
-
 : welcome
 s" Welcome to Nick's Forth-like thing."
 type cr ;
+
+( Stack manipulation )
+
+( Drop the first item below the top of stack. )
+: nip ( a b -- b )
+swap drop ;
+
+: checked-find ( replaces safe-find in kernel )
+dup find dup ( str xt xt )
+if ( str xt )
+nip exit
+then ( str 0 )
+drop warn-missing
+;
+
+( Tick )
+: ' word safe-find ;

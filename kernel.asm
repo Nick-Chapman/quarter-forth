@@ -19,7 +19,26 @@ org 0x500
     jmp start
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Macros: print/nl
+
+%macro print 1
+    push di
+    jmp %%after
+%%message: db %1, 0
+%%after:
+    mov di, %%message
+    call internal_print_string
+    pop di
+%endmacro
+
+%macro nl 0
+    call print_newline
+%endmacro
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ASM code...
+
+echo_enabled: dw 0
 
 start:
     call init_param_stack
@@ -33,9 +52,15 @@ start:
     jmp .loop
 .nan:
     PUSH dx
-    call _safe_find
+    call _find
     POP bx
+    cmp bx, 0
+    jz .missing
     call bx
+    jmp .loop
+.missing:
+    print "**(Kernel:start) No such word"
+    nl
     jmp .loop
 
 ;;; Try to parse a string as a number
@@ -208,23 +233,6 @@ cls:
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Macros: print/nl
-
-%macro print 1
-    push di
-    jmp %%after
-%%message: db %1, 0
-%%after:
-    mov di, %%message
-    call internal_print_string
-    pop di
-%endmacro
-
-%macro nl 0
-    call print_newline
-%endmacro
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Parameter stack -- register BP
 
 param_stack_base equ 0xf800  ; allows 2k for call stack
@@ -393,8 +401,6 @@ defword "key"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; echo-control, messages, startup, crash
-
-echo_enabled: dw 0
 
 defword "echo-enabled" ; ( -- addr )
     mov bx, echo_enabled
@@ -644,12 +650,6 @@ _comma:
     add word [here], 2
     ret
 
-defword "'"
-_tick:
-    call _word
-    call _safe_find
-    ret
-
 defword "execute"
     POP bx
     jmp bx
@@ -713,11 +713,8 @@ _literal:
     call _comma
     ret
 
-defwordimm "[']"
-    call _word
-    call _safe_find
-    call _literal
-    ret
+defword "non-immediate-literal" ; TODO: imprve this
+    jmp _literal
 
 defwordimm "[char]"
     call _word
@@ -818,17 +815,21 @@ _find:
     PUSH bx
     ret
 
+defword "safe-find"
 _safe_find: ; ( string -> xt )
+    call _dup
     call _find
     POP bx
     PUSH bx
     cmp bx, 0
     jz _warn_missing
+    call _swap
+    call _drop
     ret
 
-defword "warn-missing"
 _warn_missing:
-    print "**No such word: "
+    call _drop
+    print "**(Kernel) No such word: "
     POP di
     call internal_print_string
     nl
@@ -838,6 +839,7 @@ _warn_missing:
     ret
 
 ;;; not in dictionary
+defword "missing"
 _missing:
     print "**Missing**"
     nl

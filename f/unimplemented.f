@@ -33,7 +33,6 @@ latest-entry xt->name
 : 2dup          my-entry literal not-yet ; immediate
 : 2over         my-entry literal not-yet ; immediate
 : 2swap         my-entry literal not-yet ; immediate
-: ;             my-entry literal not-yet ; immediate
 : <#            my-entry literal not-yet ; immediate
 : >body         my-entry literal not-yet ; immediate
 : >in           my-entry literal not-yet ; immediate
