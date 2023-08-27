@@ -18,6 +18,7 @@ Done:
 - colon interpreter in forth
 - improve dump.f for standard words see/dump
 - recode "words" in forth
+- ".s" - non destructive show of stack (need to know stack base)
 
 Next:
 
@@ -27,7 +28,6 @@ Next:
 - strip functionality of asm intepreter/colon-compiler: de-support numbers, immediate
 - relative offsets for branch, making code relocation easier.
 
-- ".s" - non destructive show of stack (need to know stack base)
 - state aware combined interpreter/colon-compiler in forth, support [, ]
 - "quit" - clear return stack and restart interpreter loop
 - "abort" - clear param stack and call quit

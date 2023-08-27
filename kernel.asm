@@ -630,6 +630,11 @@ defword "sp" ; ( -- a ) -- TODO: define variable macro/abstraction for this & mo
     PUSH bp
     ret
 
+defword "sp0" ; ( -- a )
+    mov ax, param_stack_base
+    PUSH ax
+    ret
+
 here: dw here_start
 defword "here-pointer"
 _here_pointer:

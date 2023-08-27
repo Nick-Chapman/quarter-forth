@@ -43,3 +43,19 @@ dis
 
 : see
 word find x-see ; immediate
+
+
+( Show stack non destructively )
+
+: .s-continue
+2 -
+dup 4 - sp > if ( the 4 is for the 2 extra items while processing )
+dup @ .
+br .s-continue
+then
+drop
+;
+
+: .s
+sp0 .s-continue cr
+;
