@@ -1,3 +1,4 @@
+: show-load s" Loading regression." type cr ; show-load
 
 ( Expect... )
 
@@ -100,6 +101,11 @@ true invert     false x
 4 3 <           false x
 4 3 >           true x
 3 4 >           false x
+
+true true or    true x
+true false or   true x
+false true or   true x
+false false or  false x
 
 ( Numbers )
 

@@ -56,10 +56,12 @@ start:
     call cls
 .loop:
     call _word
+    call _dup
     POP dx
     call try_parse_as_number
     jnz .nan
     PUSH ax
+    call _drop
     jmp .loop
 .nan:
     PUSH dx
@@ -67,11 +69,15 @@ start:
     POP bx
     cmp bx, 0
     jz .missing
+    call _drop
     call bx
     jmp .loop
 .missing:
-    print "**(Kernel:start) No such word"
+    print "**(Kernel:start) No such word: "
+    POP di
+    call internal_print_string
     nl
+    call _crash_only_during_startup
     jmp .loop
 
 ;;; Try to parse a string as a number
@@ -257,7 +263,9 @@ init_param_stack:
 internal_read_word:
     mov di, buffer
 .skip:
-    call internal_read_char
+    ;;call internal_read_char
+    call _key
+    POP ax
     cmp al, 0x21
     jb .skip ; skip leading white-space
 .loop:
@@ -265,7 +273,9 @@ internal_read_word:
     jb .done ; stop at white-space
     mov [di], al
     inc di
-    call internal_read_char
+    ;;call internal_read_char
+    call _key
+    POP ax
     jmp .loop
 .done:
     mov byte [di], 0 ; null
@@ -395,11 +405,31 @@ db ((%%link - %%name - 1) | 0x80) ; dont include null in count
 %define lastlink %%link
 %endmacro
 
-defword "key"
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; key
+
+key_indirect: dw _key0
+
+_key0: ; original
     call internal_read_char
     mov ah, 0
     PUSH ax
     ret
+
+defword "key"
+_key:
+    jmp [key_indirect]
+
+defword "set-key" ; ( ax -- )
+    POP ax
+    mov [key_indirect], ax
+    ret
+
+defword "get-key" ; ( -- ax )
+    mov ax, [key_indirect]
+    PUSH ax
+    ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; echo-control, messages, startup, crash
@@ -449,8 +479,8 @@ defword "emit" ; ( byte -- ) ; emit ascii char
 defword "."
     POP ax
     call print_number
-    mov al, ' '
-    call print_char
+    ;;mov al, ' '
+    ;;call print_char
     ret
 
 defword ".h" ; ( byte -- ) ; emit as 2-digit hex
@@ -584,6 +614,12 @@ _0branch:
     mov bx, [bx]
     jmp bx ; branch to target
 
+defword "0branch,"
+    call _lit
+    dw _0branch
+    call _write_call
+    ret
+
 defword "exit"
 _exit:
     pop bx ; and ignore
@@ -616,11 +652,18 @@ _store:
     ret
 
 defword "c@"
-_c_at:
+_c_fetch:
     POP bx
     mov ah, 0
     mov al, [bx]
     PUSH ax
+    ret
+
+defword "c!"
+_c_store:
+    POP bx
+    POP ax
+    mov [bx], al
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -945,15 +988,22 @@ buffer: times 64 db 0 ;; TODO: kill; just use here+N
 
 builtin: dw builtin_data
 builtin_data:
+
+    incbin "f/pre-comments.f"
     incbin "f/comments.f"
     incbin "f/string-literals.f"
+    incbin "f/early.f"
+
     incbin "f/interpreter.f"
     incbin "f/predefined.f"
     incbin "f/unimplemented.f"
     incbin "f/regression.f"
+
+    incbin "f/buffer.f"
     incbin "f/my-letter-F.f"
     incbin "f/tools.f"
     incbin "f/words.f"
+
     incbin "f/start.f"
     incbin "f/play.f"
     db 0

@@ -1,4 +1,11 @@
 
+( Am using ['] here - but perhaps better to have branch, and lit, )
+
+: [']
+word safe-find non-immediate-literal
+; immediate
+
+
 ( Strings )
 
 : collect-string

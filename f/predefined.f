@@ -1,7 +1,7 @@
+: show-load s" Loading predefined." type cr ; show-load
 
 ( Heap )
 
-: allot     here + here-pointer ! ;
 : cell      2 ;
 : cells     cell * ;
 
@@ -24,6 +24,7 @@ dup c@ .h 1 + c@ .h ;
 : false     0 ;
 : true      65535 ;
 : invert    true swap if drop false then ;
+: or        if drop true then ;
 
 : >         swap < ;
 
@@ -36,19 +37,14 @@ dup c@ .h 1 + c@ .h ;
 
 : +!        swap over @ + swap ! ;
 
-: welcome
-s" Welcome to Nick's Forth-like thing."
-type cr ;
-
 ( Stack manipulation )
 
 ( Drop the first item below the top of stack. )
 : nip ( a b -- b )
 swap drop ;
 
-: old-find find ;
-: find ( replaces safe-find in kernel )
-dup old-find dup ( str xt xt )
+: checked-find ( replaces safe-find in kernel )
+dup find dup ( str xt xt )
 if ( str xt )
 nip exit
 then ( str 0 )
@@ -56,4 +52,4 @@ drop warn-missing
 ;
 
 ( Tick )
-: ' word find ;
+: ' word checked-find ;

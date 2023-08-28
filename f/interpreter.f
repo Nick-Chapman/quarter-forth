@@ -1,11 +1,6 @@
+: show-load s" Loading interpreter." type cr ; show-load
 
 ( define top-level interpreter in forth, and enter it... )
-
-: cr 13 emit ;
-: warn-missing ( string -- )
-s" ** No such word: " type type cr
-crash-only-during-startup
-;
 
 : interpreter ( This is traditionaly & confusingly known as "quit" )
 
@@ -58,7 +53,7 @@ then ( s: name )
 ( word not defined ) warn-missing br compiling
 ;
 
-( Redefine : here )
+( Now redefine : )
 : :
 word create-entry compiling
 ;

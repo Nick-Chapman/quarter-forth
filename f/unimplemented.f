@@ -1,6 +1,4 @@
 
-
-
 : latest-entry-name
 latest-entry xt->name
 ;
@@ -48,7 +46,6 @@ latest-entry xt->name
 : and           my-entry literal not-yet ; immediate
 : base          my-entry literal not-yet ; immediate
 : begin         my-entry literal not-yet ; immediate
-: c!            my-entry literal not-yet ; immediate
 : c,            my-entry literal not-yet ; immediate
 : cell+         my-entry literal not-yet ; immediate
 : char+         my-entry literal not-yet ; immediate
@@ -75,7 +72,6 @@ latest-entry xt->name
 : mod           my-entry literal not-yet ; immediate
 : move          my-entry literal not-yet ; immediate
 : negate        my-entry literal not-yet ; immediate
-: or            my-entry literal not-yet ; immediate
 : postpone      my-entry literal not-yet ; immediate
 : quit          my-entry literal not-yet ; immediate
 : r>            my-entry literal not-yet ; immediate
