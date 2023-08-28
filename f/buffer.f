@@ -7,22 +7,28 @@ here
 constant key-buffer
 0 key-buffer c!
 
-: is-newline
-dup 13 = swap 10 = or
-;
+: is-newline dup 13 = swap 10 = or ;
+: is-backspace 8 = ;
 
 : fill-loop ( a -- a' )
 old-key execute ( a c )
 over over swap ( a c c a ) c!
+
 ( a c ) dup is-newline if ( a c )
-emit
-1 + exit
+emit 1 + ( show newline and record in buffer )
+exit ( stop filling )
+
+then ( a c ) dup is-backspace if ( a c )
+dup emit space emit ( Handle the backspace visually )
+1 - br fill-loop ( Move the pointer back one step - TODO: check we dont go too far )
+
 then ( a c )
-emit
-1 + br fill-loop
+emit 1 + ( show char and record in buffer )
+br fill-loop
 ;
 
-: ok [char] o emit [char] k emit space ;
+: ok0 s" ok " type ; ( This doesn't work!!  - bug in string literla? )
+: ok cr [char] o emit [char] k emit space ;
 
 : fill
 ( s" filling..." type cr ) ( PROBLEM )
