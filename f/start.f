@@ -6,7 +6,5 @@ type cr ;
 cr welcome F cr
 mem cr
 
-' buffered-key set-key
-
 startup-is-complete
-echo-on
+' buffered-key set-key

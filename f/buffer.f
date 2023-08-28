@@ -14,14 +14,19 @@ dup 13 = swap 10 = or
 : fill-loop ( a -- a' )
 old-key execute ( a c )
 over over swap ( a c c a ) c!
-( a c ) is-newline if ( a )
+( a c ) dup is-newline if ( a c )
+emit
 1 + exit
-then ( a )
+then ( a c )
+emit
 1 + br fill-loop
 ;
 
+: ok [char] o emit [char] k emit space ;
+
 : fill
 ( s" filling..." type cr ) ( PROBLEM )
+ok
 key-buffer fill-loop
 0 swap c! ( add null so we know when the buffer is exhausted )
 ( s" filling... done!" type cr ) ( PROBLEM )
