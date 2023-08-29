@@ -1,4 +1,5 @@
-
+----------------------------------------------------------------------
+Done, asm...
 
 !                   ( x a -- )              : Asm   : store
 *                   ( n1 n2 -- n )          : Asm   : multiply
@@ -34,6 +35,7 @@ type                ( string -- )           : Asm   : emit string
 word                ( "name" -- str )       : Asm   : get blank delimited word from input stream
 
 ----------------------------------------------------------------------
+Done, Forth...
 
 '                   ( "name" -- xt )        : Forth : XT for next word in input stream
 (                   ( )                     : Forth : begin comment
@@ -61,21 +63,97 @@ then                ( )                     : Forth : immediate
 true                ( -- b )                : Forth : immediate, control flow
 variable            ( "name" )              : Forth : define variable
 
-----------------------------------------------------------------------
 
-#                   ( )                     : UNIMP : numeric conversion
-#>                  ( )                     : UNIMP : numeric conversion
-#s                  ( )                     : UNIMP : numeric conversion
-*/                  ( n1 n2 n3 -- n )       : UNIMP : multiply then divide
-*/mod               ( n1 n2 n3 -- nR nQ )   : UNIMP : multiply then div/mod
-+loop               ( )                     : UNIMP : loop with step size
-."                  ( ..." -- )             : UNIMP : emit literal string
-/                   ( n1 n2 -- n )          : UNIMP : divide
-/mod                ( n1 n2 -- nR nQ)       : UNIMP : div/mod
+----------------------------------------------------------------------
+Unimplemented, classified...
+
+
+----------------------------------------------------------------------
+Easy...
+
 0<                  ( n -- flag )           : UNIMP : n is less than zero
 0=                  ( n -- flag )           : UNIMP : n is zero
 1+                  ( n1 -- n2 )            : UNIMP : increment
 1-                  ( n1 -- n2 )            : UNIMP : decrement
+?dup                ( x -- 0 | x x )        : UNIMP : duplicate x if non-zero
+abs                 ( n -- u )              : UNIMP : absolute value
+and                 ( b1 b2 -- b )          : UNIMP : bool op
+cell+               ( n -- n )              : UNIMP : increment by cell size (+2)
+char+               ( n -- n )              : UNIMP : increment by char size (+1)
+chars               ( n -- n )              : UNIMP : multiply by char size (*1, nop!)
+depth               ( -- n )                : UNIMP : depth of param stack
+negate              ( n1 -- n2 )            : UNIMP : arithmetic negation
+
+----------------------------------------------------------------------
+Will require asm support...
+
+/                   ( n1 n2 -- n )          : UNIMP : divide
+/mod                ( n1 n2 -- nR nQ)       : UNIMP : div/mod
+lshift              ( x u -- x )            : UNIMP : left bit shift
+mod                 ( )                     : UNIMP : modulus
+rshift              ( x u -- x )            : UNIMP : right bit shift
+xor                 ( x1 x2 -- x )          : UNIMP : bitwise exclusive or
+
+----------------------------------------------------------------------
+Return stack...
+
+>r                  ( x -- )                : UNIMP : move to return stack
+r>                  ( -- x )                : UNIMP : move item from return stack
+r@                  ( -- x )                : UNIMP : top item of return stack
+
+----------------------------------------------------------------------
+Strings.. (also, need to debug s" !!) and mem ops...
+
+."                  ( ..." -- )             : UNIMP : emit literal string
+move                ( a1 a2 u )             : UNIMP : copy bytes in mem
+
+----------------------------------------------------------------------
+Top level interpret loop...
+
+abort               ( )                     : UNIMP : clear param-stack and call quit
+abort"              ( message" -- )         : UNIMP : display message and abort
+[                   ( )                     : UNIMP : enter interpretation state
+]                   ( )                     : UNIMP : enter compilation state
+quit                ( )                     : UNIMP : empty return stack, and restart interpreter
+state               ( -- a )                : UNIMP : cell containing compilation state flag
+
+----------------------------------------------------------------------
+Unsigned...
+
+u.                  ( u -- )                : UNIMP : unsigned print
+u<                  ( u1 u2 -- b )          : UNIMP : unsigned comparison
+um*                 ( u1 u2 ud )            : UNIMP : unsigned multiply (answer in double prec)
+um/mod              ( )                     : UNIMP : unsigned div-mode
+
+----------------------------------------------------------------------
+Hard...
+
+create              ( "name" -- )           : UNIMP : ??? related to >does
+does>               ( )                     : UNIMP : ???
+postpone            ( )                     : UNIMP : ???
+
+----------------------------------------------------------------------
+Loops & other control flow...
+
++loop               ( )                     : UNIMP : loop with step size
+begin               ( )                     : UNIMP : immediate, control flow (LOOP)
+do                  ( )                     : UNIMP : immediate, control flow (LOOP)
+else                ( )                     : UNIMP : immediate, control flow (COND)
+i                   ( -- x)                 : UNIMP : innermost loop index (LOOP)
+j                   ( -- x )                : UNIMP : another loop var (LOOP)
+leave               ( )                     : UNIMP : immediate, control flow (LOOP)
+loop                ( )                     : UNIMP : immediate, control flow (LOOP)
+recurse             ( )                     : UNIMP : control flow,
+repeat              ( )                     : UNIMP : control flow, (LOOP)
+unloop              ( )                     : UNIMP : must call in loop before exit
+until               ( )                     : UNIMP : immediate, control flow (LOOP)
+while               ( )                     : UNIMP : immediate, control flow (LOOP)
+
+----------------------------------------------------------------------
+Double precision...
+
+*/                  ( n1 n2 n3 -- n )       : UNIMP : multiply then divide
+*/mod               ( n1 n2 n3 -- nR nQ )   : UNIMP : multiply then div/mod
 2!                  ( x1 x2 a -- )          : UNIMP : double store
 2*                  ( )                     : UNIMP : double multiply
 2/                  ( )                     : UNIMP : double divide
@@ -84,64 +162,34 @@ variable            ( "name" )              : Forth : define variable
 2dup                ( )                     : UNIMP : double dup
 2over               ( )                     : UNIMP : double over
 2swap               ( )                     : UNIMP : double swap
+m*                  ( n1 n2 -- d )          : UNIMP : signed multiply (answer in double prec)
+s>d                 ( n -- d)               : UNIMP : move to double prec
+
+----------------------------------------------------------------------
+Numeric Picture conversion (???)...
+
+#                   ( )                     : UNIMP : numeric conversion
+#>                  ( )                     : UNIMP : numeric conversion
+#s                  ( )                     : UNIMP : numeric conversion
 <#                  ( )                     : UNIMP : init picture numeric conversion
+hold                ( c -- )                : UNIMP : picture output conversion
+sign                ( n -- )                : UNIMP : add sign to pictured numeric conversion
+
+----------------------------------------------------------------------
+Left over...
+
 >body               ( xt -- a )             : UNIMP : identity for me?
 >in                 ( -- a )                : UNIMP : (var) parse buffer offset
 >number             ( )                     : UNIMP : helper for number conversion
->r                  ( x -- )                : UNIMP : move to return stack
-?dup                ( x -- 0 | x x )        : UNIMP : duplicate x if non-zero
-[                   ( )                     : UNIMP : enter interpretation state
-]                   ( )                     : UNIMP : enter compilation state
-abort               ( )                     : UNIMP : clear param-stack and call quit
-abort"              ( message" -- )         : UNIMP : display message and abort
-abs                 ( n -- u)               : UNIMP : absolute value
 accept              ( )                     : UNIMP : ???
 align               ( )                     : UNIMP : (nop) I have no alignment restrictions
 aligned             ( )                     : UNIMP : (true) I have no alignment restrictions
-and                 ( b1 b2 -- b )          : UNIMP : bool and
 base                ( -- n)                 : UNIMP : current base for numeric conversion
-begin               ( )                     : UNIMP : immediate, control flow (LOOP)
-cell+               ( )                     : UNIMP : increment by cell size (+2)
-char+               ( )                     : UNIMP : increment by char size (+1)
-chars               ( )                     : UNIMP : multiply by char size (*1, nop!)
 count               ( )                     : UNIMP : working with counted strings (WONT IMP)
-create              ( "name" -- )           : UNIMP : ??? related to >does
 decimal             ( -- n )                : UNIMP : set numeric conversion radix to 10
-depth               ( )                     : UNIMP : depth of param stack
-do                  ( )                     : UNIMP : immediate, control flow (LOOP)
-does>               ( )                     : UNIMP : ???
-else                ( )                     : UNIMP : immediate, control flow (COND)
 environment?        ( )                     : UNIMP : ???
 evaluate            ( str -- )              : UNIMP : switch input to this string
 fill                ( a u c -- )            : UNIMP : fill mem from address a with u chars, c
 fm/mod              ( )                     : UNIMP : floored modulus
-hold                ( c -- )                : UNIMP : picture output conversion
-i                   ( -- x)                 : UNIMP : innermost loop index (LOOP)
-j                   ( -- x )                : UNIMP : another loop var (LOOP)
-leave               ( )                     : UNIMP : immediate, control flow (LOOP)
-loop                ( )                     : UNIMP : immediate, control flow (LOOP)
-lshift              ( x u -- x )            : UNIMP : left bit shift
-m*                  ( n1 n2 -- d )          : UNIMP : signed multiply (answer in double prec)
-mod                 ( )                     : UNIMP : modulus
-move                ( a1 a2 u )             : UNIMP : copy bytes in mem
-negate              ( n1 -- n2 )            : UNIMP : arithmetic negation
-postpone            ( )                     : UNIMP : ???
-quit                ( )                     : UNIMP : empty return stack, and restart interpreter
-r>                  ( -- x )                : UNIMP : move item from return stack
-r@                  ( -- x )                : UNIMP : top item of return stack
-recurse             ( )                     : UNIMP : control flow,
-repeat              ( )                     : UNIMP : control flow, (LOOP)
-rshift              ( x u -- x )            : UNIMP : right bit shift
-s>d                 ( n -- d)               : UNIMP : move to double prec
-sign                ( n -- )                : UNIMP : add sign to pictured numeric conversion
 sm/rem              ( )                     : UNIMP : symmetric quotient
 source              ( -- a u )              : UNIMP : address and number of chars in input buffer ?
-state               ( -- a )                : UNIMP : cell containing compilation state flag
-u.                  ( u -- )                : UNIMP : unsigned print
-u<                  ( u1 u2 -- b )          : UNIMP : unsigned comparison
-um*                 ( u1 u2 ud )            : UNIMP : unsigned multiply (answer in double prec)
-um/mod              ( )                     : UNIMP : unsigned div-mode
-unloop              ( )                     : UNIMP : must call in loop before exit
-until               ( )                     : UNIMP : immediate, control flow (LOOP)
-while               ( )                     : UNIMP : immediate, control flow (LOOP)
-xor                 ( x1 x2 -- x )          : UNIMP : bitwise exclusive or
