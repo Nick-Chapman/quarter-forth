@@ -21,3 +21,7 @@ _build/%.img: %.asm Makefile
 _build/kernel.img : $(wildcard f/*)
 
 _build: ; @mkdir -p $@
+
+
+burn: _build/disk.img
+	sudo dd if=$< of=/dev/sdb1
