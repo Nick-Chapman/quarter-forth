@@ -25,10 +25,11 @@ Done:
 - end colon defs with ret, not exit. for unified imp of see.
 - start examples.f for fact, fib etc
 - collatz example
+- see entire dictionary (but needs pagination)
 
 Next:
 
-- see entire dictionary
+- imp (or show) branch offsets as relative (imp will make code relocation easier)
 
 - can we make s" work in interprer mode?
 - ." in terms of .s (and debug problem with .s)
@@ -43,7 +44,6 @@ Next:
 - check return under/stack overflow
 - refactor builtin words to be in forthy style where possible (and thus candidates for .f)
 - strip functionality of asm intepreter/colon-compiler: de-support numbers, immediate
-- imp (or show) branch offsets as relative (imp will make code relocation easier)
 
 - state aware combined interpreter/colon-compiler in forth, support [, ]
 - "quit" - clear return stack and restart interpreter loop
@@ -57,8 +57,7 @@ Next:
 - implement dump like xxd
     - lines of addr, then 16 hex bytes and chars
     - start from given address
-    - use keyboard for paginationescape
-
+    - use keyboard for pagination/escape
 
 - >r r>
 - postpone

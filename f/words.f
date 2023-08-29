@@ -19,3 +19,15 @@ then
 : words
 latest-entry words-continue cr
 ;
+
+
+( Too much output! -- TODO: keyboard controlled pagination )
+
+: see-all-continue
+dup x-see cr
+dup another-entry? if
+next-entry br see-all-continue
+then
+;
+
+: see-all   latest-entry see-all-continue ;
