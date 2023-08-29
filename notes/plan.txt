@@ -22,10 +22,10 @@ Done:
 - parse buffer - can this be coded in forth? (need backspace detection!) - YES, done
 - doc status of all core words. implement some low hanging fruit
 - decide unimplemented.f is pointless
+- end colon defs with ret, not exit. for unified imp of see.
 
 Next:
 
-- end colon defs with ret, not exit. for unified imp of see.
 - see entire dictionary
 
 - can we make s" work in interprer mode?

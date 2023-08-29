@@ -38,7 +38,10 @@ then compile,
 word ( s: name )
 
 dup s" ;" s= if drop
-['] exit compile, exit
+( ['] exit compile, ) ( OLD )
+ret, ( OPTIMIZED )
+exit
+
 then ( s: name )
 
 dup find dup if ( s: name xt )

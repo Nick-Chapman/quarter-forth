@@ -10,28 +10,28 @@ s" Bytes available: " type
 ( Dump colon definitions )
 
 : e8 14 16 * 8 + ;
+: c3 12 16 * 3 + ;
 : is-call e8 = ;
+: is-ret c3 = ;
 
 : @rel->abs
 dup @ + 2 +
 ;
 
 : dis ( a -- )
-dup c@ is-call invert if
-
-dup ( a a )
-c@ .h
-1 + br dis
-
-then dup ( a a )
-1 + @rel->abs xt->name ( a name )
-dup ( a name name )
-type space ( a name )
-s" exit" s= invert if ( NOT RIGHT - may stop too early )
-3 + br dis
-
+dup c@ is-call if ( a )
+  dup 1 + @rel->abs xt->name ( a name )
+  type space ( a )
+  3 + br dis
 then
-cr
+  dup c@ ( a c )
+  dup is-ret if ( a c )
+    drop drop
+    [char] ; emit
+    exit
+  then
+    .h ( a )
+    1 + br dis
 ;
 
 : x-see ( xt -- )
@@ -57,5 +57,5 @@ drop
 ;
 
 : .s
-sp0 .s-continue cr
+sp0 .s-continue
 ;

@@ -332,20 +332,15 @@ colon_intepreter: ; TODO: move this towards forth style
     call _literal
     jmp .loop
 .semi:
-    ;;call write_ret ;; optimization!
-    mov ax, _exit
-    PUSH ax
-    call _write_call
+    call _write_ret ;; optimization!
+    ;;mov ax, _exit
+    ;;PUSH ax
+    ;;call _write_call
     ret
 
 is_semi:
     cmp word [di], ";"
     ret
-
-;write_ret:
-;    mov al, 0xc3 ; x86 encoding for "ret"
-;    call write_byte
-;    ret
 
 ;;; Lookup word in dictionary, return entry if found or 0 otherwise
 ;;; [in DX=sought-name, out BX=entry/0]
@@ -785,6 +780,13 @@ defwordimm "[char]"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; compile,
+
+defword "ret,"
+_write_ret:
+    mov al, 0xc3 ; x86 encoding for "ret"
+    PUSH ax
+    call _write_byte
+    ret
 
 ;;; compile call to execution token on top of stack
 defword "compile," ; ( absolute-address-to-call -- )
