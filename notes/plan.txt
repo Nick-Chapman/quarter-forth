@@ -23,6 +23,8 @@ Done:
 - doc status of all core words. implement some low hanging fruit
 - decide unimplemented.f is pointless
 - end colon defs with ret, not exit. for unified imp of see.
+- start examples.f for fact, fib etc
+- collatz example
 
 Next:
 
@@ -30,9 +32,6 @@ Next:
 
 - can we make s" work in interprer mode?
 - ." in terms of .s (and debug problem with .s)
-
-- start examples.f for fact, fib etc
-- collatz example (need mod!)
 
 - work through examples from starting forth
 

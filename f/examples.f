@@ -8,3 +8,15 @@
 3 square    9 x
 6 fact      720 x
 10 fib      55 x
+
+
+: even? dup /2 2 * = ;
+
+: collatz
+dup .
+dup 1 = if drop exit then
+dup even? if /2 br collatz then
+3 * 1+ br collatz
+;
+
+( try: 27 collatz )
