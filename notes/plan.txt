@@ -22,6 +22,11 @@ Done:
 
 Next:
 
+- nested paren comments
+- signed numeric conversion
+- signed print by default. unsigned on u.
+
+
 - merge and strip comments to single embedded forth file
 - check return under/stack overflow
 - refactor builtin words to be in forthy style where possible (and thus candidates for .f)

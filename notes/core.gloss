@@ -40,21 +40,33 @@ Done, Forth...
 '                   ( "name" -- xt )        : Forth : XT for next word in input stream
 (                   ( )                     : Forth : begin comment
 +!                  ( n a -- )              : Forth : increment variable by n
+0<                  ( n -- flag )           : Forth : n is less than zero
+0=                  ( n -- flag )           : Forth : n is zero
+1+                  ( n1 -- n2 )            : Forth : increment
+1-                  ( n1 -- n2 )            : Forth : decrement
 :                   ( "name" )              : Forth : compile definition
 >                   ( n1 n2 -- b )          : Forth : greater-than
 ?                   ( a -- )                : Forth : fetch/print value at address
+?dup                ( x -- 0 | x x )        : Forth : duplicate x if non-zero
 [']                 ( "name" -- )           : Forth : compile call to XT for next work in input stream,
+abs                 ( n -- u )              : Forth : absolute value
 allot               ( n -- )                : Forth : allocate bytes on heap
+and                 ( b1 b2 -- b )          : Forth : bool op
 bl                  ( -- n )                : Forth : ascii code for space (20)
 cell                ( -- n )                : Forth : cell size (2)
+cell+               ( n -- n )              : Forth : increment by cell size (+2)
 cells               ( n -- n )              : Forth : multiply by cell size (*2)
+char+               ( n -- n )              : Forth : increment by char size (+1)
+chars               ( n -- n )              : Forth : multiply by char size (*1, nop!)
 cr                  ( )                     : Forth : emit CR
+depth               ( -- n )                : Forth : depth of param stack
 false               ( -- b )                : Forth : bool
 here                ( -- a )                : Forth : address of next free heap cell
 if                  ( )                     : Forth : immediate, control flow (COND)
 invert              ( b -- b )              : Forth : bool op
 max                 ( n1 n2 -- n )          : Forth : signed max (TODO: my imp is currently unsigned)
 min                 ( n1 n2 -- n )          : Forth : signed min
+negate              ( n1 -- n2 )            : Forth : arithmetic negation
 or                  ( b1 b2 -- b )          : Forth : bool op
 s"                  ( ..." )                : Forth : compile string literal
 space               ( )                     : Forth : emit a space char
@@ -67,22 +79,6 @@ variable            ( "name" )              : Forth : define variable
 ----------------------------------------------------------------------
 Unimplemented, classified...
 
-
-----------------------------------------------------------------------
-Easy...
-
-0<                  ( n -- flag )           : UNIMP : n is less than zero
-0=                  ( n -- flag )           : UNIMP : n is zero
-1+                  ( n1 -- n2 )            : UNIMP : increment
-1-                  ( n1 -- n2 )            : UNIMP : decrement
-?dup                ( x -- 0 | x x )        : UNIMP : duplicate x if non-zero
-abs                 ( n -- u )              : UNIMP : absolute value
-and                 ( b1 b2 -- b )          : UNIMP : bool op
-cell+               ( n -- n )              : UNIMP : increment by cell size (+2)
-char+               ( n -- n )              : UNIMP : increment by char size (+1)
-chars               ( n -- n )              : UNIMP : multiply by char size (*1, nop!)
-depth               ( -- n )                : UNIMP : depth of param stack
-negate              ( n1 -- n2 )            : UNIMP : arithmetic negation
 
 ----------------------------------------------------------------------
 Will require asm support...

@@ -28,7 +28,7 @@ br fill-loop
 ;
 
 : ok0 s" ok " type ; ( This doesn't work!!  - bug in string literla? )
-: ok cr [char] o emit [char] k emit space ;
+: ok [char] o emit [char] k emit cr ;
 
 : fill
 ( s" filling..." type cr ) ( PROBLEM )

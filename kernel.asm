@@ -479,8 +479,8 @@ defword "emit" ; ( byte -- ) ; emit ascii char
 defword "."
     POP ax
     call print_number
-    ;;mov al, ' '
-    ;;call print_char
+    mov al, ' '
+    call print_char
     ret
 
 defword ".h" ; ( byte -- ) ; emit as 2-digit hex
@@ -548,6 +548,13 @@ _drop:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Numerics...
+
+defword "/2" ; (n -- n) TODO: should not be a prim
+_div2:
+    POP ax
+    shr ax, 1
+    PUSH ax
+    ret
 
 defword "+"
 _add:
@@ -669,8 +676,9 @@ _c_store:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; heap...
 
-defword "sp" ; ( -- a ) -- TODO: define variable macro/abstraction for this & more
-    PUSH bp
+defword "sp" ; ( -- a )
+    mov ax, bp
+    PUSH ax
     ret
 
 defword "sp0" ; ( -- a )
@@ -996,7 +1004,7 @@ builtin_data:
 
     incbin "f/interpreter.f"
     incbin "f/predefined.f"
-    incbin "f/unimplemented.f"
+    ; incbin "f/unimplemented.f" ; TODO: does this have any utility?
     incbin "f/regression.f"
 
     incbin "f/buffer.f"
@@ -1015,7 +1023,7 @@ builtin_data:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 30      ;; Number of sectors the bootloader loads
+%assign S 33      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A
