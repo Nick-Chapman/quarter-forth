@@ -57,6 +57,8 @@
 : ?dup  ( x -- 0 | x x )    dup if dup then ;   ( duplicate x if non-zero )
 : nip   ( a b -- b )        swap drop ;         ( drop item under stack top. )
 
+: rot   >r swap r> swap ;
+
 
 ( Tick )
 

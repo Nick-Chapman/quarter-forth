@@ -10,6 +10,7 @@ Done, asm...
 :                   ( "word" )              : Asm   : replaced in forth. TODO: kill. better [, ]
 <                   ( n1 n2 -- bool )       : Asm   : less-than
 =                   ( n1 n2 -- bool )       : Asm   : equality
+>r                  ( x -- )                : Asm   : move to return stack
 @                   ( a -- x )              : Asm   : fetch
 [char]              ( "c" -- )              : Asm   : immediate, char literal while compiling
 c!                  ( c a -- )              : Asm   : char store
@@ -28,7 +29,7 @@ immediate           ( b -- b )              : Asm   : mark last dict entry as im
 key                 ( -- char )             : Asm   : get next char from keyboard
 literal             ( x -- )                : Asm   : immediate, ( r: -- x )
 over                ( x y -- x y x )        : Asm   : duplicate 2nd stack elem on top. TODO: forth
-rot                 ( x y z -- y z x )      : Asm   : rotate top 3 stack elems
+r>                  ( -- x )                : Asm   : move from return stack
 s=                  ( s1 s1 -- bool )       : Asm   : string equality
 swap                ( x y -- y x )          : Asm   : obs
 type                ( string -- )           : Asm   : emit string
@@ -68,6 +69,7 @@ max                 ( n1 n2 -- n )          : Forth : signed max (TODO: my imp i
 min                 ( n1 n2 -- n )          : Forth : signed min
 negate              ( n1 -- n2 )            : Forth : arithmetic negation
 or                  ( b1 b2 -- b )          : Forth : bool op
+rot                 ( x y z -- y z x )      : Forth : rotate top 3 stack elems
 s"                  ( ..." )                : Forth : compile string literal
 space               ( )                     : Forth : emit a space char
 spaces              ( n )                   : Forth : emit N space chars
@@ -93,8 +95,6 @@ xor                 ( x1 x2 -- x )          : UNIMP : bitwise exclusive or
 ----------------------------------------------------------------------
 Return stack...
 
->r                  ( x -- )                : UNIMP : move to return stack
-r>                  ( -- x )                : UNIMP : move item from return stack
 r@                  ( -- x )                : UNIMP : top item of return stack
 
 ----------------------------------------------------------------------

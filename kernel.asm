@@ -527,19 +527,22 @@ _over:
     PUSH bx
     ret
 
-defword "rot" ; ( 1 2 3 -- 2 3 1 )
-    POP ax ;3
-    POP bx ;2
-    POP cx ;1
-    PUSH bx ;2
-    PUSH ax ;3
-    PUSH cx ;1
-    ret
-
 defword "drop"
 _drop:
     POP ax
     ret
+
+defword ">r"
+    POP ax
+    pop bx
+    push ax
+    jmp bx
+
+defword "r>"
+    pop bx
+    pop ax
+    PUSH ax
+    jmp bx
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Numerics...

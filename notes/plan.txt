@@ -26,6 +26,7 @@ Done:
 - start examples.f for fact, fib etc
 - collatz example
 - see entire dictionary (but needs pagination)
+- return stack manipulation (>r r>) and use to define rot in forth
 
 Next:
 
@@ -59,7 +60,6 @@ Next:
     - start from given address
     - use keyboard for pagination/escape
 
-- >r r>
 - postpone
 - create
     create X
