@@ -19,36 +19,53 @@ Done:
 - improve dump.f for standard words see/dump
 - recode "words" in forth
 - ".s" - non destructive show of stack (need to know stack base)
+- parse buffer - can this be coded in forth? (need backspace detection!) - YES, done
+- doc status of all core words. implement some low hanging fruit
+- decide unimplemented.f is pointless
 
 Next:
 
-- nested paren comments
+- end colon defs with ret, not exit. for unified imp of see.
+- see entire dictionary
+
+- can we make s" work in interprer mode?
+- ." in terms of .s (and debug problem with .s)
+
+- start examples.f for fact, fib etc
+- collatz example (need mod!)
+
+- work through examples from starting forth
+
 - signed numeric conversion
 - signed print by default. unsigned on u.
+- numeric conversion in form (signed and hex)
 
-
-- merge and strip comments to single embedded forth file
+- merge and strip comments to single embedded forth file - or maybe not.
 - check return under/stack overflow
 - refactor builtin words to be in forthy style where possible (and thus candidates for .f)
 - strip functionality of asm intepreter/colon-compiler: de-support numbers, immediate
-- relative offsets for branch, making code relocation easier.
+- imp (or show) branch offsets as relative (imp will make code relocation easier)
 
 - state aware combined interpreter/colon-compiler in forth, support [, ]
 - "quit" - clear return stack and restart interpreter loop
 - "abort" - clear param stack and call quit
 - support nested parens in comments
-
-- parse buffer - can this be coded in forth? (need backspace detection!)
 - allow words to be marked as hidden
 
 - support "else" (factor "ahead" - find posting on control flow imp in forth)
 - do/loop -- make F example work using original code
-- create
-    create X
-    X here expect
+
+- implement dump like xxd
+    - lines of addr, then 16 hex bytes and chars
+    - start from given address
+    - use keyboard for paginationescape
+
 
 - >r r>
 - postpone
+- create
+    create X
+    X here expect
 - does>
 
 - bye: is it possible to quit qemu from inside forth?
