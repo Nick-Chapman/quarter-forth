@@ -1,0 +1,46 @@
+
+----------------------------------------------------------------------
+Forth (core extended)
+
+.s                              ( )                     : show stack (non destructively)
+nip                             ( a b -- b )            : drop item below stck top
+see                             ( "name" )              : decompile a definition
+words                           ( )                     : list words in dictionary
+
+----------------------------------------------------------------------
+
+My current non-standard words:
+
+.h                              ( b )                   : emit byte as 2-digit hex
+.hh                             ( a -- )                : emit 16bit number as 4digit hex
+0branch [LIT:xt]                ( )                     : branch if top of stack is non-zero
+0branch,                        ( xt -- )               : write code to call 0branch
+@rel->abs                       ( a -- xt )             : get XT from x86 relative call payload
+another-entry?                  ( xt1 -- bool )         : walk dictionary
+br                              ( "name" -- )           : tail-call (jump!)
+branch [LIT:xt]                 ( )                     : unconditional branch
+crash                           ( )                     : obv
+crash-only-during-startup       ( )                     : obv
+create-entry                    ( str --)               : write dict header at here. TODO: rename: entry,
+echo-enabled                    ( -- a )                : address of flag to control echo
+echo-off                        ( )                     : TODO: move to forth
+echo-on                         ( )                     : TODO: move to forth
+flip-immediate-flag             ( xt -- )               : used by (standard word) immediate
+get-key                         ( -- xt )               : for current impl of "key"
+here-pointer                    ( -- a )                : variable containing here
+immediate?                      ( "word" -- bool )      : TODO: dont expose this!
+latest-entry                    ( -- xt )               : added to dictionary
+lit [LIT:n]                     ( -- x )                : internal for compilation
+mem                             ( )                     : report #bytes available
+missing                         ( )                     : used by sae find. (TODO: kill)
+next-entry                      ( xt1 -- xt2 )          : walk dictionary
+non-immediate-literal           ( )                     : TODO: avoid this hack
+number?                         ( str -- n 1|str 0 )    : test if a string represents a number
+safe-find                       ( )                     : KILL
+set-key                         ( xt -- )               : replace imp for "key"
+sp                              ( -- a )                : param stack pointer (TODO: fix off by 2 bug)
+sp0                             ( -- a )                : base of stack
+startup-is-complete             ( )                     : notify startup is complete
+strlen                          ( str -- n )            : obv
+test-immediate-flag             ( xt -- bool )          : TODO: rename as immediate?
+xt->name                        ( xt -- string )        : name of dictionary entry
