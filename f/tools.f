@@ -49,7 +49,7 @@ word find x-see ; immediate
 
 : .s-continue
 2 -
-dup 4 - sp > if ( the 4 is for the 2 extra items while processing )
+dup 2 - sp > if ( the 2 is for the extra item while processing )
 dup @ .
 br .s-continue
 then
