@@ -127,21 +127,11 @@ depth      0 x
 5 6 depth  2 x      drop drop
 
 
-( Basic user functions -- TODO: move out of regression )
-
-: square    dup * ;
-: fact      dup 1 > if dup 1 - fact * then ;
-: fib       dup 1 > if dup 1 - fib swap 2 - fib + then ;
-
-3 square    9 x
-6 fact      720 x
-10 fib      55 x
-
 
 ( Tail recursion. br is my tail call primitive -- might reconsider when I have loops )
 
-: sq br square 1 + ;
-7 sq                    49 x
+: sq br 1+ 1+ ;
+7 sq    8 x
 
 
 ( Variables; fetch and store )

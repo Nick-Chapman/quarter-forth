@@ -1014,6 +1014,7 @@ builtin_data:
     incbin "f/tools.f"
     incbin "f/words.f"
 
+    incbin "f/examples.f"
     incbin "f/start.f"
     incbin "f/play.f"
     db 0
