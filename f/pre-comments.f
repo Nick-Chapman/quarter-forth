@@ -1,4 +1,6 @@
 
+: cr        13 emit ;
+
 : here      here-pointer @ ;
 : allot     here + here-pointer ! ;
 

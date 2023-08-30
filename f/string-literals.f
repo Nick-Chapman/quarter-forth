@@ -13,7 +13,9 @@ key dup [char] " = if exit
 then c, br collect-string
 ;
 
-: s"
+( Compile code for a string literal, leaving address on stack )
+
+: s" ( ..." -- string )
 ( make a branch slot )          ['] branch compile, here 0 ,
 ( note where string starts )    here swap
 ( collect the string chars )    collect-string drop ( the closing " )
@@ -21,3 +23,22 @@ then c, br collect-string
 ( fill in the branch slot )     here swap !
 ( push string at runtime )      ['] lit compile, ,
 ; immediate
+
+
+( Compile code to emit a literal string )
+
+: ." ( ..." )
+['] s" execute
+['] type compile,
+; immediate
+
+
+( Print literal string while interpreting )
+
+: .."
+here
+['] ." execute
+ret,
+dup execute
+here-pointer !
+;

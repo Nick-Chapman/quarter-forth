@@ -1,9 +1,10 @@
+.." Loading tools.f" cr
 
 ( Tools for exploring mem and defs )
 
 : mem ( report bytes available )
 sp here -
-s" Bytes available: " type
+." Bytes available: "
 . cr
 ;
 
@@ -35,9 +36,9 @@ then
 ;
 
 : x-see ( xt -- )
-s" : " type
+." : "
 dup xt->name type
-s"    " type
+."    "
 dis
 ;
 

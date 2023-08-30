@@ -1,4 +1,4 @@
-: show-load s" Loading buffer." type cr ; show-load
+.." Loading buffer.f" cr
 
 get-key constant old-key
 

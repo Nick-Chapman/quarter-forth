@@ -1,3 +1,4 @@
+.." Loading starting-forth.f" cr
 
 ( Large letter F )
 : star 42 emit ;

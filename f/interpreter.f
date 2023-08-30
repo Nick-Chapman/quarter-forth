@@ -1,4 +1,4 @@
-: show-load s" Loading interpreter." type cr ; show-load
+.." Loading interpreter.f" cr
 
 ( define top-level interpreter in forth, and enter it... )
 

@@ -1,9 +1,7 @@
+.." Loading start.f" cr
 
-: welcome
-s" Welcome to Nick's Forth-like thing."
-type cr ;
-
-cr welcome cr
+cr
+.." Welcome to nforth. A 16-bit Forth system running on x86." cr cr
 mem cr
 
 startup-is-complete

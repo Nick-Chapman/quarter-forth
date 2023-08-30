@@ -1001,22 +1001,19 @@ buffer: times 64 db 0 ;; TODO: kill; just use here+N
 
 builtin: dw builtin_data
 builtin_data:
-
     incbin "f/pre-comments.f"
     incbin "f/comments.f"
     incbin "f/string-literals.f"
+    ;; no loading messages before here
     incbin "f/early.f"
-
     incbin "f/interpreter.f"
     incbin "f/predefined.f"
     ; incbin "f/unimplemented.f" ; TODO: does this have any utility?
     incbin "f/regression.f"
-
     incbin "f/buffer.f"
     incbin "f/my-letter-F.f"
     incbin "f/tools.f"
     incbin "f/words.f"
-
     incbin "f/examples.f"
     incbin "f/start.f"
     incbin "f/play.f"

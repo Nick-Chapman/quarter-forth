@@ -1,3 +1,4 @@
+.." Loading examples.f" cr
 
 ( Simple user examples )
 

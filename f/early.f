@@ -1,7 +1,6 @@
-
-: cr 13 emit ;
+.." Loading early.f" cr
 
 : warn-missing ( string -- )
-s" ** No such word: " type type cr
+." ** No such word: " type cr
 crash-only-during-startup
 ;

@@ -1,5 +1,4 @@
-: show-load s" Loading predefined." type cr ; show-load
-
+.." Loading predefined.f" cr
 
 ( This is a 16bit Forth; cell size is 2. Chars have size 1 )
 

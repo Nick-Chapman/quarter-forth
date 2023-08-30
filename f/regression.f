@@ -1,10 +1,10 @@
-: show-load s" Loading regression." type cr ; show-load
+.." Loading regression.f" cr
 
 ( Expect... )
 
 : x
 over = if drop exit then
-s" Expect failed, got: " type . cr crash ( -only-during-startup )
+." Expect failed, got: " . cr crash ( -only-during-startup )
 ;
 
 ( Stack manipulation )

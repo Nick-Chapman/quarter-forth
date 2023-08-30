@@ -1,3 +1,4 @@
+.." Loading words.f" cr
 
 ( List available words )
 
