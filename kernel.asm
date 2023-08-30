@@ -1008,7 +1008,6 @@ builtin_data:
     incbin "f/early.f"
     incbin "f/interpreter.f"
     incbin "f/predefined.f"
-    ; incbin "f/unimplemented.f" ; TODO: does this have any utility?
     incbin "f/regression.f"
     incbin "f/buffer.f"
     incbin "f/my-letter-F.f"
@@ -1026,7 +1025,7 @@ builtin_data:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 33      ;; Number of sectors the bootloader loads
+%assign S 25      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A
