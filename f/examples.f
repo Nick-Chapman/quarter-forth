@@ -1,5 +1,15 @@
 .." Loading examples.f" cr
 
+( Large letter F. Adapted from "starting Forth", by Leo brodie )
+
+: star      [char] * emit ;
+: stars     dup if star 1 - br stars then drop ;   ( TODO: 0 do star loop )
+: margin    cr 30 spaces ;
+: blip      margin star ;
+: bar       margin 5 stars ;
+: F         bar blip bar blip blip cr ;
+
+
 ( Simple user examples )
 
 : square    dup * ;

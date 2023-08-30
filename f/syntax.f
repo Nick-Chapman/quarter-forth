@@ -1,19 +1,28 @@
 
-( Am using ['] here - but perhaps better to have branch, and lit, )
+: cr        13 emit ;
+: here      here-pointer @ ;
+: allot     here + here-pointer ! ;
+: if        0branch, here 0 ,   ; immediate
+: then      here swap !         ; immediate
 
-: [']
+: (         key [char] ) = if exit then br ( ; immediate
+
+( Now we can write comments! Woo hoo! )
+
+
+: ['] ( comp: "word" ) ( run: -- xt )
 word safe-find non-immediate-literal
 ; immediate
 
 
-( Strings )
+( Strings Literals... )
 
 : collect-string
 key dup [char] " = if exit
 then c, br collect-string
 ;
 
-( Compile code for a string literal, leaving address on stack )
+( Compile code for a literal string, leaving address on stack )
 
 : s" ( ..." -- string )
 ( make a branch slot )          ['] branch compile, here 0 ,
@@ -42,3 +51,6 @@ ret,
 dup execute
 here-pointer !
 ;
+
+
+ .." Loaded  syntax.f " cr
