@@ -321,7 +321,7 @@ colon_intepreter: ; TODO: move this towards forth style
     POP ax
     cmp ax, 0
     jnz .immediate
-    call _write_call
+    call _write_abs_call
     jmp .loop
 .immediate:
     POP bx
@@ -333,9 +333,6 @@ colon_intepreter: ; TODO: move this towards forth style
     jmp .loop
 .semi:
     call _write_ret ;; optimization!
-    ;;mov ax, _exit
-    ;;PUSH ax
-    ;;call _write_call
     ret
 
 is_semi:
@@ -601,11 +598,6 @@ isEq:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Control flow
 
-defword "branchA" ; TODO: be relative
-_branchA:
-    pop bx
-    mov bx, [bx]
-    jmp bx
 
 defword "0branch"
 _0branch:
@@ -622,7 +614,7 @@ _0branch:
 defword "0branch,"
     call _lit
     dw _0branch
-    call _write_call
+    call _write_abs_call
     ret
 
 defword "exit"
@@ -630,13 +622,26 @@ _exit:
     pop bx ; and ignore
     ret
 
+defword "branchA"
+_branchA: ;; TODO: deprecate, prefer _branchR. currently used by string-lit comp
+    pop bx
+    mov bx, [bx]
+    jmp bx
+
+;;;defword "branchA" ; when call from Forth
+_branchR:
+    pop bx
+    add bx, [bx]
+    jmp bx
+
 defwordimm "tail"
     call _word
     call _safe_find
-    mov ax, _branchA
-    PUSH ax
-    call _write_call
-    call _comma
+    call _lit
+    dw _branchA ;; TODO: goal, use _branchR
+    call _write_abs_call
+    ;;call _abs_to_rel ;; NOPE, doesn't work
+    call _comma ; TODO: need to call _abs_to_rel before commaring!
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -749,7 +754,7 @@ _flip_immediate_flag:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Literals
 
-defword "lit"
+defword "lit" ; TODO: have a byte-literal version
 _lit:
     pop bx
     mov ax, [bx]
@@ -761,9 +766,9 @@ defwordimm "literal"
 _literal:
     POP ax
     push ax ; save lit value
-    mov ax, _lit
-    PUSH ax
-    call _write_call
+    call _lit
+    dw _lit
+    call _write_abs_call
     pop ax ; restore lit value
     PUSH ax
     call _comma
@@ -786,24 +791,26 @@ defwordimm "[char]"
 
 defword "ret,"
 _write_ret:
-    mov al, 0xc3 ; x86 encoding for "ret"
-    PUSH ax
+    call _lit
+    dw 0xc3 ; x86 encoding for "ret"
     call _write_byte
     ret
 
 ;;; compile call to execution token on top of stack
 defword "compile," ; ( absolute-address-to-call -- )
-_write_call:
+_write_abs_call:
     call _abs_to_rel
-    call _write_call_byte
+    call _write_rel_call
+    ret
+
+_write_rel_call:
+    call _write_rel_call_byte
     call _comma
     ret
 
-_write_call_byte:
-    ;;mov al, 0xe8 ; x86 encoding for "call"
-    ;;PUSH ax
+_write_rel_call_byte:
     call _lit
-    dw 0xe8
+    dw 0xe8 ; x86 encoding for "call"; uses relative addressing
     call _write_byte
     ret
 
@@ -930,16 +937,16 @@ defword "char"
     PUSH ax
     ret
 
-defword "constant"
+defword "constant" ;; TODO: is this relocatable?
     call _word
     call _create_entry
     call _lit
     dw _lit
-    call _write_call
+    call _write_abs_call
     call _comma
     call _lit
     dw _exit
-    call _write_call
+    call _write_abs_call
     ret
 
 defword "type"
