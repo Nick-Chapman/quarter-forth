@@ -30,10 +30,19 @@ Done:
 
 Next:
 
+- ." in terms of .s -- think I now know how!
+- .." to work in interpreter mode
+- only when compiling. guard for if/then etc (will need "state")
+
+- basic modal repl: switches state on [ and ] -- this will be in asm
+- use modal repl + entry, for early defs: comments, strings .. compiler/interpreter
+
+- pre-compiler and pre-interpreter ( no support for numbers ), but good enough for...
+- state aware combined interpreter/colon-compiler in forth, support [, ]
+
 - imp (or show) branch offsets as relative (imp will make code relocation easier)
 
-- can we make s" work in interprer mode?
-- ." in terms of .s (and debug problem with .s)
+- reproduce/debug problem with .s when used in buffered-key
 
 - work through examples from starting forth
 
@@ -46,7 +55,6 @@ Next:
 - refactor builtin words to be in forthy style where possible (and thus candidates for .f)
 - strip functionality of asm intepreter/colon-compiler: de-support numbers, immediate
 
-- state aware combined interpreter/colon-compiler in forth, support [, ]
 - "quit" - clear return stack and restart interpreter loop
 - "abort" - clear param stack and call quit
 - support nested parens in comments
