@@ -27,21 +27,21 @@ Done:
 - collatz example
 - see entire dictionary (but needs pagination)
 - return stack manipulation (>r r>) and use to define rot in forth
+- ." in terms of .s -- think I now know how!
+- .." to work in interpreter mode -- use to show Loading messages
+- paginated mem dump -- ascii and xxd style
+
 
 Next:
 
-- ." in terms of .s -- think I now know how!
-- .." to work in interpreter mode
-- only when compiling. guard for if/then etc (will need "state")
-
-- basic modal repl: switches state on [ and ] -- this will be in asm
-- use modal repl + entry, for early defs: comments, strings .. compiler/interpreter
+- imp (& show) branch offsets as relative (imp will make code relocation easier)
 
 - pre-compiler and pre-interpreter ( no support for numbers ), but good enough for...
 - state aware combined interpreter/colon-compiler in forth, support [, ]
+- basic modal repl: switches state on [ and ] -- this will be in asm (proto in forth)
+- use modal repl + entry, for early defs: comments, strings .. compiler/interpreter
 
-- imp (or show) branch offsets as relative (imp will make code relocation easier)
-
+- only when compiling. guard for if/then etc (will need "state")
 - reproduce/debug problem with .s when used in buffered-key
 
 - work through examples from starting forth
@@ -62,11 +62,6 @@ Next:
 
 - support "else" (factor "ahead" - find posting on control flow imp in forth)
 - do/loop -- make F example work using original code
-
-- implement dump like xxd
-    - lines of addr, then 16 hex bytes and chars
-    - start from given address
-    - use keyboard for pagination/escape
 
 - postpone
 - create
