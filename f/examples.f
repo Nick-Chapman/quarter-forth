@@ -20,3 +20,12 @@ dup even? if /2 br collatz then
 ;
 
 ( try: 27 collatz )
+
+
+( AHA - Use return stack to make useful version of twice )
+
+: twice ( xt -- )
+dup >r execute r> execute
+;
+
+3 ' square twice    81 x
