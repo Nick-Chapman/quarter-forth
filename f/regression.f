@@ -128,10 +128,10 @@ depth      0 x
 
 
 
-( Tail recursion. br is my tail call primitive -- might reconsider when I have loops )
+( "tail" is my tail call primitive; who needs loops?! )
 
-: sq br 1+ 1+ ;
-7 sq    8 x
+: sq tail 1+ 1+ ;
+7 sq   8 x
 
 
 ( Variables; fetch and store )

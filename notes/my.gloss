@@ -17,7 +17,7 @@ My current non-standard words:
 0branch,                        ( xt -- )               : write code to call 0branch
 @rel->abs                       ( a -- xt )             : get XT from x86 relative call payload
 another-entry?                  ( xt1 -- bool )         : walk dictionary
-br                              ( "name" -- )           : tail-call (jump!)
+tail                            ( "name" -- )           : tail-call (i.e jump!) to a word
 branch [LIT:xt]                 ( )                     : unconditional branch
 crash                           ( )                     : obv
 crash-only-during-startup       ( )                     : obv

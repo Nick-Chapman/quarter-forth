@@ -12,7 +12,7 @@
 
 : bl        32 ;
 : space     bl emit ;
-: spaces    dup if space 1 - br spaces then drop ;
+: spaces    dup if space 1 - tail spaces then drop ;
 : ?         @ . ;
 
 ( Definitions )

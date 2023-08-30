@@ -1,9 +1,9 @@
 .." Loading examples.f" cr
 
-( Large letter F. Adapted from "starting Forth", by Leo brodie )
+( Large letter F. Adapted from "starting Forth", by Leo Brodie )
 
 : star      [char] * emit ;
-: stars     dup if star 1 - br stars then drop ;   ( TODO: 0 do star loop )
+: stars     dup if star 1 - tail stars then drop ;   ( TODO: 0 do star loop )
 : margin    cr 30 spaces ;
 : blip      margin star ;
 : bar       margin 5 stars ;
@@ -26,8 +26,8 @@
 : collatz
 dup .
 dup 1 = if drop exit then
-dup even? if /2 br collatz then
-3 * 1+ br collatz
+dup even? if /2 tail collatz then
+3 * 1+ tail collatz
 ;
 
 ( try: 27 collatz )

@@ -15,17 +15,17 @@ dup find dup if ( s: name xt )
 ( word is in the dictionary, so execute it, and loop... )
 swap drop ( s: xt )
 execute
-br interpreter
+tail interpreter
 then
 drop ( s: name )
 
 number? if ( leave converted number on the stack, and loop... )
-br interpreter
+tail interpreter
 then ( s: name )
 
 ( word not defined, so message, skip and loop... )
 warn-missing
-br interpreter
+tail interpreter
 
 ;
 interpreter ( enter! )
@@ -51,14 +51,14 @@ then ( s: name )
 
 dup find dup if ( s: name xt )
 swap drop ( s: xt )
-compile-or-execute br compiling
+compile-or-execute tail compiling
 then drop ( s: name )
 
 number? if
-['] lit compile, , br compiling
+['] lit compile, , tail compiling
 then ( s: name )
 
-( word not defined ) warn-missing br compiling
+( word not defined ) warn-missing tail compiling
 ;
 
 ( Now redefine : )

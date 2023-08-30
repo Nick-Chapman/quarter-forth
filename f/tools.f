@@ -23,7 +23,7 @@ dup @ + 2 +
 dup c@ is-call if ( a )
   dup 1 + @rel->abs xt->name ( a name )
   type space ( a )
-  3 + br dis
+  3 + tail dis
 then
   dup c@ ( a c )
   dup is-ret if ( a c )
@@ -32,7 +32,7 @@ then
     exit
   then
     .h ( a ) space
-    1 + br dis
+    1 + tail dis
 ;
 
 : x-see ( xt -- )
@@ -52,7 +52,7 @@ word find x-see ; immediate
 2 -
 dup 2 - sp > if ( the 2 is for the extra item while processing )
 dup @ .
-br .s-continue
+tail .s-continue
 then
 drop
 ;
@@ -75,7 +75,7 @@ sp0 .s-continue
 : words-continue ( xt -- )
 dup xt->name type space
 dup another-entry? if
-next-entry br words-continue
+next-entry tail words-continue
 then
 ;
 
@@ -90,7 +90,7 @@ latest-entry words-continue cr
 dup if >r dup >r ( xt )
 execute
 r> r> ( xt n )
-1- br times
+1- tail times
 then drop drop
 ;
 
@@ -103,7 +103,7 @@ then drop drop
 over execute
 cr ." (waiting...)" cr
 raw-key is-escape if drop drop exit ( quit when escape key pressed )
-then cr br pag-continue ;
+then cr tail pag-continue ;
 
 ( Paginated dump )
 : pag ( start-addr xt -- ) swap pag-continue ;

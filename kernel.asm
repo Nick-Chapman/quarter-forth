@@ -601,8 +601,8 @@ isEq:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Control flow
 
-defword "branch"
-_branch:
+defword "branchA" ; TODO: be relative
+_branchA:
     pop bx
     mov bx, [bx]
     jmp bx
@@ -630,10 +630,10 @@ _exit:
     pop bx ; and ignore
     ret
 
-defwordimm "br" ; TODO: better name: jump, tail, branch
+defwordimm "tail"
     call _word
     call _safe_find
-    mov ax, _branch
+    mov ax, _branchA
     PUSH ax
     call _write_call
     call _comma

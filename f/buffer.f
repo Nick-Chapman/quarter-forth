@@ -22,11 +22,11 @@ exit ( stop filling )
 
 then ( a c ) dup is-backspace if ( a c )
 dup emit space emit ( Handle the backspace visually )
-1 - br fill-loop ( Move the pointer back one step - TODO: check we dont go too far )
+1 - tail fill-loop ( Move the pointer back one step - TODO: check we dont go too far )
 
 then ( a c )
 emit 1 + ( show char and record in buffer )
-br fill-loop
+tail fill-loop
 ;
 
 : ok0 s" ok " type ; ( This doesn't work!!  - bug in string literla? )
