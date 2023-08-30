@@ -136,7 +136,13 @@ drop [char] . emit ;
 : dc ( a -- a+1 ) dup c@ emit-printable-or-dot 1+ ;
 : dc64 ( a -- a+64 ) dup .hh ." : " ['] dc 64 times cr ;
 : dc-oneK ( a -- a+1K ) ['] dc64 16 times ;
-
 : dump ( start-addr -- ) ['] dc-oneK pag ;
 
-( TODO: hex-byte based dump, with chars to side )
+( xxd-style dump : hex-bytes + ascii to the side, paginated at 256 bytes )
+
+: emit-byte ( c -- ) .h space ;
+: db ( a -- a+1 ) dup c@ emit-byte 1+ ;
+: xxd-line ( a -- a+16 )
+dup .hh ." : " dup ['] db 16 times space drop ['] dc 16 times cr ;
+: xxd-page ( a -- a+1K ) ['] xxd-line 16 times ;
+: xxd ( start-addr -- ) ['] xxd-page pag ;
