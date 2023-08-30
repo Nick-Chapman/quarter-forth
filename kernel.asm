@@ -478,7 +478,7 @@ defword "."
     call print_char
     ret
 
-defword ".h" ; ( byte -- ) ; emit as 2-digit hex
+defword ".h" ; ( byte -- ) ; emit as 2-digit hex ; TODO: in forth
 _dot_h:
     POP ax
     mov ah, 0
@@ -495,8 +495,8 @@ _dot_h:
     and di, 0xf
     mov al, [.hex+di]
     call print_char
-    mov al, ' '
-    call print_char
+    ;;mov al, ' '
+    ;;call print_char
     ret
 .hex db "0123456789abcdef"
 
@@ -1019,7 +1019,7 @@ builtin_data:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 26      ;; Number of sectors the bootloader loads
+%assign S 28      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A

@@ -2,6 +2,8 @@
 
 get-key constant old-key
 
+: raw-key  old-key execute ;
+
 here
 200 allot
 constant key-buffer
@@ -11,7 +13,7 @@ constant key-buffer
 : is-backspace 8 = ;
 
 : fill-loop ( a -- a' )
-old-key execute ( a c )
+raw-key ( a c )
 over over swap ( a c c a ) c!
 
 ( a c ) dup is-newline if ( a c )

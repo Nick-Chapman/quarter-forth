@@ -31,7 +31,7 @@ then
     [char] ; emit
     exit
   then
-    .h ( a )
+    .h ( a ) space
     1 + br dis
 ;
 
@@ -94,3 +94,49 @@ then
 ;
 
 : see-all   latest-entry see-all-continue ;
+
+
+
+( Repeated execution )
+
+: times ( xt n -- ) ( call xt, n times )
+dup if >r dup >r ( xt )
+execute
+r> r> ( xt n )
+1- br times
+then drop drop
+;
+
+
+( Pagination )
+
+: is-escape  27 = ;
+
+: pag-continue ( xt a -- a' )
+over execute
+cr ." (waiting...)" cr
+raw-key is-escape if drop drop exit ( quit when escape key pressed )
+then cr br pag-continue ;
+
+( Paginated dump )
+: pag ( start-addr xt -- ) swap pag-continue ;
+
+
+: @.hh ( a -- ) dup c@ .h 1- c@ .h ;
+: .hh ( a ) sp 1+ @.hh drop ; ( THIS IS SUCH A HACK )
+
+: is-printable? ( c -- bool ) dup 31 > swap 128 < and ;
+
+: emit-printable-or-dot ( c -- )
+dup is-printable? if emit exit then
+drop [char] . emit ;
+
+( Ascii char dump, paginated on 1k blocks )
+
+: dc ( a -- a+1 ) dup c@ emit-printable-or-dot 1+ ;
+: dc64 ( a -- a+64 ) dup .hh ." : " ['] dc 64 times cr ;
+: dc-oneK ( a -- a+1K ) ['] dc64 16 times ;
+
+: dump ( start-addr -- ) ['] dc-oneK pag ;
+
+( TODO: hex-byte based dump, with chars to side )
