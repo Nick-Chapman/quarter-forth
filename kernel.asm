@@ -616,7 +616,7 @@ _0branch:
     add bx, 2 ; skip over target pointer, and continue
     jmp bx
 .no:
-    mov bx, [bx]
+    add bx, [bx] ; add relative offset (backpatched in by "then")
     jmp bx ; branch to target
 
 defword "0branch,"
@@ -1019,7 +1019,7 @@ builtin_data:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 28      ;; Number of sectors the bootloader loads
+%assign S 29      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A

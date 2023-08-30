@@ -30,11 +30,11 @@ Done:
 - ." in terms of .s -- think I now know how!
 - .." to work in interpreter mode -- use to show Loading messages
 - paginated mem dump -- ascii and xxd style
+- imp relative branch0 offsets (nicer to see & future code relocation will be easier)
 
 
 Next:
 
-- imp (& show) branch offsets as relative (imp will make code relocation easier)
 
 - pre-compiler and pre-interpreter ( no support for numbers ), but good enough for...
 - state aware combined interpreter/colon-compiler in forth, support [, ]
