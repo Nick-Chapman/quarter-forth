@@ -84,19 +84,6 @@ latest-entry words-continue cr
 ;
 
 
-( Too much output! -- TODO: keyboard controlled pagination )
-
-: see-all-continue
-dup x-see cr
-dup another-entry? if
-next-entry br see-all-continue
-then
-;
-
-: see-all   latest-entry see-all-continue ;
-
-
-
 ( Repeated execution )
 
 : times ( xt n -- ) ( call xt, n times )
@@ -146,3 +133,24 @@ drop [char] . emit ;
 dup .hh ." : " dup ['] db 16 times space drop ['] dc 16 times cr ;
 : xxd-page ( a -- a+1K ) ['] xxd-line 16 times ;
 : xxd ( start-addr -- ) ['] xxd-page pag ;
+
+
+( See all defs, paginated in bacthes of 10 )
+
+: next-entry-if-it-exists ( 0|xt1 -- 0|xt2 )
+dup if 3 - @
+dup if 3 +
+then then
+;
+
+: see1 ( xt -- xt' )
+dup if
+dup x-see cr
+next-entry-if-it-exists
+then
+;
+
+: see10 ( xt -- xt' ) ['] see1 10 times ;
+: see-all
+latest-entry ['] see10 pag
+;
