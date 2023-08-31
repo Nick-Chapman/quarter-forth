@@ -64,18 +64,18 @@ sp0 .s-continue
 
 ( List available words )
 
-: another-entry? ( xt1 -- bool )
+: meh-another-entry? ( xt1 -- bool ) ( TODO: die )
 3 - @
 ;
 
-: next-entry ( xt1 -- xt2 )
+: meh-next-entry ( xt1 -- xt2 ) ( TODO: die )
 3 - @ 3 +
 ;
 
 : words-continue ( xt -- )
 dup xt->name type space
-dup another-entry? if
-next-entry tail words-continue
+dup meh-another-entry? if
+meh-next-entry tail words-continue
 then
 ;
 
@@ -135,18 +135,12 @@ dup .hh ." : " dup ['] db 16 times space drop ['] dc 16 times cr ;
 : xxd ( start-addr -- ) ['] xxd-page pag ;
 
 
-( See all defs, paginated in bacthes of 10 )
-
-: next-entry-if-it-exists ( 0|xt1 -- 0|xt2 )
-dup if 3 - @
-dup if 3 +
-then then
-;
+( See all defs, paginated in batches of 10 )
 
 : see1 ( xt -- xt' )
 dup if
 dup x-see cr
-next-entry-if-it-exists
+xt->next
 then
 ;
 

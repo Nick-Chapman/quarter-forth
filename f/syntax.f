@@ -10,8 +10,32 @@
 ( Now we can write comments! Woo hoo! )
 
 
+( WIP new find... )
+
+: xt->next ( 0|xt1 -- 0|xt2 )  ( TODO: move to asm )
+dup if 3 - @
+dup if 3 +
+then then
+;
+
+: nip ( a b -- b ) swap drop ;
+
+: find-loop ( s x -- x )
+dup if ( s x )
+over over ( s x s x ) xt->name ( s x s s2 ) s= if ( s x ) nip exit
+then xt->next tail find-loop
+then ( s 0 ) nip
+;
+
+: find ( string -- xt )
+latest-entry find-loop
+;
+
+
+
+
 : ['] ( comp: "word" ) ( run: -- xt )
-word safe-find non-immediate-literal
+word find non-immediate-literal
 ; immediate
 
 
@@ -53,4 +77,4 @@ here-pointer !
 ;
 
 
- .." Loaded  syntax.f " cr
+.." Loaded  syntax.f " cr

@@ -469,6 +469,7 @@ defword "emit" ; ( byte -- ) ; emit ascii char
     ret
 
 defword "."
+_dot:
     POP ax
     call print_number
     mov al, ' '
@@ -822,7 +823,7 @@ _abs_to_rel: ; ( addr-abs -> addr-rel )
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Dictionary entries & find
+;;; (New) dict/XT (grabbed!)
 
 defword "xt->name" ; ( xt -- string )
 _xt_name: ;; TODO: use this in dictfind
@@ -834,6 +835,39 @@ _xt_name: ;; TODO: use this in dictfind
     sub bx, cx
     PUSH bx
     ret
+
+defword "latest-entry" ; ( -- xt ) ; ( TODO: rename latest-xt )
+_latest_entry:
+    mov bx, [dictionary]
+    add bx, 3
+    PUSH bx
+    ret
+
+;;defword "find" ; ( string -- 0|xt ) -- This is non standard!
+_find:
+    POP dx
+    call internal_dictfind ;; INLINE
+    PUSH bx
+    ret
+
+;; ;;defword "safe-find"
+;; _safe_find: ; ( string -> xt )
+;;     call _dup
+;;     call _find
+;;     POP bx
+;;     PUSH bx
+;;     cmp bx, 0
+;;     jz _warn_missing
+;;     call _swap
+;;     call _drop
+;;     ret
+
+_safe_find: ; ( string -> xt|0 )
+    jmp _find
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Dictionary entries & find
+
 
 defword "strlen" ; ( name-addr -- n )
 _strlen:
@@ -878,25 +912,6 @@ _write_string:
     call internal_write_byte ; null
     ret
 
-defword "find" ; ( string -- 0|xt ) -- This is non standard!
-_find:
-    POP dx
-    call internal_dictfind ;; INLINE
-    PUSH bx
-    ret
-
-defword "safe-find"
-_safe_find: ; ( string -> xt )
-    call _dup
-    call _find
-    POP bx
-    PUSH bx
-    cmp bx, 0
-    jz _warn_missing
-    call _swap
-    call _drop
-    ret
-
 _warn_missing:
     call _drop
     print "**(Kernel) No such word: "
@@ -913,13 +928,6 @@ defword "missing"
 _missing:
     print "**Missing**"
     nl
-    ret
-
-defword "latest-entry" ; ( -- xt )
-_latest_entry:
-    mov bx, [dictionary]
-    add bx, 3
-    PUSH bx
     ret
 
 defword "word" ; ( " blank-deliminted-word " -- string-addr ) ; TODO: earlier
@@ -955,26 +963,27 @@ defword "type"
     ret
 
 defword "s="
-    ;; call _over
-    ;; call _over
-    ;; print "{"
-    ;; POP di
-    ;; call internal_print_string
-    ;; print " =?= "
-    ;; POP di
-    ;; call internal_print_string
-    ;; print "}"
-    call _dup
-    call _strlen
-    POP cx
-    POP SI
-    POP DI
-    call internal_cmp_n ;; TODO: define/use a non-lengthed string compare
-    mov ax, 0 ; default no
-    jnz .no
-    mov ax, 1
-.no:
-    PUSH ax
+_string_eq:
+    POP si
+    POP di
+.loop:
+    mov al, [si]
+    mov bl, [di]
+    cmp al, bl
+    jnz .diff ; found a differing char, so exit false
+    ;; current chars match
+    cmp al, 0
+    jz .same ; one char is zero (so both must be), so we reached the string ends
+    inc si
+    inc di
+    jmp .loop
+.diff:
+    call _lit
+    dw 0
+    ret
+.same:
+    call _lit
+    dw 1
     ret
 
 defword ":"
@@ -1026,7 +1035,7 @@ builtin_data:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 29      ;; Number of sectors the bootloader loads
+%assign S 30      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A

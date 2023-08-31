@@ -61,7 +61,7 @@
 
 ( Tick )
 
-: checked-find ( replaces safe-find in kernel )
+: checked-find
 dup find dup ( str xt xt )
 if ( str xt )
 nip exit
