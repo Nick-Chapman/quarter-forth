@@ -76,7 +76,7 @@ sp0 .s-continue
 dup xt->name type space
 dup meh-another-entry? if
 meh-next-entry tail words-continue
-then
+then drop
 ;
 
 : words
