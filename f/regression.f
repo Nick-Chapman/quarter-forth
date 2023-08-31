@@ -99,6 +99,7 @@ false false and  false x
 ( misc: +! )
 
 variable eggs
+0 eggs !
 : e 1 eggs +! ;
 
 e e e e eggs @ 4 x
