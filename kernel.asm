@@ -1005,6 +1005,21 @@ defword "number?" ; ( string -- number 1 | string 0 )
     PUSH ax
     ret
 
+defword "shutdown"
+shutdown:
+    mov ax, 0x5307
+    mov bx, 0x0001
+    mov cx, 0x0003
+    int 0x15
+.loop:
+    jmp .loop
+
+defword "reboot"
+reboot:
+    int 0x19
+.loop:
+    jmp .loop
+
 dictionary: dw lastlink
 
 %assign X ($-$$)
