@@ -29,8 +29,7 @@ emit 1 + ( show char and record in buffer )
 tail fill-loop
 ;
 
-: ok0 s" ok " type ; ( This doesn't work!!  - bug in string literla? )
-: ok [char] o emit [char] k emit cr ;
+: ok s" ok" type cr ;
 
 : fill
 ( s" filling..." type cr ) ( PROBLEM )

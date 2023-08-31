@@ -264,7 +264,7 @@ internal_read_word:
     mov di, buffer
 .skip:
     ;;call internal_read_char
-    call _key
+    call .key
     POP ax
     cmp al, 0x21
     jb .skip ; skip leading white-space
@@ -274,11 +274,21 @@ internal_read_word:
     mov [di], al
     inc di
     ;;call internal_read_char
-    call _key
+    call .key
     POP ax
     jmp .loop
 .done:
     mov byte [di], 0 ; null
+    ret
+.key:
+    ;; Here we are calling from low-level ASM to a _forth word
+    ;; And so we must preserve the registers being used here.
+    ;; Failure to do this was the cause of the assumed string literal bug.
+    push ax
+    push di
+    call _key
+    pop di
+    pop ax
     ret
 
 ;;; Compute length of a null-terminated string

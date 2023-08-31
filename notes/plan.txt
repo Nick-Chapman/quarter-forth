@@ -31,6 +31,7 @@ Done:
 - .." to work in interpreter mode -- use to show Loading messages
 - paginated mem dump -- ascii and xxd style
 - imp relative branch0 offsets (nicer to see & future code relocation will be easier)
+- debug/fix problem with .s when used in buffered-key ok message
 
 
 Next:
@@ -42,7 +43,6 @@ Next:
 - use modal repl + entry, for early defs: comments, strings .. compiler/interpreter
 
 - only when compiling. guard for if/then etc (will need "state")
-- reproduce/debug problem with .s when used in buffered-key
 
 - work through examples from starting forth
 
