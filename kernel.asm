@@ -1049,6 +1049,7 @@ builtin_data:
     incbin "f/buffer.f"
     incbin "f/tools.f"
     incbin "f/examples.f"
+    incbin "f/control.f"
     incbin "f/start.f"
     incbin "f/play.f"
     db 0
@@ -1060,7 +1061,7 @@ builtin_data:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 30      ;; Number of sectors the bootloader loads
+%assign S 31      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A
