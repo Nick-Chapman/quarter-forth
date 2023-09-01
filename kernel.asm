@@ -61,6 +61,7 @@ start:
     call try_parse_as_number
     jnz .nan
     PUSH ax
+    call _swap
     call _drop
     jmp .loop
 .nan:
