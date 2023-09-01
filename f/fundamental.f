@@ -104,4 +104,4 @@ here-pointer !
 ;
 
 
-.." Loaded  syntax.f " cr
+.." Loaded  fundamental.f " cr

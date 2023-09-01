@@ -1057,7 +1057,7 @@ buffer: times 64 db 0 ;; TODO: kill; just use here+N
 
 builtin: dw builtin_data
 builtin_data:
-    incbin "f/syntax.f"
+    incbin "f/fundamental.f"
     incbin "f/interpreter.f"
     incbin "f/predefined.f"
     incbin "f/regression.f"
