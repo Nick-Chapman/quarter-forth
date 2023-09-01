@@ -250,7 +250,7 @@ init_param_stack:
 ;;; Read word from keyboard into buffer memory -- prefer _word
 ;;; [uses AX,DI]
 internal_read_word:
-    mov di, buffer
+    mov di, deprecated_word_buffer
 .skip:
     ;;call internal_read_char
     call .key
@@ -713,7 +713,7 @@ _branchR:
     add bx, [bx]
     jmp bx
 
-defwordimm "asm-tail" ; TODO remove no coded in forth!
+defwordimm "tail" ; TODO remove no coded in forth!
     call _word
     call _safe_find
     call _lit
@@ -957,7 +957,7 @@ _missing:
 defword "word" ; ( " blank-deliminted-word " -- string-addr ) ; TODO: earlier
 _word:
     call internal_read_word ;; TODO inline
-    mov ax, buffer
+    mov ax, deprecated_word_buffer
     PUSH ax ;; transient buffer; for _find/create
     ret
 
@@ -1045,12 +1045,17 @@ _reset:
 .loop:
     jmp .loop
 
+;; defword "deprecated-word-buffer" ; ( -- a )
+;;     mov ax, deprecated_word_buffer
+;;     PUSH ax
+;;     ret
+
 dictionary: dw lastlink
 
 %assign X ($-$$)
 ;%warning X "- After Prim Words"
 
-buffer: times 64 db 0 ;; TODO: kill; just use here+N
+deprecated_word_buffer: times 64 db 0 ;; TODO: kill
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Embedded string data
@@ -1076,7 +1081,7 @@ builtin_data:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 32      ;; Number of sectors the bootloader loads
+%assign S 33      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A

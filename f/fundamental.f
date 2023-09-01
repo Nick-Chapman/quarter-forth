@@ -6,32 +6,10 @@
 : then      dup here swap - swap ! ; immediate
 : exit      r> drop ;
 
-: (         key [char] ) = if exit then asm-tail ( ; immediate
+: (         key [char] ) = if exit then tail ( ; immediate
 
 ( Now we can write comments! Woo hoo! )
 
-( definition cycles...
-
-['] needs find
-find need tail
-tail needs find and [']
-comments need tail
-Everything wants comment.
-
-So we choose order:
-- asm-tail and asm-find
-- then comments
-- then [']
-- then tail
-- then find
-)
-
-: ['] ( comp: "word" ) ( run: -- xt )
-word find non-immediate-literal
-; immediate
-
-
-( Tail calling -- no need for special asm magic! )
 
 ( Drop the top item on the return stack )
 : r>drop
@@ -43,14 +21,37 @@ r>drop
 execute
 ;
 
-: tail ( "word" )
-word find ( xt )
-['] lit compile, ,
-['] jump compile,
-; immediate
+( definition cycles, across: word, find, tail, ['] and comments
+
+comments need tail
+word need tail
+find need tail
+['] needs word/find
+tail needs word/find/[']
+Everything wants comment.
+)
 
 
-( Redefine find in Forth )
+( Define "word" in Forth )
+
+: word-loop-2 ( a -- ) ( Keep chars until whitespace )
+key dup 33 < if ( a c ) ( whitespace )
+drop 0 swap c! exit ( null-terminator )
+then over c! ( a ) 1 + tail word-loop-2 ( keep collecting... )
+;
+
+: word-loop-1 ( a -- ) ( Skip leading whitespace )
+key dup 33 < if ( a c ) ( whitespace )
+drop tail word-loop-1 ( keep skipping... )
+then over c! ( a ) 1 +
+tail word-loop-2 ( collect first char and keep collect... )
+;
+
+: word ( "name" -- str )
+here 100 + dup word-loop-1 ;
+
+
+( Define "find" in Forth )
 
 : nip ( a b -- b ) swap drop ;
 
@@ -64,6 +65,22 @@ then ( s 0 ) nip
 : find ( string -- xt )
 latest-entry find-loop
 ;
+
+
+( Define "[']" in Forth )
+
+: ['] ( comp: "name" ) ( run: -- xt )
+word find non-immediate-literal
+; immediate
+
+
+( Define "tail" in Forth )
+
+: tail ( "name" )
+word find ( xt )
+['] lit compile, ,
+['] jump compile,
+; immediate
 
 
 ( Strings Literals... )
