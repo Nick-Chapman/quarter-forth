@@ -119,22 +119,6 @@ try_parse_as_number: ; TODO: code in forth
     cmp bl, 0 ; return NO
     ret
 
-;;; Compare n bytes at two pointers
-;;; [in CX=n, SI/DI=pointers-to-things-to-compare, out Z=same]
-;;; [consumes SI, DI, CX; uses AL]
-internal_cmp_n: ;; CX/SI/DI --> Z
-.loop:
-    mov al, [si]
-    cmp al, [di]
-    jnz .ret
-    inc si
-    inc di
-    dec cx
-    jnz .loop
-    ret ; Z - matches
-.ret:
-    ret ; NZ - diff
-
 ;;; Reading input...
 internal_read_char: ; -> AL
     call [read_char_indirection]
@@ -354,40 +338,6 @@ is_semi:
     cmp word [di], ";"
     ret
 
-;;; Lookup word in dictionary, return entry if found or 0 otherwise
-;;; [in DX=sought-name, out BX=entry/0]
-;;; [uses SI, DI, BX, CX]
-internal_dictfind: ; (DX --> BX)
-    mov di, dx
-    PUSH di
-    call _strlen ; ax=len
-    POP ax
-    mov bx, [dictionary]
-.loop:
-    mov cl, [bx+2]
-    and cl, 0x7f
-    cmp al, cl ; 8bit length comapre
-    jnz .next
-    ;; length matches; compare names
-    mov si, dx ; si=sought name
-    mov di, bx
-    sub di, ax
-    dec di ; subtract 1 more for the null
-    ;; now di=this entry name
-    mov cx, ax ; length
-    push ax
-    call internal_cmp_n
-    pop ax
-    jnz .next
-    add bx, 3 ; entry->xt
-    ret ; BX=xt
-.next:
-    mov bx, [bx] ; traverse link
-    cmp bx, 0
-    jnz .loop
-    ret ; BX=0 - not found
-
-
 %assign X ($-$$)
 ;%warning X "- After ASM"
 
@@ -411,6 +361,112 @@ db (%%link - %%name - 1) ; dont include null in count
 db ((%%link - %%name - 1) | 0x80) ; dont include null in count
 %define lastlink %%link
 %endmacro
+
+defword "if" ; ( x -- ) & sets z/nz
+_if:
+    POP ax
+    cmp ax, 0
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; dictionary header layout ;; TODO: comment/picture
+
+defword "xt->name" ; ( xt -- string )
+_xt_name: ;; TODO: use this in dictfind -- TODO: kill dictfind
+    POP bx
+    mov ch, 0
+    mov cl, [bx-1] ; size byte -1 from xt
+    and cl, 0x7f
+    sub bx, 4 ; (1) null, (2) link pointer, (1) size byte
+    sub bx, cx
+    PUSH bx
+    ret
+
+defword "latest-entry" ; ( -- xt ) ; ( TODO: rename latest-xt )
+_latest_entry:
+    mov bx, [dictionary]
+    add bx, 3
+    PUSH bx
+    ret
+
+;; : xt->next ( 0|xt1 -- 0|xt2 )
+;; dup if 3 - @
+;; dup if 3 +
+;; then then;
+
+defword "xt->next" ; ( 0|xt1 -- 0|xt2 )
+_xt_next:
+    call _dup
+    call _if
+    jz .ret ; zero
+    call _lit
+    dw 3
+    call _minus
+    call _fetch
+    call _dup
+    call _if
+    jz .ret ; zero
+    call _lit
+    dw 3
+    call _add
+.ret:
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Find
+;; : find-loop ( s x -- x )
+
+;; dup if ( s x )
+;; over over ( s x s x ) xt->name ( s x s s2 ) s= if ( s x ) nip exit
+;; then xt->next tail find-loop
+;; then ( s 0 ) nip ;
+;;
+;; : find ( string -- xt )
+;; latest-entry find-loop ;
+
+defword "find" ; ( s -- xt' )
+_find:
+    call _latest_entry ; ( s xt )
+.loop:
+    call _dup
+    call _if ; ( s xt )
+    jz .missing
+    call _over
+    call _over ; ( s xt s xt )
+    call _xt_name ; ( s xt s s' )
+    call _s_equals
+    call _if ; ( s xt )
+    jz .next
+    call _nip ; ( xt' ) Found it !
+    ret
+.next:
+    call _xt_next ; ( s xt )
+    jmp .loop
+.missing: ; ( s 0 )
+    call _nip ; ( 0 )
+    ret
+
+defword "safe-find"
+_safe_find: ; ( string -> xt )
+    call _dup ; ( s s )
+    call _find ; ( s xt )
+    call _swap ; ( xt s )
+    call _over ; ( xt s xt )
+    call _warn_if_missing ; ( xt )
+    ret
+
+_warn_if_missing: ; ( s xt|0 -> )
+    POP ax
+    cmp ax, 0
+    jnz .ok
+    print "(kernel) No such word: "
+    call _type
+    nl
+    call _crash_only_during_startup
+    ret
+.ok:
+    call _drop
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; key
@@ -557,6 +613,12 @@ defword "r>"
     PUSH ax
     jmp bx
 
+;;defword "nip" ;; TOOD Macros!
+_nip:
+    call _swap
+    call _drop
+    ret
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Numerics...
 
@@ -576,6 +638,7 @@ _add:
     ret
 
 defword "-"
+_minus:
     POP bx
     POP ax
     sub ax, bx
@@ -837,55 +900,6 @@ _abs_to_rel: ; ( addr-abs -> addr-rel )
     PUSH ax
     ret
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; (New) dict/XT (grabbed!)
-
-defword "xt->name" ; ( xt -- string )
-_xt_name: ;; TODO: use this in dictfind
-    POP bx
-    mov ch, 0
-    mov cl, [bx-1] ; size byte -1 from xt
-    and cl, 0x7f
-    sub bx, 4 ; (1) null, (2) link pointer, (1) size byte
-    sub bx, cx
-    PUSH bx
-    ret
-
-defword "latest-entry" ; ( -- xt ) ; ( TODO: rename latest-xt )
-_latest_entry:
-    mov bx, [dictionary]
-    add bx, 3
-    PUSH bx
-    ret
-
-defword "asm-find" ; ( string -- 0|xt ) -- This is non standard!
-_find:
-    POP dx
-    call internal_dictfind ;; INLINE
-    PUSH bx
-    ret
-
-defword "safe-find"
-_safe_find: ; ( string -> xt )
-    call _dup ; ( s s )
-    call _find ; ( s xt )
-    call _swap ; ( xt s )
-    call _over ; ( xt s xt )
-    call _warn_if_missing ; ( xt )
-    ret
-
-_warn_if_missing: ; ( s xt|0 -> )
-    POP ax
-    cmp ax, 0
-    jnz .ok
-    print "(kernel) No such word: "
-    call _type
-    nl
-    call _crash_only_during_startup
-    ret
-.ok:
-    call _drop
-    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Dictionary entries & find
@@ -974,7 +988,7 @@ _type:
     ret
 
 defword "s="
-_string_eq:
+_s_equals:
     POP si
     POP di
 .loop:

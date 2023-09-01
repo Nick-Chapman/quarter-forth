@@ -27,7 +27,7 @@ So we choose order:
 )
 
 : ['] ( comp: "word" ) ( run: -- xt )
-word asm-find non-immediate-literal
+word find non-immediate-literal
 ; immediate
 
 
@@ -44,20 +44,13 @@ execute
 ;
 
 : tail ( "word" )
-word asm-find ( xt )
+word find ( xt )
 ['] lit compile, ,
 ['] jump compile,
 ; immediate
 
 
-
-( find in Forth )
-
-: xt->next ( 0|xt1 -- 0|xt2 )  ( TODO: move to asm )
-dup if 3 - @
-dup if 3 +
-then then
-;
+( Redefine find in Forth )
 
 : nip ( a b -- b ) swap drop ;
 
