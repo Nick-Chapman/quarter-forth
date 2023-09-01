@@ -650,7 +650,7 @@ _branchR:
     add bx, [bx]
     jmp bx
 
-defwordimm "tail"
+defwordimm "asm-tail" ; TODO remove no coded in forth!
     call _word
     call _safe_find
     call _lit
@@ -858,7 +858,7 @@ _latest_entry:
     PUSH bx
     ret
 
-;;defword "find" ; ( string -- 0|xt ) -- This is non standard!
+defword "asm-find" ; ( string -- 0|xt ) -- This is non standard!
 _find:
     POP dx
     call internal_dictfind ;; INLINE
@@ -881,6 +881,7 @@ _warn_if_missing: ; ( s xt|0 -> )
     print "(kernel) No such word: "
     call _type
     nl
+    call _crash_only_during_startup
     ret
 .ok:
     call _drop
@@ -1061,7 +1062,7 @@ builtin_data:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 31      ;; Number of sectors the bootloader loads
+%assign S 32      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A

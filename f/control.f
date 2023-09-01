@@ -5,11 +5,6 @@
 r> dup >r >r
 ;
 
-( Drop the top item on the return stack )
-: r>drop
-r> r> drop >r
-;
-
 ( r-dup is also known as twice; lets also define thrice )
 : twice: r> dup >r >r ;
 : thrice: r> dup dup >r >r >r ;

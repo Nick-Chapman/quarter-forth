@@ -4,15 +4,54 @@
 : allot     here + here-pointer ! ;
 : if        0branch, here 0 ,     ; immediate
 : then      dup here swap - swap ! ; immediate
-
 : exit      r> drop ;
 
-: (         key [char] ) = if exit then tail ( ; immediate
+: (         key [char] ) = if exit then asm-tail ( ; immediate
 
 ( Now we can write comments! Woo hoo! )
 
+( definition cycles...
 
-( WIP new find... )
+['] needs find
+find need tail
+tail needs find and [']
+comments need tail
+Everything wants comment.
+
+So we choose order:
+- asm-tail and asm-find
+- then comments
+- then [']
+- then tail
+- then find
+)
+
+: ['] ( comp: "word" ) ( run: -- xt )
+word asm-find non-immediate-literal
+; immediate
+
+
+( Tail calling -- no need for special asm magic! )
+
+( Drop the top item on the return stack )
+: r>drop
+r> r> drop >r
+;
+
+: jump ( xt -- ) ( R: x y -- y )
+r>drop
+execute
+;
+
+: tail ( "word" )
+word asm-find ( xt )
+['] lit compile, ,
+['] jump compile,
+; immediate
+
+
+
+( find in Forth )
 
 : xt->next ( 0|xt1 -- 0|xt2 )  ( TODO: move to asm )
 dup if 3 - @
@@ -32,13 +71,6 @@ then ( s 0 ) nip
 : find ( string -- xt )
 latest-entry find-loop
 ;
-
-
-
-
-: ['] ( comp: "word" ) ( run: -- xt )
-word find non-immediate-literal
-; immediate
 
 
 ( Strings Literals... )
