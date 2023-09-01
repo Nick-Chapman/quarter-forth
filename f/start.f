@@ -4,4 +4,5 @@ cr .." Welcome to nforth. A 16-bit Forth system running on x86." cr cr
 mem cr
 
 startup-is-complete
+( echo-on )
 ' buffered-key set-key

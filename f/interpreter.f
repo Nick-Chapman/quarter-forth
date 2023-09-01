@@ -9,6 +9,7 @@ crash-only-during-startup
 
 : interpreter ( This is traditionaly & confusingly known as "quit" )
 
+( [char] > emit )
 word ( s: name )
 
 dup find dup if ( s: name xt )

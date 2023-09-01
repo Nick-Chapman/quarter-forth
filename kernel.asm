@@ -53,8 +53,12 @@ echo_enabled: dw 0
 
 start:
     call init_param_stack
-    call cls
+    call cls ;; TODO: only do this on cold start
+    mov ax, _reset
+    push ax
 .loop:
+    ;;mov al, '?' ;; See when we are using the asm interpreter
+    ;;call print_char
     call _word
     call _dup
     POP dx
@@ -629,7 +633,7 @@ defword "0branch,"
     call _write_abs_call
     ret
 
-defword "exit"
+defword "no-exit" ;; Now coded in forth
 _exit:
     pop bx ; and ignore
     ret
@@ -861,24 +865,29 @@ _find:
     PUSH bx
     ret
 
-;; ;;defword "safe-find"
-;; _safe_find: ; ( string -> xt )
-;;     call _dup
-;;     call _find
-;;     POP bx
-;;     PUSH bx
-;;     cmp bx, 0
-;;     jz _warn_missing
-;;     call _swap
-;;     call _drop
-;;     ret
+defword "safe-find"
+_safe_find: ; ( string -> xt )
+    call _dup ; ( s s )
+    call _find ; ( s xt )
+    call _swap ; ( xt s )
+    call _over ; ( xt s xt )
+    call _warn_if_missing ; ( xt )
+    ret
 
-_safe_find: ; ( string -> xt|0 )
-    jmp _find
+_warn_if_missing: ; ( s xt|0 -> )
+    POP ax
+    cmp ax, 0
+    jnz .ok
+    print "(kernel) No such word: "
+    call _type
+    nl
+    ret
+.ok:
+    call _drop
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Dictionary entries & find
-
 
 defword "strlen" ; ( name-addr -- n )
 _strlen:
@@ -923,17 +932,6 @@ _write_string:
     call internal_write_byte ; null
     ret
 
-_warn_missing:
-    call _drop
-    print "**(Kernel) No such word: "
-    POP di
-    call internal_print_string
-    nl
-    call _crash_only_during_startup
-    mov ax, _missing
-    PUSH ax
-    ret
-
 ;;; not in dictionary
 defword "missing"
 _missing:
@@ -956,7 +954,7 @@ defword "char"
     PUSH ax
     ret
 
-defword "constant" ;; TODO: is this relocatable?
+defword "constant" ;; TODO: move to forth
     call _word
     call _create_entry
     call _lit
@@ -969,6 +967,7 @@ defword "constant" ;; TODO: is this relocatable?
     ret
 
 defword "type"
+_type:
     POP di
     call internal_print_string
     ret
@@ -1017,7 +1016,7 @@ defword "number?" ; ( string -- number 1 | string 0 )
     ret
 
 defword "bye"
-bye:
+_bye:
     mov ax, 0x5307
     mov bx, 0x0001
     mov cx, 0x0003
@@ -1026,7 +1025,7 @@ bye:
     jmp .loop
 
 defword "reset"
-reset:
+_reset:
     int 0x19
 .loop:
     jmp .loop
