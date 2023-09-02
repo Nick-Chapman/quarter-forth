@@ -1067,10 +1067,10 @@ builtin_data:
     incbin "f/interpreter.f"
     incbin "f/predefined.f"
     incbin "f/regression.f"
-    incbin "f/buffer.f"
     incbin "f/tools.f"
     incbin "f/examples.f"
     incbin "f/control.f"
+    incbin "f/buffer.f"
     incbin "f/start.f"
     incbin "f/play.f"
     db 0

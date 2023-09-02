@@ -12,24 +12,31 @@ constant key-buffer
 : is-newline dup 13 = swap 10 = or ;
 : is-backspace 8 = ;
 
+( Replace the inner echo-{enabled,on,off} )
+echo-enabled @ variable echo-enabled echo-enabled !
+: echo-on true echo-enabled ! ;
+: echo-off false echo-enabled ! ;
+: echo echo-enabled @ if emit exit then drop ;
+
+: ok
+echo-enabled @ if ." ok" cr then ;
+
 : fill-loop ( a -- a' )
 raw-key ( a c )
 over over swap ( a c c a ) c!
 
 ( a c ) dup is-newline if ( a c )
-emit 1 + ( show newline and record in buffer )
+echo 1 + ( show newline and record in buffer )
 exit ( stop filling )
 
 then ( a c ) dup is-backspace if ( a c )
-dup emit space emit ( Handle the backspace visually )
+dup echo space echo ( Handle the backspace visually )
 1 - tail fill-loop ( Move the pointer back one step - TODO: check we dont go too far )
 
 then ( a c )
-emit 1 + ( show char and record in buffer )
+echo 1 + ( show char and record in buffer )
 tail fill-loop
 ;
-
-: ok s" ok" type cr ;
 
 : fill
 ( s" filling..." type cr ) ( PROBLEM )
@@ -52,4 +59,4 @@ then drop
 reset-kb-pointer fill buffered-key
 ;
 
-( ' buffered-key set-key )
+' buffered-key set-key
