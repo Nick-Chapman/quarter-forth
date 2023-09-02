@@ -53,17 +53,6 @@
 : rot   >r swap r> swap ;
 
 
-( Tick )
-
-: checked-find
-dup find dup ( str xt xt )
-if ( str xt )
-nip exit
-then ( str 0 )
-drop warn-missing
-;
-
-: ' word checked-find ;
 
 : .hh ( a -- )
 dup c@ .h 1 + c@ .h ;

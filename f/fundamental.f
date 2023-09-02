@@ -1,4 +1,6 @@
 
+: immediate latest immediate^ ;
+
 : cr        13 emit ;
 : here      here-pointer @ ;
 : allot     here + here-pointer ! ;
@@ -8,7 +10,6 @@
 : bl        32 ;
 : space     bl emit ;
 : >         swap < ;
-
 
 : (         key [char] ) = if exit then tail ( ; immediate
 
@@ -61,15 +62,15 @@ here 100 + dup word-loop-1 ;
 
 : find-loop ( s x -- x )
 dup if ( s x )
+dup hidden? if xt->next tail find-loop then
 over over ( s x s x ) xt->name ( s x s s2 ) s= if ( s x ) nip exit
 then xt->next tail find-loop
 then ( s 0 ) nip
 ;
 
 : find ( string -- xt )
-latest-entry find-loop
+latest find-loop
 ;
-
 
 ( Define "[']" in Forth )
 
@@ -123,6 +124,28 @@ ret,
 dup execute
 here-pointer !
 ;
+
+
+( tick and hide )
+
+: warn-missing ( string -- )
+." ** No such word: " type cr
+crash-only-during-startup
+;
+
+: checked-find
+dup find dup ( str xt xt )
+if ( str xt )
+nip exit
+then ( str 0 )
+drop warn-missing
+;
+
+: hide
+word checked-find hidden^
+;
+
+: ' word checked-find ;
 
 
 .." Loaded  fundamental.f " cr

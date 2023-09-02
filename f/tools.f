@@ -80,7 +80,7 @@ then drop
 ;
 
 : words
-latest-entry words-continue cr
+latest words-continue cr
 ;
 
 
@@ -147,5 +147,5 @@ then
 
 : see10 ( xt -- xt' ) ['] see1 10 times ;
 : see-all
-latest-entry ['] see10 pag
+latest ['] see10 pag
 ;

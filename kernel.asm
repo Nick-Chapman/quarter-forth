@@ -316,7 +316,7 @@ colon_intepreter: ; TODO: move this towards forth style
     PUSH dx
     call _safe_find
     call _dup
-    call _xt_immediate
+    call _immediate_query
     POP ax
     cmp ax, 0
     jnz .immediate
@@ -355,10 +355,13 @@ db (%%link - %%name - 1) ; dont include null in count
 %define lastlink %%link
 %endmacro
 
+immediate_flag equ 0x40
+hidden_flag equ 0x80
+
 %macro defwordimm 1
 %%name: db %1, 0 ; null
 %%link: dw lastlink
-db ((%%link - %%name - 1) | 0x80) ; dont include null in count
+db ((%%link - %%name - 1) | immediate_flag)
 %define lastlink %%link
 %endmacro
 
@@ -376,14 +379,14 @@ _xt_name: ;; TODO: use this in dictfind -- TODO: kill dictfind
     POP bx
     mov ch, 0
     mov cl, [bx-1] ; size byte -1 from xt
-    and cl, 0x7f
+    and cl, ~(immediate_flag | hidden_flag)
     sub bx, 4 ; (1) null, (2) link pointer, (1) size byte
     sub bx, cx
     PUSH bx
     ret
 
-defword "latest-entry" ; ( -- xt ) ; ( TODO: rename latest-xt )
-_latest_entry:
+defword "latest" ; ( -- xt )
+_latest:
     mov bx, [dictionary]
     add bx, 3
     PUSH bx
@@ -426,7 +429,7 @@ _xt_next:
 
 defword "find" ; ( s -- xt' )
 _find:
-    call _latest_entry ; ( s xt )
+    call _latest ; ( s xt )
 .loop:
     call _dup
     call _if ; ( s xt )
@@ -434,7 +437,7 @@ _find:
     call _over
     call _over ; ( s xt s xt )
     call _xt_name ; ( s xt s s' )
-    call _s_equals
+    call _s_equals                  ; TODO: respect hidden flag?
     call _if ; ( s xt )
     jz .next
     call _nip ; ( xt' ) Found it !
@@ -696,7 +699,7 @@ defword "0branch,"
     call _write_abs_call
     ret
 
-defword "no-exit" ;; Now coded in forth
+;;defword "no-exit" ;; Now coded in forth
 _exit:
     pop bx ; and ignore
     ret
@@ -795,17 +798,14 @@ defword "execute"
     POP bx
     jmp bx
 
-;; defword "immediate-word?" ;; TODO: dont expose this...
-;;     call _word
-;;     call _safe_find
-;;     call _test_immediate_flag
-;;     ret
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Dictionary flags: immediate, hidden
 
-defword "immediate?"
-_xt_immediate:
+defword "immediate?" ; ( xt -- bool )
+_immediate_query:
     POP bx
     mov al, [bx-1]
-    cmp al, 0x80
+    cmp al, immediate_flag
     ja .yes
     jmp .no
 .yes:
@@ -817,17 +817,37 @@ _xt_immediate:
     PUSH ax
     ret
 
-defword "immediate"
-    call _latest_entry
-    call _flip_immediate_flag
+defword "hidden?" ; ( xt -- bool )
+_hidden_query:
+    POP bx
+    mov al, [bx-1]
+    cmp al, hidden_flag
+    ja .yes
+    jmp .no
+.yes:
+    mov ax, 0xffff ; true
+    PUSH ax
+    ret
+.no:
+    mov ax, 0 ; false
+    PUSH ax
     ret
 
-defword "flip-immediate-flag"
-_flip_immediate_flag:
+defword "immediate^"
+_immediate_flip:
     POP bx
     ;; size/flag byte -1 from xt
     mov al, [bx-1]
-    xor al, 0x80
+    xor al, immediate_flag
+    mov [bx-1], al
+    ret
+
+defword "hidden^"
+_hidden_flip:
+    POP bx
+    ;; size/flag byte -1 from xt
+    mov al, [bx-1]
+    xor al, hidden_flag
     mov [bx-1], al
     ret
 

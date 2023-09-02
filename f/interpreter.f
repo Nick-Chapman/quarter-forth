@@ -1,10 +1,5 @@
 .." Loading interpreter.f" cr
 
-: warn-missing ( string -- )
-." ** No such word: " type cr
-crash-only-during-startup
-;
-
 ( define top-level interpreter in forth, and enter it... )
 
 : interpreter ( This is traditionaly & confusingly known as "quit" )
