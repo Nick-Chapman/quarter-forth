@@ -6,6 +6,8 @@
 : then      dup here swap - swap ! ; immediate
 : exit      r> drop ;
 
+
+
 : (         key [char] ) = if exit then tail ( ; immediate
 
 ( Now we can write comments! Woo hoo! )

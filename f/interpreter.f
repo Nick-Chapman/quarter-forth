@@ -35,7 +35,7 @@ interpreter ( enter! )
 ( define colon-compiler in forth; replacing : )
 
 : compile-or-execute ( xt -- )
-dup test-immediate-flag if
+dup immediate? if
 execute exit
 then compile,
 ;

@@ -316,7 +316,7 @@ colon_intepreter: ; TODO: move this towards forth style
     PUSH dx
     call _safe_find
     call _dup
-    call _test_immediate_flag
+    call _xt_immediate
     POP ax
     cmp ax, 0
     jnz .immediate
@@ -713,6 +713,7 @@ _branchR:
     add bx, [bx]
     jmp bx
 
+;; TODO: backport the new Forth definition here
 defwordimm "tail" ; TODO remove no coded in forth!
     call _word
     call _safe_find
@@ -794,14 +795,14 @@ defword "execute"
     POP bx
     jmp bx
 
-defword "immediate?" ;; TODO: dont expose this...
-    call _word
-    call _safe_find
-    call _test_immediate_flag
-    ret
+;; defword "immediate-word?" ;; TODO: dont expose this...
+;;     call _word
+;;     call _safe_find
+;;     call _test_immediate_flag
+;;     ret
 
-defword "test-immediate-flag" ;; but this, renamed as immediate?
-_test_immediate_flag:
+defword "immediate?"
+_xt_immediate:
     POP bx
     mov al, [bx-1]
     cmp al, 0x80
@@ -856,7 +857,7 @@ _literal:
 defword "non-immediate-literal" ; TODO: imprve this
     jmp _literal
 
-defwordimm "[char]"
+defwordimm "[char]" ;; TODO: move to forth
     call _word
     POP bx
     mov ah, 0
@@ -961,7 +962,7 @@ _word:
     PUSH ax ;; transient buffer; for _find/create
     ret
 
-defword "char"
+defword "char" ;; TODO: move to forth
     call _word
     POP bx
     mov ah, 0

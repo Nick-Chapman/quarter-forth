@@ -159,10 +159,10 @@ one two         2 x 1 x
 
 ( Immediacy )
 
-immediate? here     false x
-immediate? dup      false x
-immediate? if       true x
-immediate? literal  true x
+' here immediate?     false x
+' dup immediate?      false x
+' if immediate?       true x
+' literal immediate?  true x
 
 ( Compilation )
 
