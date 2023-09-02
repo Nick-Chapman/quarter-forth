@@ -1,4 +1,4 @@
-.." Loading control.f" cr
+.." Loading control.f ( " latest
 
 ( Duplicate the top item on the return stack )
 : r-dup
@@ -35,3 +35,6 @@ This consumes the top two return stack items, restoring the
 return stack to: m u, as required for when "m" is re-entered.
 )
 ;
+
+
+words-since char ) emit cr

@@ -1084,14 +1084,15 @@ deprecated_word_buffer: times 64 db 0 ;; TODO: kill
 builtin: dw builtin_data
 builtin_data:
     incbin "f/fundamental.f"
+    incbin "f/tools.f"
     incbin "f/interpreter.f"
     incbin "f/predefined.f"
     incbin "f/regression.f"
-    incbin "f/tools.f"
     incbin "f/examples.f"
     incbin "f/control.f"
     incbin "f/buffer.f"
     incbin "f/start.f"
+    ;incbin "f/zero.f"
     incbin "f/play.f"
     db 0
 
@@ -1102,7 +1103,7 @@ builtin_data:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 40      ;; Number of sectors the bootloader loads
+%assign S 45      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A

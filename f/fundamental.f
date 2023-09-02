@@ -65,7 +65,7 @@ dup if ( s x )
 dup hidden? if xt->next tail find-loop then
 over over ( s x s x ) xt->name ( s x s s2 ) s= if ( s x ) nip exit
 then xt->next tail find-loop
-then ( s 0 ) nip
+then ( s xt ) drop drop 0 ( xt might not be 0 in case word is hidden )
 ;
 
 : find ( string -- xt )
@@ -133,19 +133,20 @@ here-pointer !
 crash-only-during-startup
 ;
 
-: checked-find
+: checked-find ( "name" -- xt|0 )
 dup find dup ( str xt xt )
 if ( str xt )
 nip exit
 then ( str 0 )
-drop warn-missing
+swap warn-missing
 ;
 
-: hide
-word checked-find hidden^
-;
+: ' ( "name" -- xt|0 )
+word checked-find ;
 
-: ' word checked-find ;
+: hide ( "name" -- )
+word checked-find dup if hidden^ exit then
+;
 
 
 .." Loaded  fundamental.f " cr

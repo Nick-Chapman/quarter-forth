@@ -1,4 +1,4 @@
-.." Loading interpreter.f" cr
+.." Loading interpreter.f ( " latest
 
 ( define top-level interpreter in forth, and enter it... )
 
@@ -61,3 +61,7 @@ then ( s: name )
 : :
 word create-entry compiling
 ;
+
+hide compile-or-execute
+hide compiling
+words-since char ) emit cr

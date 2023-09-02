@@ -1,4 +1,6 @@
-.." Loading examples.f" cr
+.." Loading examples.f ( " latest
+
+: spaces    dup if space 1 - tail spaces then drop ;
 
 ( Large letter F. Adapted from "starting Forth", by Leo Brodie )
 
@@ -27,7 +29,7 @@
 dup .
 dup 1 = if drop exit then
 dup even? if /2 tail collatz then
-3 * 1+ tail collatz
+3 * 1 + tail collatz
 ;
 
 ( try: 27 collatz )
@@ -40,3 +42,15 @@ dup >r execute r> execute
 ;
 
 3 ' square twice    81 x
+
+
+hide bar
+hide blip
+hide even?
+hide margin
+hide spaces
+hide square
+hide star
+hide stars
+hide twice
+words-since char ) emit cr

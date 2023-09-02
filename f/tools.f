@@ -1,4 +1,18 @@
-.." Loading tools.f" cr
+.." Loading tools.f ( " latest
+
+
+: false     ( -- b )        0 ;
+: true      ( -- b )        65535 ;
+: invert    ( b -- b )      if false exit then true ;   ( bool negation )
+
+
+( Expect... )
+
+: x
+over = if drop exit then
+." Expect failed, got: " . cr crash ( -only-during-startup )
+;
+
 
 ( Tools for exploring mem and defs )
 
@@ -43,7 +57,7 @@ dis
 ;
 
 : see
-word find x-see ; immediate
+word find x-see cr ; immediate
 
 
 ( Show stack non destructively )
@@ -61,26 +75,38 @@ drop
 sp0 .s-continue
 ;
 
+: depth ( -- n )           ( depth of param stack )
+sp sp0 swap - /2
+;
+
+: check-stack
+depth if
+." stack is not empty: < " .s [char] > emit cr
+then
+;
+
 
 ( List available words )
 
-: meh-another-entry? ( xt1 -- bool ) ( TODO: die )
-3 - @
+: show-if-not-hidden ( xt -- )
+dup hidden? if drop exit then xt->name type space
 ;
 
-: meh-next-entry ( xt1 -- xt2 ) ( TODO: die )
-3 - @ 3 +
+( I CANT MAKE A VERSION WORK WHICH PRINT WORDS BOTTOM UP )
+( Is something wrong with non tail-recusive calls ? )
+
+: words-continue ( xtEarlier xt -- xtEarlier xt )
+over over = if exit then
+dup show-if-not-hidden
+xt->next words-continue
 ;
 
-: words-continue ( xt -- )
-dup xt->name type space
-dup meh-another-entry? if
-meh-next-entry tail words-continue
-then drop
+: words-since ( xtEarlier -- )
+latest words-continue drop drop
 ;
 
 : words
-latest words-continue cr
+0 words-since cr
 ;
 
 
@@ -149,3 +175,40 @@ then
 : see-all
 latest ['] see10 pag
 ;
+
+hide .hh
+hide .s-continue
+hide @.hh
+hide @rel->abs
+hide and
+hide c3
+hide db
+hide dc
+hide dc-oneK
+hide dc64
+hide dis
+hide dump
+hide e8
+hide emit-byte
+hide emit-printable-or-dot
+hide false
+hide invert
+hide is-call
+hide is-escape
+hide is-printable?
+hide is-ret
+hide pag
+hide pag-continue
+hide see-all
+hide see1
+hide see10
+hide show-if-not-hidden
+hide times
+hide true
+hide words-continue
+hide x-see
+hide xxd
+hide xxd-line
+hide xxd-page
+
+words-since char ) emit cr

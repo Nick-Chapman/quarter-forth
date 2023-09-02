@@ -1,11 +1,4 @@
-.." Loading regression.f" cr
-
-( Expect... )
-
-: x
-over = if drop exit then
-." Expect failed, got: " . cr crash ( -only-during-startup )
-;
+.." Loading regression.f ( " latest
 
 ( Stack manipulation )
 
@@ -119,13 +112,11 @@ v c@ 1 +   255 x
 8 chars     8 x
 
 
-( Parameter stack )
+( Parameter stack -- we have one item on stackk during this module )
 
-sp sp0 =    true x
-
-depth      0 x
-5 depth    1 x      drop
-5 6 depth  2 x      drop drop
+depth      1 x
+5 depth    2 x      drop
+5 6 depth  3 x      drop drop
 
 
 
@@ -168,3 +159,18 @@ one two         2 x 1 x
 
 42 : life literal ;
 1 life 2                2 x 42 x 1 x
+
+
+hide -1
+hide a
+hide b
+hide e
+hide eggs
+hide hi
+hide inc
+hide life
+hide one
+hide sq
+hide two
+hide v
+words-since char ) emit cr

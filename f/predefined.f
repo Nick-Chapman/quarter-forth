@@ -1,4 +1,4 @@
-.." Loading predefined.f" cr
+.." Loading predefined.f ( " latest
 
 ( This is a 16bit Forth; cell size is 2. Chars have size 1 )
 
@@ -42,8 +42,6 @@
 
 : +!        swap over @ + swap ! ;
 
-: depth   ( -- n )          sp sp0 swap - /2 ;          ( depth of param stack )
-
 
 ( Stack manipulation )
 
@@ -53,6 +51,8 @@
 : rot   >r swap r> swap ;
 
 
-
 : .hh ( a -- )
 dup c@ .h 1 + c@ .h ;
+
+
+words-since char ) emit cr
