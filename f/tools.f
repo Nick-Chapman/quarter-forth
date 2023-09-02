@@ -90,7 +90,7 @@ latest-entry words-continue cr
 dup if >r dup >r ( xt )
 execute
 r> r> ( xt n )
-1- tail times
+1 - tail times
 then drop drop
 ;
 
@@ -109,9 +109,10 @@ then cr tail pag-continue ;
 : pag ( start-addr xt -- ) swap pag-continue ;
 
 
-: @.hh ( a -- ) dup c@ .h 1- c@ .h ;
-: .hh ( a ) sp 1+ @.hh drop ; ( THIS IS SUCH A HACK )
+: @.hh ( a -- ) dup c@ .h 1 - c@ .h ;
+: .hh ( a ) sp 1 + @.hh drop ; ( THIS IS SUCH A HACK )
 
+: and if exit then drop 0 ;
 : is-printable? ( c -- bool ) dup 31 > swap 128 < and ;
 
 : emit-printable-or-dot ( c -- )
@@ -120,7 +121,7 @@ drop [char] . emit ;
 
 ( Ascii char dump, paginated on 1k blocks )
 
-: dc ( a -- a+1 ) dup c@ emit-printable-or-dot 1+ ;
+: dc ( a -- a+1 ) dup c@ emit-printable-or-dot 1 + ;
 : dc64 ( a -- a+64 ) dup .hh ." : " ['] dc 64 times cr ;
 : dc-oneK ( a -- a+1K ) ['] dc64 16 times ;
 : dump ( start-addr -- ) ['] dc-oneK pag ;
@@ -128,7 +129,7 @@ drop [char] . emit ;
 ( xxd-style dump : hex-bytes + ascii to the side, paginated at 256 bytes )
 
 : emit-byte ( c -- ) .h space ;
-: db ( a -- a+1 ) dup c@ emit-byte 1+ ;
+: db ( a -- a+1 ) dup c@ emit-byte 1 + ;
 : xxd-line ( a -- a+16 )
 dup .hh ." : " dup ['] db 16 times space drop ['] dc 16 times cr ;
 : xxd-page ( a -- a+1K ) ['] xxd-line 16 times ;

@@ -5,7 +5,9 @@
 : if        0branch, here 0 ,     ; immediate
 : then      dup here swap - swap ! ; immediate
 : exit      r> drop ;
-
+: bl        32 ;
+: space     bl emit ;
+: >         swap < ;
 
 
 : (         key [char] ) = if exit then tail ( ; immediate

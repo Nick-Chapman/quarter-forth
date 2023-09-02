@@ -10,8 +10,6 @@
 
 ( Output )
 
-: bl        32 ;
-: space     bl emit ;
 : spaces    dup if space 1 - tail spaces then drop ;
 : ?         @ . ;
 
@@ -26,10 +24,6 @@
 : or        ( b1 b2 -- b )  if drop true then ;         ( bool disjunction )
 : and       ( b1 b2 -- b )  if exit then drop false ;   ( bool conjunction )
 : invert    ( b -- b )      if false exit then true ;   ( bool negation )
-
-( Comparison )
-
-: >         swap < ;
 
 ( Numberic )
 
