@@ -102,7 +102,7 @@ then drop drop
 : pag-continue ( xt a -- a' )
 over execute
 cr ." (waiting...)" cr
-raw-key is-escape if drop drop exit ( quit when escape key pressed )
+key is-escape if drop drop exit ( quit when escape key pressed )
 then cr tail pag-continue ;
 
 ( Paginated dump )

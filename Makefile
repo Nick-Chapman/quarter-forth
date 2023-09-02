@@ -16,7 +16,7 @@ NASM_FLAGS = -Werror
 
 _build/%.img: %.asm Makefile
 	@echo Assembling $<
-	@nasm $(NASM_FLAGS) -o $@ $< || rm $@
+	@nasm $(NASM_FLAGS) -o $@ $< || rm -f $@
 
 _build/kernel.img : $(wildcard f/*)
 
