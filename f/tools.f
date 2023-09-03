@@ -101,8 +101,13 @@ dup show-if-not-hidden
 xt->next words-continue
 ;
 
+
+: words-between ( xtEarlier xtLater )
+words-continue drop drop
+;
+
 : words-since ( xtEarlier -- )
-latest words-continue drop drop
+latest words-between
 ;
 
 : words
@@ -205,10 +210,10 @@ hide see10
 hide show-if-not-hidden
 hide times
 hide true
+hide words-between
 hide words-continue
 hide x-see
 hide xxd
 hide xxd-line
 hide xxd-page
-
 words-since char ) emit cr

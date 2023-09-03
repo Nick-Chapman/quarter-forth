@@ -25,22 +25,10 @@ hide tail
 hide jump
 hide nip
 hide r>drop
-hide warn-missing
 
 ( ----------------------------------------------------------------------
 Setup level 0...
 ---------------------------------------------------------------------- )
-
-( Define a few extra thing... )
-
-: three 3 ;
-: two 2 ;
-: one 1 ;
-
-: warn-missing ( string -- )
-." ** No such word: " type cr
-crash
-;
 
 ( Need entry/call because of transient string buffer )
 ( This is a pain! )
@@ -65,6 +53,7 @@ hide :
 )
 ( .." ENTERING LEVEL ZERO... " cr )
 wfx-loop
+hide wfx-loop
 
 ( TODO : move implementation/entry of level-0 interpreter to asm )
 
@@ -185,6 +174,7 @@ then warn-missing tail 1interpreter
 ( .." ENTERING LEVEL ONE... " cr )
 1interpreter
 
+( 7 6 * . )
 
 ( ----------------------------------------------------------------------
 Playing with level 1
@@ -208,11 +198,11 @@ Playing with level 1
 ( "[" was not a work before, so we dont need to hide it )
 hide ]
 
-: [ wfx-loop ; immediate
+: [ 1interpreter ; immediate
 : ] r> drop ;
 
 : ex5
-dup * [ three two - ] literal * ( inner com ) 1 +
+dup * [ 33 2 - ] literal * ( inner com ) 1 +
 ;
 
 ( Run our example. Expect 101 )
@@ -232,7 +222,3 @@ hide ex2
 hide ex3
 hide ex4
 hide ex5
-hide one
-hide three
-hide two
-hide wfx-loop
