@@ -10,10 +10,59 @@
 : bl        32 ;
 : space     bl emit ;
 : >         swap < ;
+: nip       swap drop ;
 
 : (         key [char] ) = if exit then tail ( ; immediate
 
 ( Now we can write comments! Woo hoo! )
+
+( TODO : is the definition of exit above correct? -- the non-tail loop problem?? )
+
+
+( Define "[']" in Forth )
+
+: ['] ( comp: "name" ) ( run: -- xt )
+word find non-immediate-literal
+; immediate
+
+
+( Strings Literals... )
+
+: collect-string
+key dup [char] " = if exit
+then c, tail collect-string
+;
+
+( Compile code for a literal string, leaving address on stack )
+
+: s" ( ..." -- string )
+( make a branch slot )          ['] branchA compile, here 0 , ( TODO: use branchR )
+( note where string starts )    here swap
+( collect the string chars )    collect-string drop ( the closing " )
+( add a null )                  0 c,
+( fill in the branch slot )     here swap !
+( push string at runtime )      ['] lit compile, ,
+; immediate
+
+
+( Compile code to emit a literal string )
+
+: ." ( ..." )
+['] s" execute
+['] type compile,
+; immediate
+
+
+( Print literal string while interpreting )
+
+: .."
+here
+['] ." execute
+ret,
+dup execute
+here-pointer !
+;
+
 
 
 ( Drop the top item on the return stack )
@@ -58,7 +107,6 @@ here 100 + dup word-loop-1 ;
 
 ( Define "find" in Forth )
 
-: nip ( a b -- b ) swap drop ;
 
 : find-loop ( s x -- x )
 dup if ( s x )
@@ -72,12 +120,6 @@ then ( s xt ) drop drop 0 ( xt might not be 0 in case word is hidden )
 latest find-loop
 ;
 
-( Define "[']" in Forth )
-
-: ['] ( comp: "name" ) ( run: -- xt )
-word find non-immediate-literal
-; immediate
-
 
 ( Define "tail" in Forth )
 
@@ -88,43 +130,6 @@ word find ( xt )
 ; immediate
 
 
-( Strings Literals... )
-
-: collect-string
-key dup [char] " = if exit
-then c, tail collect-string
-;
-
-( Compile code for a literal string, leaving address on stack )
-
-: s" ( ..." -- string )
-( make a branch slot )          ['] branchA compile, here 0 , ( TODO: use branchR )
-( note where string starts )    here swap
-( collect the string chars )    collect-string drop ( the closing " )
-( add a null )                  0 c,
-( fill in the branch slot )     here swap !
-( push string at runtime )      ['] lit compile, ,
-; immediate
-
-
-( Compile code to emit a literal string )
-
-: ." ( ..." )
-['] s" execute
-['] type compile,
-; immediate
-
-
-( Print literal string while interpreting )
-
-: .."
-here
-['] ." execute
-ret,
-dup execute
-here-pointer !
-;
-
 
 ( tick and hide )
 
@@ -132,6 +137,7 @@ here-pointer !
 ." ** No such word: " type cr
 crash-only-during-startup
 ;
+
 
 : checked-find ( "name" -- xt|0 )
 dup find dup ( str xt xt )
@@ -144,9 +150,22 @@ swap warn-missing
 : ' ( "name" -- xt|0 )
 word checked-find ;
 
+: x-hide ( xt|0 -- )
+dup if hidden^ exit then
+;
+
 : hide ( "name" -- )
-word checked-find dup if hidden^ exit then
+word checked-find x-hide
 ;
 
 
+
 .." Loaded  fundamental.f " cr
+
+( echo-on )
+
+hide checked-find
+hide collect-string
+hide find-loop
+hide word-loop-1
+hide word-loop-2

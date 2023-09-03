@@ -365,7 +365,7 @@ db ((%%link - %%name - 1) | immediate_flag)
 %define lastlink %%link
 %endmacro
 
-defword "if" ; ( x -- ) & sets z/nz
+;;defword "if" ; ( x -- ) & sets z/nz
 _if:
     POP ax
     cmp ax, 0
@@ -516,7 +516,7 @@ defword "echo-on"
 
 defword "crash"
 _crash:
-    print "**We have crashed!"
+    print "**(kernel) We have crashed!"
     nl
 .loop:
     call echo_off
@@ -932,7 +932,7 @@ _strlen:
     PUSH ax
     ret
 
-defword "create-entry" ; ( name-addr -- )
+defword "entry," ; ( name-addr -- )
 _create_entry:
     call _dup           ; ( a a )
     call _strlen        ; ( a n )
@@ -969,11 +969,11 @@ _write_string:
     ret
 
 ;;; not in dictionary
-defword "missing"
-_missing:
-    print "**Missing**"
-    nl
-    ret
+;defword "missing"
+;_missing:
+;    print "**Missing**"
+;    nl
+;    ret
 
 defword "word" ; ( " blank-deliminted-word " -- string-addr ) ; TODO: earlier
 _word:
@@ -1084,15 +1084,15 @@ deprecated_word_buffer: times 64 db 0 ;; TODO: kill
 builtin: dw builtin_data
 builtin_data:
     incbin "f/fundamental.f"
+    incbin "f/zero.f"
     incbin "f/tools.f"
-    incbin "f/interpreter.f"
+    ;incbin "f/interpreter.f"
     incbin "f/predefined.f"
     incbin "f/regression.f"
-    incbin "f/examples.f"
     incbin "f/control.f"
     incbin "f/buffer.f"
+    incbin "f/examples.f"
     incbin "f/start.f"
-    ;incbin "f/zero.f"
     incbin "f/play.f"
     db 0
 
@@ -1103,7 +1103,7 @@ builtin_data:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 45      ;; Number of sectors the bootloader loads
+%assign S 47      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A

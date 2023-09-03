@@ -57,11 +57,16 @@ then ( s: name )
 ( word not defined ) warn-missing tail compiling
 ;
 
+' : ( grab the old def so we can hide after replacing )
+
 ( Now redefine : )
 : :
-word create-entry compiling
+word entry, compiling
 ;
+
+x-hide
 
 hide compile-or-execute
 hide compiling
+hide interpreter
 words-since char ) emit cr
