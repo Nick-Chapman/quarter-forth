@@ -8,7 +8,6 @@ hide 0branch
 hide 0branch,
 hide branchA
 hide bye
-hide c,
 hide crash-only-during-startup
 hide echo-off
 hide here-pointer

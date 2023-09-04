@@ -38,9 +38,12 @@
 : min       over over > if swap then drop ;
 : max       over over < if swap then drop ;
 
+: mod ( n n -- n ) /mod drop ;
+
+
 ( Misc )
 
-: +!        swap over @ + swap ! ;
+: +! ( n a ) swap over @ + swap ! ;
 
 
 ( Stack manipulation )
@@ -51,6 +54,8 @@
 : rot   >r swap r> swap ;
 : -rot  swap >r swap r> ;
 
+: 2dup  over over ;
+: 2drop drop drop ;
 
 : .hh ( a -- )
 dup c@ .h 1 + c@ .h ;
