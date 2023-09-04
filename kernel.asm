@@ -1084,9 +1084,8 @@ deprecated_word_buffer: times 64 db 0 ;; TODO: kill
 builtin: dw builtin_data
 builtin_data:
     incbin "f/fundamental.f"
-    incbin "f/zero.f"
+    incbin "f/interpreter.f"
     incbin "f/tools.f"
-    ;incbin "f/interpreter.f"
     incbin "f/predefined.f"
     incbin "f/regression.f"
     incbin "f/control.f"
