@@ -1087,6 +1087,7 @@ builtin_data:
     incbin "f/interpreter.f"
     incbin "f/tools.f"
     incbin "f/predefined.f"
+    ;incbin "f/own-mult.f"
     incbin "f/regression.f"
     incbin "f/control.f"
     incbin "f/buffer.f"

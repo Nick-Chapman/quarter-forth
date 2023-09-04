@@ -192,7 +192,6 @@ hide dc
 hide dc-oneK
 hide dc64
 hide dis
-hide dump
 hide e8
 hide emit-byte
 hide emit-printable-or-dot
@@ -213,7 +212,6 @@ hide true
 hide words-between
 hide words-continue
 hide x-see
-hide xxd
 hide xxd-line
 hide xxd-page
 words-since char ) emit cr

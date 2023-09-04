@@ -9,6 +9,7 @@
 1 2 3 over  2 x 3 x 2 x 1 x
 1 2 3 rot   1 x 3 x 2 x
 1 2 3 nip   3 x 1 x
+1 2 3 -rot  2 x 1 x 3 x
 
 ( Execution tokens )
 

@@ -49,6 +49,7 @@
 : nip   ( a b -- b )        swap drop ;         ( drop item under stack top. )
 
 : rot   >r swap r> swap ;
+: -rot  swap >r swap r> ;
 
 
 : .hh ( a -- )

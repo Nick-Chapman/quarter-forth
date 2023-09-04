@@ -16,6 +16,11 @@
 
 ( Now we can write comments! Woo hoo! )
 
+
+( Alternative comments, useful as they dont nest )
+: {         key [char] } = if exit then tail { ; immediate
+
+
 ( TODO : is the definition of exit above correct? -- the non-tail loop problem?? )
 
 
@@ -50,6 +55,16 @@ then c, tail collect-string
 : ." ( ..." )
 ['] s" execute
 ['] type compile,
+; immediate
+
+
+( Crash with string message )
+
+: abort" ( ..." )
+['] s" execute
+['] type compile,
+['] cr compile,
+['] crash compile,
 ; immediate
 
 
