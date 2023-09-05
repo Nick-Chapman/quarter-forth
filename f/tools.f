@@ -4,6 +4,8 @@
 : false     ( -- b )        0 ;
 : true      ( -- b )        65535 ;
 : invert    ( b -- b )      if false exit then true ;   ( bool negation )
+: rot   >r swap r> swap ;
+: -rot  swap >r swap r> ;
 
 
 ( Expect... )
@@ -86,21 +88,26 @@ then
 ;
 
 
-( List available words )
-
 : show-if-not-hidden ( xt -- )
 dup hidden? if drop exit then xt->name type space
 ;
 
-( I CANT MAKE A VERSION WORK WHICH PRINT WORDS BOTTOM UP )
-( Is something wrong with non tail-recusive calls ? )
-
+( Print available words -- newest first )
 : words-continue ( xtEarlier xt -- xtEarlier xt )
 over over = if exit then
 dup show-if-not-hidden
 xt->next words-continue
 ;
 
+( Print available words -- oldest first )
+: words-continue ( xtEarlier xt -- xtEarlier xt )
+over over = if exit then
+dup -rot xt->next words-continue rot
+dup show-if-not-hidden
+drop
+;
+
+( Order the above two defs to pick printing order for "words". later def wins )
 
 : words-between ( xtEarlier xtLater )
 words-continue drop drop
@@ -214,4 +221,6 @@ hide words-continue
 hide x-see
 hide xxd-line
 hide xxd-page
+hide -rot
+hide rot
 words-since char ) emit cr
