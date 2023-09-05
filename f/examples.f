@@ -32,8 +32,8 @@ dup even? if /2 tail collatz then
 3 * 1 + tail collatz
 ;
 
-( try: 27 collatz )
-
+: z
+27 collatz ;
 
 ( AHA - Use return stack to make useful version of twice )
 

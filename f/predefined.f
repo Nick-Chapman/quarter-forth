@@ -1,4 +1,4 @@
-.." Loading predefined.f ( " latest
+.." Loading predefined.f" cr
 
 ( This is a 16bit Forth; cell size is 2. Chars have size 1 )
 
@@ -61,4 +61,4 @@
 dup c@ .h 1 + c@ .h ;
 
 
-words-since char ) emit cr
+{ words-since char ) emit cr }

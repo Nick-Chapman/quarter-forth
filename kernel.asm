@@ -54,11 +54,13 @@ echo_enabled: dw 0
 start:
     call init_param_stack
     call cls ;; TODO: only do this on cold start
-    mov ax, _reset
+    mov ax, _bye ;; _reset ;; or _bye ?
     push ax
 .loop:
-    ;;mov al, '?' ;; See when we are using the asm interpreter
-    ;;call print_char
+    ;; mov al, 'K' ;; See when we are using the asm interpreter
+    ;; call print_char
+    ;; mov al, '>' ;; See when we are using the asm interpreter
+    ;; call print_char
     call _word
     call _dup
     POP dx
@@ -417,27 +419,32 @@ _xt_next:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Find
-;; : find-loop ( s x -- x )
 
+;; : find-loop ( s x -- x )
 ;; dup if ( s x )
+;; dup hidden? if xt->next tail find-loop then
 ;; over over ( s x s x ) xt->name ( s x s s2 ) s= if ( s x ) nip exit
 ;; then xt->next tail find-loop
-;; then ( s 0 ) nip ;
-;;
+;; then ( s xt ) drop drop 0 ( xt might not be 0 in case word is hidden )
+
 ;; : find ( string -- xt )
 ;; latest-entry find-loop ;
 
-defword "find" ; ( s -- xt' )
+defword "0find" ; ( s -- xt' )
 _find:
     call _latest ; ( s xt )
 .loop:
     call _dup
     call _if ; ( s xt )
     jz .missing
+    call _dup
+    call _hidden_query
+    call _if
+    jnz .next
     call _over
     call _over ; ( s xt s xt )
     call _xt_name ; ( s xt s s' )
-    call _s_equals                  ; TODO: respect hidden flag?
+    call _s_equals
     call _if ; ( s xt )
     jz .next
     call _nip ; ( xt' ) Found it !
@@ -446,7 +453,10 @@ _find:
     call _xt_next ; ( s xt )
     jmp .loop
 .missing: ; ( s 0 )
-    call _nip ; ( 0 )
+    call _drop
+    call _drop
+    call _lit
+    dw 0
     ret
 
 defword "safe-find"
@@ -726,7 +736,7 @@ _branchR:
     jmp bx
 
 ;; TODO: backport the new Forth definition here
-defwordimm "tail" ; TODO remove no coded in forth!
+defwordimm "tail" ; TODO remove now coded in forth! -- when it is debugged!
     call _word
     call _safe_find
     call _lit
@@ -984,7 +994,7 @@ _write_string:
 ;    nl
 ;    ret
 
-defword "word" ; ( " blank-deliminted-word " -- string-addr ) ; TODO: earlier
+defword "0word" ; ( " blank-deliminted-word " -- string-addr ) ; TODO: earlier
 _word:
     call internal_read_word ;; TODO inline
     mov ax, deprecated_word_buffer
@@ -1041,7 +1051,7 @@ _s_equals:
     dw 1
     ret
 
-defword ":"
+defword "::" ;; TODO: KILL THIS
     jmp colon_intepreter
 
 defword "number?" ; ( string -- number 1 | string 0 )
@@ -1092,8 +1102,12 @@ deprecated_word_buffer: times 64 db 0 ;; TODO: kill
 
 builtin: dw builtin_data
 builtin_data:
-    incbin "f/fundamental.f"
+    incbin "f/fun-A.f"
     incbin "f/interpreter.f"
+    incbin "f/word.f"
+    incbin "f/find.f"
+    incbin "f/string.f"
+    incbin "f/fun-Z.f"
     incbin "f/tools.f"
     incbin "f/predefined.f"
     ;incbin "f/own-mult.f"

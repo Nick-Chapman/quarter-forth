@@ -1,4 +1,4 @@
-.." Loading regression.f ( " latest
+.." Loading regression.f" cr
 
 ( Stack manipulation )
 
@@ -175,4 +175,5 @@ hide one
 hide sq
 hide two
 hide v
-words-since char ) emit cr
+
+{ words-since char ) emit cr }

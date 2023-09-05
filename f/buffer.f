@@ -9,13 +9,6 @@ here
 constant key-buffer
 0 key-buffer c!
 
-( TODO : remove copies )
-: false 0 ;
-: true 0 1 - ;
-: or if drop true then ;
-: variable  here 2 allot constant ;
-: +! swap over @ + swap ! ;
-
 : is-newline dup 13 = swap 10 = or ;
 : is-backspace 8 = ;
 
@@ -69,11 +62,8 @@ reset-kb-pointer fill buffered-key
 ( Install the new buffered-key input routine )
 ' buffered-key set-key
 
-
-hide +!
 hide buffered-key
 hide echo
-hide false
 hide fill
 hide fill-loop
 hide is-backspace
@@ -81,9 +71,6 @@ hide is-newline
 hide kb-pointer
 hide key-buffer
 hide ok
-hide or
 hide old-key
 hide reset-kb-pointer
-hide true
-hide variable
 words-since char ) emit cr
