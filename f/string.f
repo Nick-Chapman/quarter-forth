@@ -5,7 +5,6 @@
 : ['] ( comp: "name" ) ( run: -- xt )  ( TODO: must we use this here? )
 ( word find non-immediate-literal )
 tick: non-immediate-literal             ( Nice to use tick: ? )
-
 ; immediate
 
 

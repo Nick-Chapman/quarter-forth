@@ -7,6 +7,7 @@ Defining a level 0 colon-compiler
 ( Does report missing words at least! )
 ( Compiles words until a "[" marker is reached )
 
+
 entry: ]
 call: 0word
 call: dup
@@ -34,7 +35,7 @@ call: crash-only-during-startup
 tail ]
 ret,
 
-entry: :
+entry: almost: ( "almost" because caller has to compile the final ret, )
 call: entry:
 call: ]
 ret,
@@ -49,7 +50,7 @@ It supports immediateness and numerics.
 Compiling words until ";" marker
 )
 
-: compile-or-execute
+almost: compile-or-execute
 dup immediate? [ if ]
 execute exit
 [ then ] compile,
@@ -62,9 +63,13 @@ execute exit
 ( [ tick: lit ] [ literal ] compile, , )
 
 
-: 1compiling
-0word dup
-lit [ string; , ] s= [ if ] drop ret, exit
+almost: 1compiling
+
+0word
+dup
+lit [ string; , ]
+
+s= [ if ] drop ret, exit
 [ then ]
 dup 0find dup [ if ]
 swap drop compile-or-execute 1compiling exit
@@ -79,20 +84,10 @@ type '?' emit cr crash-only-during-startup 1compiling exit
 [ ret,
 
 
-: ] 1compiling [ ret,
-
-
-( Now we replace : with a ;-terminated version. woop woop! )
-: :
-0word entry, ]
+almost: :
+0word entry, 1compiling
 [ ret,
 
 
-( But we should like to have versions of [ and ] which play nice )
-( [ is an immediate word which starts a nested interpreter )
-( And that already suport switch off with ] -- NO IT DOESN'T )
-( We can get out with exit... which we name ] )
-
-
-: [ 0interpreter ; immediate
-: ] r> drop ;
+: ] 1compiling ;
+: [ 1interpreter ; immediate

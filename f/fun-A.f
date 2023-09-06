@@ -6,16 +6,18 @@
 :: cr        13 emit ;
 :: '?'       [char] ? ;
 :: '0'       [char] 0 ;
+:: '1'       [char] 1 ;
 :: 0         0 ;
 
-:: 0interpreter
+
+:: 1interpreter
 0word dup 0find dup if
-swap drop execute tail 0interpreter
-then drop '0' emit type '?' emit cr crash-only-during-startup tail 0interpreter
+swap drop execute tail 1interpreter
+then drop '0' emit type '?' emit cr crash-only-during-startup tail 1interpreter
 ;
 
-'0' emit cr
-0interpreter
+'1' emit cr
+1interpreter
 
 :: exit      r> drop ;
 

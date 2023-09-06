@@ -1115,6 +1115,7 @@ builtin: dw builtin_data
 builtin_data:
     incbin "f/fun-A.f"
     incbin "f/boot.f"
+    incbin "f/colon.f"
     incbin "f/interpreter.f"
     incbin "f/word.f"
     incbin "f/find.f"
