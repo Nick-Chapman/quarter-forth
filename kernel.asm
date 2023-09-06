@@ -395,7 +395,7 @@ start:
 
 .missing:
     call _drop
-    print "0interpreter: "
+    print "kernel.0interpreter:"
     call _type
     call _lit
     dw '?'
@@ -416,6 +416,50 @@ _cr:
 _if:
     POP ax
     cmp ax, 0
+    ret
+
+
+;; : find-or-crash ( "name" -- xt|0 )
+;; dup 0find dup if swap drop exit then
+;; drop type '?' emit cr crash-only-during-startup
+;; ;
+
+;;defword "find-or-crash"
+_find_or_crash:
+    call _dup
+    call _find
+    call _dup
+    call _if
+    jz .missing
+    call _swap
+    call _drop
+    call _exit
+    ret
+.missing:
+    call _drop
+    print "kernel.find-or-crash:"
+    call _type
+    call _lit
+    dw '?'
+    call _emit
+    call _cr
+    call _crash ;;-only-during-startup
+    ret
+
+defword "tick:"
+    call _word
+    call _find_or_crash
+    ret
+
+defword "entry:"
+    call _word
+    call _create_entry
+    ret
+
+defword "call:"
+    call _word
+    call _find_or_crash
+    call _write_abs_call ;;_compile,
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

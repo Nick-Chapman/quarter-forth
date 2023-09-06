@@ -19,32 +19,3 @@
 :: 'C'       [char] C ;
 :: '?'       [char] ? ;
 :: 0         0 ;
-
-( Need entry/call because of transient string buffer )
-
-:: 0find! ( "name" -- xt|0 )
-dup 0find dup if swap drop exit then
-drop type '?' emit cr crash-only-during-startup
-;
-
-:: tick: 0word 0find! ; ( KILL? )
-:: entry: 0word entry, ;
-:: call: 0word 0find! compile, ;
-
-( Some strings to compare against )
-
-here char [ , 0 , constant string[
-here char ; , 0 , constant string;
-
-
-( temp access to hide for dev... )
-
-:: x-hide ( xt|0 -- )
-dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
-;
-
-:: hide ( "name" -- )
-0word 0find! x-hide
-;
-
-

@@ -7,6 +7,7 @@ Defining a level 0 colon-compiler
 ( Does report missing words at least! )
 ( Compiles words until a "[" marker is reached )
 
+here char [ , 0 , constant string[
 
 entry: ]
 call: 0word
@@ -58,6 +59,8 @@ execute exit
 [ then ] compile,
 [ ret,
 
+
+here char ; , 0 , constant string;
 
 almost: 1compiling
 
