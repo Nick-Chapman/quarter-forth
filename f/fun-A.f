@@ -9,13 +9,3 @@
 :: (         key [char] ) = if exit then tail ( ; immediate
 
 ( Now we can write comments! Woo hoo! )
-
-( Alternative comments, useful as they dont nest )
-:: { key [char] } = if exit then tail { ; immediate
-
-
-:: 'A'       [char] A ;
-:: 'B'       [char] B ;
-:: 'C'       [char] C ;
-:: '?'       [char] ? ;
-:: 0         0 ;

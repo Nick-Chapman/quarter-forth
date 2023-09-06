@@ -1,6 +1,8 @@
 
 ( Define reference implementation of ] and : )
 
+here char C , constant 'C'
+
 : compile-or-execute ( xt -- )
 dup immediate? if
 execute exit
@@ -36,7 +38,7 @@ number? if
 then ( name )
 
 ( word not defined )
-'C' emit type '?' emit cr
+[ 'C' ] emit type '?' emit cr
 crash-only-during-startup
 tail compiling
 ;

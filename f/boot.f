@@ -1,4 +1,11 @@
 
+here char A , constant 'A'
+here char B , constant 'B'
+here char B , constant '?'
+
+here char [ , 0 , constant string[
+here char ; , 0 , constant string;
+
 ( ----------------------------------------------------------------------
 Defining a level 0 colon-compiler
 ---------------------------------------------------------------------- )
@@ -7,7 +14,6 @@ Defining a level 0 colon-compiler
 ( Does report missing words at least! )
 ( Compiles words until a "[" marker is reached )
 
-here char [ , 0 , constant string[
 
 entry: ]
 call: 0word
@@ -28,10 +34,10 @@ call: compile,
 tail ]
 then
 call: drop
-call: 'A'
+call: lit 'A'
 call: emit
 call: type
-call: '?'
+call: lit '?'
 call: emit
 call: cr
 call: crash-only-during-startup
@@ -60,8 +66,6 @@ execute exit
 [ ret,
 
 
-here char ; , 0 , constant string;
-
 almost: 1compiling
 
 0word
@@ -79,7 +83,7 @@ number? [ if ]
 1compiling exit
 
 [ then ]
-'B' emit type '?' emit cr
+[ 'B' ] emit type '?' emit cr
 crash-only-during-startup 1compiling exit
 [ ret,
 

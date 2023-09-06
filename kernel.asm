@@ -315,7 +315,7 @@ colon_intepreter: ; TODO: move this towards forth style
     call try_parse_as_number
     jz .number
     PUSH dx
-    call _safe_find
+    call _find_or_crash ;;_safe_find
     call _dup
     call _immediate_query
     POP ax
@@ -462,6 +462,11 @@ defword "call:"
     call _write_abs_call ;;_compile,
     ret
 
+defword "0" ; ( -- 0 )
+    call _lit
+    dw 0
+    ret
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; dictionary header layout ;; TODO: comment/picture
 
@@ -548,27 +553,27 @@ _find:
     dw 0
     ret
 
-defword "safe-find"
-_safe_find: ; ( string -> xt )
-    call _dup ; ( s s )
-    call _find ; ( s xt )
-    call _swap ; ( xt s )
-    call _over ; ( xt s xt )
-    call _warn_if_missing ; ( xt )
-    ret
+;; ;;defword "safe-find"
+;; _safe_find: ; ( string -> xt )
+;;     call _dup ; ( s s )
+;;     call _find ; ( s xt )
+;;     call _swap ; ( xt s )
+;;     call _over ; ( xt s xt )
+;;     call _warn_if_missing ; ( xt )
+;;     ret
 
-_warn_if_missing: ; ( s xt|0 -> )
-    POP ax
-    cmp ax, 0
-    jnz .ok
-    print "(kernel) No such word: "
-    call _type
-    nl
-    call _crash_only_during_startup
-    ret
-.ok:
-    call _drop
-    ret
+;; _warn_if_missing: ; ( s xt|0 -> )
+;;     POP ax
+;;     cmp ax, 0
+;;     jnz .ok
+;;     print "(kernel) No such word: "
+;;     call _type
+;;     nl
+;;     call _crash_only_during_startup
+;;     ret
+;; .ok:
+;;     call _drop
+;;     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; key
@@ -830,7 +835,7 @@ _branchR:
 ;; TODO: backport the new Forth definition here
 defwordimm "tail" ; TODO remove now coded in forth! -- when it is debugged!
     call _word
-    call _safe_find
+    call _find_or_crash ;;_safe_find
     call _lit
     dw _branchA ;; TODO: goal, use _branchR
     call _write_abs_call
