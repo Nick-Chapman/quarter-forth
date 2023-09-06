@@ -881,17 +881,28 @@ _lit:
     add bx, 2
     jmp bx
 
-defwordimm "literal"
+
+;; defwordimm "nah-literal"
+;; _literal:
+;;     POP ax
+;;     push ax ; save lit value
+;;     call _lit
+;;     dw _lit
+;;     call _write_abs_call
+;;     pop ax ; restore lit value
+;;     PUSH ax
+;;     call _comma
+;;     ret
+
+
+defwordimm "literal" ;; Much simpler/cleaner definition
 _literal:
-    POP ax
-    push ax ; save lit value
     call _lit
     dw _lit
-    call _write_abs_call
-    pop ax ; restore lit value
-    PUSH ax
+    call _write_abs_call ;; TODO: fix name to be more like: compile,
     call _comma
     ret
+
 
 defword "non-immediate-literal" ; TODO: imprve this
     jmp _literal

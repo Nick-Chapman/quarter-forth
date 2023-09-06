@@ -27,7 +27,7 @@ tail ]
 then
 call: drop
 call: type
-call: qm
+call: '?'
 call: emit
 call: cr
 call: crash-only-during-startup
@@ -44,7 +44,7 @@ Using level 0 to define a level 1 compiler...
 ---------------------------------------------------------------------- )
 
 (
-1] is not properly tail recursive, but never mind for now -- TODO: why not?
+1compiling is not properly tail recursive, but never mind for now -- TODO: why not?
 It supports immediateness and numerics.
 Compiling words until ";" marker
 )
@@ -55,26 +55,38 @@ execute exit
 [ then ] compile,
 [ ret,
 
-: 1]
+
+( WHY IS THIS SO COMPLICATED ?? HURTS MY BRAIN )
+( [ tick: lit ] [ literal ] compile, , 1compiling exit )
+
+( [ tick: lit ] [ literal ] compile, , )
+
+
+: 1compiling
 0word dup
 lit [ string; , ] s= [ if ] drop ret, exit
 [ then ]
 dup 0find dup [ if ]
-swap drop compile-or-execute 1] exit
+swap drop compile-or-execute 1compiling exit
 [ then ] drop
 number? [ if ]
-[ ['] lit ] compile, , 1] exit
+
+[ tick: lit ] [ literal ] compile, ,
+1compiling exit
+
 [ then ]
-type qm emit cr crash-only-during-startup 1] exit
+type '?' emit cr crash-only-during-startup 1compiling exit
 [ ret,
 
-: ] 1] [ ret,
-( hide 1] )
+
+: ] 1compiling [ ret,
+
 
 ( Now we replace : with a ;-terminated version. woop woop! )
 : :
 0word entry, ]
 [ ret,
+
 
 ( ----------------------------------------------------------------------
 Defining a level 1 interpreter
