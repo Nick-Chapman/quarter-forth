@@ -32,36 +32,42 @@ Done:
 - paginated mem dump -- ascii and xxd style
 - imp relative branch0 offsets (nicer to see & future code relocation will be easier)
 - debug/fix problem with .s when used in buffered-key ok message
-
+- bye: is it possible to quit qemu from inside forth? - YES
+- allow words to be marked as hidden
+- (strip functionality of asm intepreter/colon-compiler: de-support numbers, immediate)
+- bootstrap from simplest word-find-execute loop
+- finally killed ASM def of colon compiler
+- support [ and ] to switch compiler/interpreter without being state-aware!
 
 Next:
 
+- big cleanup of ASM file
+- cleanup of TODOs everywhere
+- refactor builtin words to be in forthy style where possible (and thus candidates for .f)
 
-- pre-compiler and pre-interpreter ( no support for numbers ), but good enough for...
-- state aware combined interpreter/colon-compiler in forth, support [, ]
-- basic modal repl: switches state on [ and ] -- this will be in asm (proto in forth)
-- use modal repl + entry, for early defs: comments, strings .. compiler/interpreter
+- recode number? in forth (and kill from ASM) - signed and hex
 
-- only when compiling. guard for if/then etc (will need "state")
+- primordal mode (-1), access to fixed array of single-char words
+- allowing bootstrap def of word/find
+
+- state aware combined interpreter/colon-compiler ?
+- if not, then recode/cleanup the reference imp
+
+- kill transient deprecated_word_buffer -- just use here
+- check return under/stack overflow
 
 - work through examples from starting forth
 
 - signed numeric conversion
 - signed print by default. unsigned on u.
-- numeric conversion in form (signed and hex)
-
-- merge and strip comments to single embedded forth file - or maybe not.
-- check return under/stack overflow
-- refactor builtin words to be in forthy style where possible (and thus candidates for .f)
-- strip functionality of asm intepreter/colon-compiler: de-support numbers, immediate
-
-- "quit" - clear return stack and restart interpreter loop
-- "abort" - clear param stack and call quit
-- support nested parens in comments
-- allow words to be marked as hidden
+- smart print that can see if numbers are XT addresses
+- hex converion on input
 
 - support "else" (factor "ahead" - find posting on control flow imp in forth)
 - do/loop -- make F example work using original code
+- "quit" - clear return stack and restart interpreter loop
+- "abort" - clear param stack and call quit
+- support nested parens in comments
 
 - postpone
 - create
@@ -69,10 +75,11 @@ Next:
     X here expect
 - does>
 
-- bye: is it possible to quit qemu from inside forth?
 
 - macros/defs in prep to explore threaded interpreter
 - threaded interpreter: direct or indirect?
 
 - run for real. not in qemu
 - port everything to 6502. bbc or own-6502-computer
+
+- stretch: continue BBC meteors game
