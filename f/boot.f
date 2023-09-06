@@ -77,28 +77,24 @@ number? [ if ]
 
 [ then ]
 'B' emit type '?' emit cr
-crash-only-during-startup 1compiling
+crash-only-during-startup 1compiling exit
 [ ret,
+
+
+almost: start]
+1compiling [ ret,
 
 
 ( This is out first definition of a working colon compiler )
 
 almost: :
-0word entry, 1compiling
+0word entry, start]
 [ ret,
 
 
-( Rename; pehaps just name it ] in first place ? )
+( But define versions of [ and ] which play nice )
+( [ is an immediate word which starts a nested interpreter )
+( ] workd like exit; manipulating the return stack )
 
-
-(
-I think the following defs for ] and [ are a problem.
-We need to switch between states, rather that forever executing new
-intepreters and compilers.
-Pretty sure it consumes our return stack.
-And - we can no longer use "exit" to pop back the interpretation levels.
-That definitely worked before. Which version?
-)
-
-: ] 1compiling ;
 : [ 0interpreter ; immediate
+: ] r> drop ;
