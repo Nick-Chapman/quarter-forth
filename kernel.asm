@@ -395,7 +395,7 @@ start:
 
 .missing:
     call _drop
-    print "kernel.0interpreter:"
+    print "kernel.0interpreter "
     call _type
     call _lit
     dw '?'
@@ -437,7 +437,7 @@ _find_or_crash:
     ret
 .missing:
     call _drop
-    print "kernel.find-or-crash:"
+    print "kernel.find-or-crash "
     call _type
     call _lit
     dw '?'
@@ -1211,7 +1211,6 @@ deprecated_word_buffer: times 64 db 0 ;; TODO: kill
 
 builtin: dw builtin_data
 builtin_data:
-    incbin "f/fun-A.f"
     incbin "f/boot.f"
     incbin "f/interpreter.f"
     incbin "f/colon.f" ; does not work on 0interpreter. why?

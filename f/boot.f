@@ -1,10 +1,56 @@
 
-here char A , constant 'A'
-here char B , constant 'B'
-here char B , constant '?'
+char A constant 'A'
+char B constant 'B'
+char ? constant '?'
+char ) constant ')'
+
+entry: here
+call: here-pointer
+call: @
+ret,
 
 here char [ , 0 , constant string[
 here char ; , 0 , constant string;
+
+entry: immediate
+call: latest
+call: immediate^
+ret,
+
+entry: if       immediate
+call: 0branch,
+call: here
+call: 0
+call: ,
+ret,
+
+entry: then     immediate
+call: dup
+call: here
+call: swap
+call: -
+call: swap
+call: !
+ret,
+
+entry: exit
+call: r>
+call: drop
+ret,
+
+entry: (        immediate
+call: key
+call: ')'
+call: =
+if
+call: exit
+then
+tail (
+ret,
+
+
+( Now we can write comments! Woo hoo! )
+
 
 ( ----------------------------------------------------------------------
 Defining a level 0 colon-compiler
@@ -18,7 +64,7 @@ Defining a level 0 colon-compiler
 entry: ]
 call: 0word
 call: dup
-call: lit string[ ,
+call: string[
 call: s=
 if
 call: drop
@@ -34,13 +80,13 @@ call: compile,
 tail ]
 then
 call: drop
-call: lit 'A'
+call: 'A'
 call: emit
 call: type
-call: lit '?'
+call: '?'
 call: emit
 call: cr
-call: crash-only-during-startup
+call: crash ( -only-during-startup )
 tail ]
 ret,
 
@@ -65,12 +111,11 @@ execute exit
 [ then ] compile,
 [ ret,
 
-
 almost: 1compiling
 
 0word
 dup
-lit [ string; , ]
+string;
 
 s= [ if ] drop ret, exit
 [ then ]
@@ -83,7 +128,7 @@ number? [ if ]
 1compiling exit
 
 [ then ]
-[ 'B' ] emit type '?' emit cr
+'B' emit type '?' emit cr
 crash-only-during-startup 1compiling exit
 [ ret,
 
