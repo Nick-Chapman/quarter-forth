@@ -303,41 +303,41 @@ internal_write_byte:
     inc word [here]
     ret
 
-colon_intepreter: ; TODO: move this towards forth style
-    call _word
-    call _create_entry
-.loop:
-    call _word
-    POP dx
-    mov di, dx
-    call is_semi
-    jz .semi
-    call try_parse_as_number
-    jz .number
-    PUSH dx
-    call _find_or_crash ;;_safe_find
-    call _dup
-    call _immediate_query
-    POP ax
-    cmp ax, 0
-    jnz .immediate
-    call _write_abs_call
-    jmp .loop
-.immediate:
-    POP bx
-    call bx
-    jmp .loop
-.number:
-    PUSH ax
-    call _literal
-    jmp .loop
-.semi:
-    call _write_ret ;; optimization!
-    ret
+;; colon_intepreter: ; TODO: move this towards forth style
+;;     call _word
+;;     call _create_entry
+;; .loop:
+;;     call _word
+;;     POP dx
+;;     mov di, dx
+;;     call is_semi
+;;     jz .semi
+;;     call try_parse_as_number
+;;     jz .number
+;;     PUSH dx
+;;     call _find_or_crash ;;_safe_find
+;;     call _dup
+;;     call _immediate_query
+;;     POP ax
+;;     cmp ax, 0
+;;     jnz .immediate
+;;     call _write_abs_call
+;;     jmp .loop
+;; .immediate:
+;;     POP bx
+;;     call bx
+;;     jmp .loop
+;; .number:
+;;     PUSH ax
+;;     call _literal
+;;     jmp .loop
+;; .semi:
+;;     call _write_ret ;; optimization!
+;;     ret
 
-is_semi:
-    cmp word [di], ";"
-    ret
+;; is_semi:
+;;     cmp word [di], ";"
+;;     ret
 
 %assign X ($-$$)
 ;%warning X "- After ASM"
@@ -1160,10 +1160,10 @@ _s_equals:
     dw 1
     ret
 
-defword "::" ;; TODO: KILL THIS
-    jmp colon_intepreter
+;;defword "no-more::" ;; TODO: KILL THIS
+;;    jmp colon_intepreter
 
-defword "number?" ; ( string -- number 1 | string 0 )
+defword "number?" ; ( string -- number 1 | string 0 ) ;; TODO: now can recoded in forth
     call _dup
     POP dx
     call try_parse_as_number

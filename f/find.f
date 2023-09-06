@@ -1,7 +1,7 @@
 
 ( Define "find" in Forth )
 
-:: nip   swap drop ;
+: nip   swap drop ;
 
 : find-loop ( s x -- x )
 dup if ( s x )
