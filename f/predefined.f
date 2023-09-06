@@ -57,8 +57,9 @@
 : 2dup  over over ;
 : 2drop drop drop ;
 
+{ NOPE
 : .hh ( a -- )
 dup c@ .h 1 + c@ .h ;
-
+}
 
 { words-since char ) emit cr }

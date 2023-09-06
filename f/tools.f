@@ -188,7 +188,6 @@ then
 latest ['] see10 pag
 ;
 
-hide .hh
 hide .s-continue
 hide @.hh
 hide @rel->abs
