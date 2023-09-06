@@ -401,7 +401,8 @@ start:
     dw '?'
     call _emit
     call _cr
-    call _crash_only_during_startup
+    ;;call _crash_only_during_startup
+    call _crash
     jmp .loop
 
 defword "cr"
