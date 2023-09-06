@@ -90,6 +90,15 @@ almost: :
 
 ( Rename; pehaps just name it ] in first place ? )
 
-: ] 1compiling ;
 
+(
+I think the following defs for ] and [ are a problem.
+We need to switch between states, rather that forever executing new
+intepreters and compilers.
+Pretty sure it consumes our return stack.
+And - we can no longer use "exit" to pop back the interpretation levels.
+That definitely worked before. Which version?
+)
+
+: ] 1compiling ;
 : [ 0interpreter ; immediate
