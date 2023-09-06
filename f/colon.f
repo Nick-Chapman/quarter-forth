@@ -15,15 +15,12 @@ tick: non-immediate-literal             ( Nice to use tick: ? )
 
 ( We make use of the previous  "]" whilst defining ths one )
 
-: old-] ] ;
-
-
-: ]
+: compiling
 0word ( name ) dup
 
 ( s" ;" )               ( IF WE HAD STRINGS )
 ( lit [ string; , ] )   ( THE SAME AS THE NEXT LINE )
-[ string; old-] literal
+[ string; ] literal
 
 s= if drop ret, ( OPTIMIZED ) exit
 
@@ -31,19 +28,21 @@ then ( name )
 
 dup 0find dup if ( name xt )
 swap drop ( xt )
-compile-or-execute tail ]
+compile-or-execute tail compiling
 then drop ( name )
 
 number? if
-['] lit compile, , tail ]
+['] lit compile, , tail compiling
 then ( name )
 
 ( word not defined )
 'C' emit type '?' emit cr
 crash-only-during-startup
-tail ]
+tail compiling
 ;
 
-: : 0word entry, ] ;
+: : 0word entry, compiling ;
 
+: [ interpreter ; immediate
+: ] r> drop ;
 

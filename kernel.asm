@@ -1163,8 +1163,8 @@ builtin: dw builtin_data
 builtin_data:
     incbin "f/fun-A.f"
     incbin "f/boot.f"
-    ;incbin "f/colon.f"
     incbin "f/interpreter.f"
+    incbin "f/colon.f" ; does not work on 0interpreter. why?
     incbin "f/word.f"
     incbin "f/find.f"
     incbin "f/string.f"
@@ -1188,7 +1188,7 @@ builtin_data:
 ;;; Size check...
 
 %assign R ($-$$)  ;; Space required for above code
-%assign S 49      ;; Number of sectors the bootloader loads
+%assign S 50      ;; Number of sectors the bootloader loads
 %assign A (S*512) ;; Therefore: Maximum space allowed
 ;;;%warning "Kernel size" required=R, allowed=A (#sectors=S)
 %if R>A
