@@ -47,45 +47,43 @@ check_ps_underflow:
 %endmacro
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; ASM code...
+;;; old start ;; TODO: kill
 
-echo_enabled: dw 0
-
-start:
-    call init_param_stack
-    call cls ;; TODO: only do this on cold start
-    mov ax, _bye ;; _reset ;; or _bye ?
-    push ax
-.loop:
-    ;; mov al, 'K' ;; See when we are using the asm interpreter
-    ;; call print_char
-    ;; mov al, '>' ;; See when we are using the asm interpreter
-    ;; call print_char
-    call _word
-    call _dup
-    POP dx
-    call try_parse_as_number
-    jnz .nan
-    PUSH ax
-    call _swap
-    call _drop
-    jmp .loop
-.nan:
-    PUSH dx
-    call _find
-    POP bx
-    cmp bx, 0
-    jz .missing
-    call _drop
-    call bx
-    jmp .loop
-.missing:
-    print "**(Kernel:start) No such word: "
-    POP di
-    call internal_print_string
-    nl
-    call _crash_only_during_startup
-    jmp .loop
+;; old_start:
+;;     call init_param_stack
+;;     call cls ;; TODO: only do this on cold start
+;;     mov ax, _bye ;; _reset ;; or _bye ?
+;;     push ax
+;; .loop:
+;;     ;; mov al, 'K' ;; See when we are using the asm interpreter
+;;     ;; call print_char
+;;     ;; mov al, '>' ;; See when we are using the asm interpreter
+;;     ;; call print_char
+;;     call _word
+;;     call _dup
+;;     POP dx
+;;     call try_parse_as_number
+;;     jnz .nan
+;;     PUSH ax
+;;     call _swap
+;;     call _drop
+;;     jmp .loop
+;; .nan:
+;;     PUSH dx
+;;     call _find
+;;     POP bx
+;;     cmp bx, 0
+;;     jz .missing
+;;     call _drop
+;;     call bx
+;;     jmp .loop
+;; .missing:
+;;     print "**(Kernel:start) No such word: "
+;;     POP di
+;;     call internal_print_string
+;;     nl
+;;     call _crash_only_during_startup
+;;     jmp .loop
 
 ;;; Try to parse a string as a number
 ;;; [in DX=string-to-be-tested, out Z=yes-number, DX:AX=number]
@@ -120,6 +118,7 @@ try_parse_as_number: ; TODO: code in forth
 .no:
     cmp bl, 0 ; return NO
     ret
+
 
 ;;; Reading input...
 internal_read_char: ; -> AL
@@ -367,6 +366,51 @@ db ((%%link - %%name - 1) | immediate_flag)
 %define lastlink %%link
 %endmacro
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; new start: simple word-find-execute loop
+
+;; : interpreter
+;; 0word dup 0find dup if
+;; swap drop execute tail interpreter
+;; then drop '0' emit type '?' emit cr crash-only-during-startup tail interpreter
+;; ;
+
+defword "0interpreter" ;; ok name?
+start:
+    call init_param_stack
+    call cls ;; TODO: only do this on cold start
+    mov ax, _bye
+    push ax ; on return stack
+.loop:
+    call _word
+    call _dup
+    call _find
+    call _dup
+    call _if
+    jz .missing
+    call _swap
+    call _drop
+    call _execute
+    jmp .loop
+
+.missing:
+    call _drop
+    print "0interpreter: "
+    call _type
+    call _lit
+    dw '?'
+    call _emit
+    call _cr
+    call _crash_only_during_startup
+    jmp .loop
+
+defword "cr"
+_cr:
+    call _lit
+    dw 13
+    call _emit
+    ret
+
 ;;defword "if" ; ( x -- ) & sets z/nz
 _if:
     POP ax
@@ -510,6 +554,8 @@ defword "get-key" ; ( -- ax )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; echo-control, messages, startup, crash
 
+echo_enabled: dw 0
+
 defword "echo-enabled" ; ( -- addr )
     mov bx, echo_enabled
     PUSH bx
@@ -548,6 +594,7 @@ _crash_only_during_startup:
 ;;; Output
 
 defword "emit" ; ( byte -- ) ; emit ascii char
+_emit:
     POP ax
     call print_char
     ret
@@ -814,6 +861,7 @@ _comma:
     ret
 
 defword "execute"
+_execute:
     POP bx
     jmp bx
 

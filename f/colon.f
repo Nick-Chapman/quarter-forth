@@ -39,7 +39,8 @@ number? if
 then ( name )
 
 ( word not defined )
-type '?' emit cr crash-only-during-startup
+'C' emit type '?' emit cr
+crash-only-during-startup
 tail ]
 ;
 

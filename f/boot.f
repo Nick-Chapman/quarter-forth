@@ -27,6 +27,8 @@ call: compile,
 tail ]
 then
 call: drop
+call: 'A'
+call: emit
 call: type
 call: '?'
 call: emit
@@ -45,9 +47,9 @@ Using level 0 to define a level 1 compiler...
 ---------------------------------------------------------------------- )
 
 (
-1compiling is not properly tail recursive, but never mind for now -- TODO: why not?
-It supports immediateness and numerics.
+This compiler supports immediateness and numerics.
 Compiling words until ";" marker
+BUt it can't take advantage of immediateness in it's own definition
 )
 
 almost: compile-or-execute
@@ -55,12 +57,6 @@ dup immediate? [ if ]
 execute exit
 [ then ] compile,
 [ ret,
-
-
-( WHY IS THIS SO COMPLICATED ?? HURTS MY BRAIN )
-( [ tick: lit ] [ literal ] compile, , 1compiling exit )
-
-( [ tick: lit ] [ literal ] compile, , )
 
 
 almost: 1compiling
@@ -80,14 +76,20 @@ number? [ if ]
 1compiling exit
 
 [ then ]
-type '?' emit cr crash-only-during-startup 1compiling exit
+'B' emit type '?' emit cr
+crash-only-during-startup 1compiling
 [ ret,
 
+
+( This is out first definition of a working colon compiler )
 
 almost: :
 0word entry, 1compiling
 [ ret,
 
 
+( Rename; pehaps just name it ] in first place ? )
+
 : ] 1compiling ;
-: [ 1interpreter ; immediate
+
+: [ 0interpreter ; immediate
