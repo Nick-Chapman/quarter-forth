@@ -76,8 +76,6 @@ dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
 
 ( TODO: code "literal" in Forth, and then backport to Asm )
 
-( This crashes without 1interpreter. think because of use of [ and ] )
-
 : literal ( -- x ) ( C: x -- )
 lit
 [ tick: lit , ]

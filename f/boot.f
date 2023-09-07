@@ -61,7 +61,7 @@ Defining a level 0 colon-compiler
 ( Compiles words until a "[" marker is reached )
 
 
-entry: ]
+entry: ]]
 call: 0word
 call: dup
 call: string[
@@ -77,7 +77,7 @@ if
 call: swap
 call: drop
 call: compile,
-tail ]
+tail ]]
 then
 call: drop
 call: 'A'
@@ -87,12 +87,12 @@ call: '?'
 call: emit
 call: cr
 call: crash ( -only-during-startup )
-tail ]
+tail ]]
 ret,
 
 entry: almost: ( "almost" because caller has to compile the final ret, )
 call: entry:
-call: ]
+call: ]]
 ret,
 
 ( ----------------------------------------------------------------------
@@ -106,9 +106,9 @@ BUt it can't take advantage of immediateness in it's own definition
 )
 
 almost: compile-or-execute
-dup immediate? [ if ]
+dup immediate? [ if ]]
 execute exit
-[ then ] compile,
+[ then ]] compile,
 [ ret,
 
 almost: 1compiling
@@ -117,19 +117,19 @@ almost: 1compiling
 dup
 string;
 
-s= [ if ] drop ret, exit
-[ then ]
-dup 0find dup [ if ]
+s= [ if ]] drop ret, exit
+[ then ]]
+dup 0find dup [ if ]]
 swap drop compile-or-execute 1compiling exit
-[ then ] drop
-number? [ if ]
+[ then ]] drop
+number? [ if ]]
 
-[ tick: lit ] [ literal ] compile, ,
+[ tick: lit ]] [ literal ]] compile, ,
 1compiling exit
 
-[ then ]
+[ then ]]
 'B' emit type '?' emit cr
-crash-only-during-startup 1compiling exit
+crash 1compiling exit
 [ ret,
 
 
@@ -142,11 +142,3 @@ almost: start]
 almost: :
 0word entry, start]
 [ ret,
-
-
-( But define versions of [ and ] which play nice )
-( [ is an immediate word which starts a nested interpreter )
-( ] workd like exit; manipulating the return stack )
-
-: [ 0interpreter ; immediate
-: ] r> drop ;

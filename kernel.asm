@@ -382,6 +382,11 @@ start:
     mov ax, _bye
     push ax ; on return stack
 .loop:
+    cmp byte [is_startup_complete], 0
+    jz .go
+    mov al, '%' ;; only see '%' after startup is complete
+    call print_char
+.go:
     call _word
     call _dup
     call _find
@@ -392,17 +397,16 @@ start:
     call _drop
     call _execute
     jmp .loop
-
 .missing:
     call _drop
-    print "kernel.0interpreter "
+    mov al, '%' ;; make it clear who is reporting the error
+    call print_char
     call _type
     call _lit
-    dw '?'
+    dw '?' ;; standard ? error
     call _emit
     call _cr
-    ;;call _crash_only_during_startup
-    call _crash
+    call _crash_only_during_startup
     jmp .loop
 
 defword "cr"
@@ -1213,7 +1217,7 @@ builtin: dw builtin_data
 builtin_data:
     incbin "f/boot.f"
     incbin "f/interpreter.f"
-    incbin "f/colon.f" ; does not work on 0interpreter. why?
+    incbin "f/colon.f"
     incbin "f/word.f"
     incbin "f/find.f"
     incbin "f/string.f"

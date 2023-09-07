@@ -1,20 +1,40 @@
 
-( Define and enter top-level interpreter,  "[" )
+here char ] , 0 , constant string]
 
-: interpreter
-( [char] 1 emit )
+: [
+
+( debugging... )
+( [char] > emit )
+
 0word ( string )
+
+( Is the word the special "]" marker? )
+dup string] s= if ( string )
+
+( YES, exit the interpreter looop )
+drop exit then
+
+( Is the name in the dictionary? )
 dup 0find dup if ( string xt )
-( word is in the dictionary, so execute it, and loop... )
-swap drop ( xt ) execute tail interpreter
+
+( YES, execute it, and loop... )
+swap drop ( xt ) execute tail [
+
+( NO, name is not in the dictionary )
 then drop ( string )
-( word not in dictionary, maybe it's a number... )
-number? if ( converted-number ) tail interpreter
-( word not defined, so message, skip and loop... )
-then [char] 1 emit type [char] ? emit cr crash-only-during-startup tail interpreter
-;
 
-: [ interpreter ; immediate
+( Maybe it's a number... )
+number? if ( converted-number )
 
-char 1 emit cr
-interpreter
+( YES; leave the converted number on the stack, and loop... )
+tail [
+
+( NO; name undefined, so message, skip and loop... )
+
+then [char] >                   ( make it clear where the error is coming from )
+emit type [char] ? emit cr      ( standard ? error )
+crash-only-during-startup tail [
+
+; immediate
+
+( enter the interpreter ) [

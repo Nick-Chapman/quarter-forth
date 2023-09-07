@@ -44,6 +44,3 @@ tail compiling
 ;
 
 : : 0word entry, compiling ;
-
-: [ interpreter ; immediate
-: ] r> drop ;
