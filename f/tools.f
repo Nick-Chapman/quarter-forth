@@ -7,6 +7,10 @@
 : rot   >r swap r> swap ;
 : -rot  swap >r swap r> ;
 
+: bl        32 ;
+: space     bl emit ;
+: >         swap < ;
+
 
 ( Expect... )
 
@@ -188,15 +192,28 @@ then
 latest ['] see10 pag
 ;
 
+: x-hide ( xt|0 -- )
+dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
+;
+
+: hide ( "name" -- )
+0word find! x-hide
+;
+
+
+hide -rot
 hide .s-continue
+hide >
 hide @.hh
 hide @rel->abs
 hide and
+hide bl
 hide c3
 hide db
 hide dc
 hide dc-oneK
 hide dc64
+hide depth
 hide dis
 hide e8
 hide emit-byte
@@ -209,18 +226,19 @@ hide is-printable?
 hide is-ret
 hide pag
 hide pag-continue
+hide rot
 hide see-all
 hide see1
 hide see10
 hide show-if-not-hidden
+hide space
 hide times
 hide true
 hide words-between
 hide words-continue
 hide words-continue
+hide x-hide
 hide x-see
 hide xxd-line
 hide xxd-page
-hide -rot
-hide rot
 words-since char ) emit cr

@@ -1,4 +1,6 @@
-.." Loading predefined.f" cr
+.." Loading predefined.f ( ... )" cr
+
+: allot     here + here-pointer ! ;
 
 ( This is a 16bit Forth; cell size is 2. Chars have size 1 )
 
@@ -10,6 +12,8 @@
 
 ( Output )
 
+: bl        32 ;
+: space     bl emit ;
 : spaces    dup if space 1 - tail spaces then drop ;
 : ?         @ . ;
 
@@ -25,7 +29,9 @@
 : and       ( b1 b2 -- b )  if exit then drop false ;   ( bool conjunction )
 : invert    ( b -- b )      if false exit then true ;   ( bool negation )
 
-( Numberic )
+( Numbers )
+
+: >         swap < ;
 
 : 0<      ( n -- flag )     0 < ;                       ( n is less than zero )
 : 0=      ( n -- flag )     0 = ;                       ( n is zero )
@@ -40,11 +46,9 @@
 
 : mod ( n n -- n ) /mod drop ;
 
-
 ( Misc )
 
 : +! ( n a ) swap over @ + swap ! ;
-
 
 ( Stack manipulation )
 
@@ -57,9 +61,12 @@
 : 2dup  over over ;
 : 2drop drop drop ;
 
-{ NOPE
-: .hh ( a -- )
-dup c@ .h 1 + c@ .h ;
-}
+( Alternative comments, useful since parens don't nest )
+
+: {         key [char] } = if exit then tail { ; immediate
+
+( Tick )
+
+: ' ( "name" -- xt|0 ) word find! ;
 
 { words-since char ) emit cr }

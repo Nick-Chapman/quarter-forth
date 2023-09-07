@@ -1,3 +1,4 @@
+.." Loading word.f" cr
 
 ( Define "word" in Forth )
 

@@ -1,3 +1,4 @@
+.." Loading find.f" cr
 
 ( Define "find" in Forth )
 
@@ -15,7 +16,7 @@ then ( s xt ) drop drop 0 ( xt might not be 0 in case word is hidden )
 latest find-loop
 ;
 
-: find-or-crash ( "name" -- xt|0 )
+: find! ( "name" -- xt|0 )
 dup find dup if nip exit then
 drop type '?' emit cr crash-only-during-startup
 ;

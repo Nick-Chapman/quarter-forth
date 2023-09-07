@@ -1,3 +1,4 @@
+.." Loading colon.f ( " cr
 
 ( Define reference implementation of ] and : )
 

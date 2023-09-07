@@ -52,3 +52,5 @@ ret,
 dup execute
 here-pointer !
 ;
+
+.." Loaded  string.f" cr

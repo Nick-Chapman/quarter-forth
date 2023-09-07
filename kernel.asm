@@ -1216,12 +1216,11 @@ deprecated_word_buffer: times 64 db 0 ;; TODO: kill
 builtin: dw builtin_data
 builtin_data:
     incbin "f/boot.f"
+    incbin "f/string.f"
     incbin "f/interpreter.f"
-    incbin "f/colon.f"
+    ; incbin "f/colon.f" ; works, but not necessary
     incbin "f/word.f"
     incbin "f/find.f"
-    incbin "f/string.f"
-    incbin "f/fun-Z.f"
     incbin "f/tools.f"
     incbin "f/predefined.f"
     ;incbin "f/own-mult.f"

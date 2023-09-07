@@ -1,10 +1,10 @@
+.." Loading interpeter.f" cr
 
 here char ] , 0 , constant string]
 
 : [
 
-( debugging... )
-( [char] > emit )
+( debugging... ) ( [char] > emit )
 
 0word ( string )
 
