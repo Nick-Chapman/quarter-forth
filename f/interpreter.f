@@ -1,12 +1,10 @@
-.." Loading interpeter.f" cr
+.." Loading interpeter.f ( " latest
 
 here char ] , 0 , constant string]
 
 : [
-
 ( debugging... ) ( [char] > emit )
-
-0word ( string )
+word ( string )
 
 ( Is the word the special "]" marker? )
 dup string] s= if ( string )
@@ -15,7 +13,7 @@ dup string] s= if ( string )
 drop exit then
 
 ( Is the name in the dictionary? )
-dup 0find dup if ( string xt )
+dup find dup if ( string xt )
 
 ( YES, execute it, and loop... )
 swap drop ( xt ) execute tail [
@@ -38,3 +36,6 @@ crash-only-during-startup tail [
 ; immediate
 
 ( enter the interpreter ) [
+
+hide string]
+words-since char ) emit cr

@@ -1,3 +1,12 @@
+char s emit
+char t emit
+char r emit
+char i emit
+char n emit
+char g emit
+char . emit
+char f emit
+cr
 
 ( Strings Literals... )
 

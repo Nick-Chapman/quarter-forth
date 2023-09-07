@@ -63,7 +63,7 @@ Defining a level 0 colon-compiler
 
 
 entry: ]]
-call: 0word
+call: word
 call: dup
 call: string[
 call: s=
@@ -72,7 +72,7 @@ call: drop
 call: exit
 then
 call: dup
-call: 0find
+call: find
 call: dup
 if
 call: swap
@@ -114,13 +114,13 @@ execute exit
 
 almost: 1compiling
 
-0word
+word
 dup
 string;
 
 s= [ if ]] drop ret, exit
 [ then ]]
-dup 0find dup [ if ]]
+dup find dup [ if ]]
 swap drop compile-or-execute 1compiling exit
 [ then ]] drop
 number? [ if ]]
@@ -141,5 +141,5 @@ almost: start]
 ( This is out first definition of a working colon compiler )
 
 almost: :
-0word entry, start]
+word entry, start]
 [ ret,

@@ -1,4 +1,4 @@
-.." Loading word.f" cr
+.." Loading word.f ( " latest
 
 ( Define "word" in Forth )
 
@@ -17,3 +17,7 @@ tail word-loop-2 ( collect first char and keep collect... )
 
 : word ( "name" -- str )
 here 100 + dup word-loop-1 ; ( TODO : why 100+ )
+
+hide word-loop-1
+hide word-loop-2
+words-since char ) emit cr

@@ -197,7 +197,7 @@ dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
 ;
 
 : hide ( "name" -- )
-0word find! x-hide
+word find! x-hide
 ;
 
 

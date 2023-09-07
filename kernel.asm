@@ -428,7 +428,7 @@ _if:
 ;; drop type '?' emit cr crash-only-during-startup
 ;; ;
 
-;;defword "find-or-crash"
+defword "find!"
 _find_or_crash:
     call _dup
     call _find
@@ -528,7 +528,7 @@ _xt_next:
 ;; : find ( string -- xt )
 ;; latest-entry find-loop ;
 
-defword "0find" ; ( s -- xt' )
+defword "find" ; ( s -- xt' )
 _find:
     call _latest ; ( s xt )
 .loop:
@@ -1107,7 +1107,7 @@ _write_string:
 ;    nl
 ;    ret
 
-defword "0word" ; ( " blank-deliminted-word " -- string-addr ) ; TODO: earlier
+defword "word" ; ( " blank-deliminted-word " -- string-addr ) ; TODO: earlier
 _word:
     call internal_read_word ;; TODO inline
     mov ax, deprecated_word_buffer
@@ -1217,11 +1217,11 @@ builtin: dw builtin_data
 builtin_data:
     incbin "f/boot.f"
     incbin "f/string.f"
-    incbin "f/interpreter.f"
-    ; incbin "f/colon.f" ; works, but not necessary
+    incbin "f/tools.f"
     incbin "f/word.f"
     incbin "f/find.f"
-    incbin "f/tools.f"
+    incbin "f/interpreter.f"
+    ; incbin "f/colon.f" ; works, but not necessary
     incbin "f/predefined.f"
     ;incbin "f/own-mult.f"
     incbin "f/regression.f"

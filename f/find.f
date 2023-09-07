@@ -1,6 +1,4 @@
-.." Loading find.f" cr
-
-( Define "find" in Forth )
+.." Loading find.f ( " latest
 
 : nip   swap drop ;
 
@@ -20,3 +18,7 @@ latest find-loop
 dup find dup if nip exit then
 drop type '?' emit cr crash-only-during-startup
 ;
+
+hide find-loop
+hide nip
+words-since char ) emit cr
