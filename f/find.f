@@ -16,7 +16,7 @@ latest find-loop
 
 : find! ( "name" -- xt|0 )
 dup find dup if nip exit then
-drop type '?' emit cr crash-only-during-startup
+drop type [char] ? emit cr crash-only-during-startup
 ;
 
 hide find-loop

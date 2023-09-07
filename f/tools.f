@@ -1,14 +1,79 @@
 .." Loading tools.f ( " latest
 
+: bl        32 ;
+: space     bl emit ;
+: rot       >r swap r> swap ;
+: -rot      swap >r swap r> ;
+
+( hide )
+
+: x-hide ( xt|0 -- )
+dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
+;
+
+: hide ( "name" -- ) word find! x-hide ;
+hide x-hide
+
+( hide some internals from boot.f and string.f )
+
+hide 'A'
+hide 'B'
+hide '?'
+hide ')'
+hide string[
+hide string;
+hide ]]
+hide almost:
+hide compile-or-execute
+hide 1compiling
+hide start]
+hide [']
+hide collect-string
+
+
+( words )
+
+: show-if-not-hidden ( xt -- )
+dup hidden? if drop exit then xt->name type space
+;
+
+( Print available words -- newest first )
+: words-continue ( xtEarlier xt -- xtEarlier xt )
+over over = if exit then
+dup show-if-not-hidden
+xt->next words-continue
+;
+hide words-continue
+
+( Print available words -- oldest first )
+: words-continue ( xtEarlier xt -- xtEarlier xt )
+over over = if exit then
+dup -rot xt->next words-continue rot
+dup show-if-not-hidden
+drop
+;
+hide show-if-not-hidden
+
+
+( Order the above two defs to pick printing order for "words". later def wins )
+
+: words-since ( xtEarlier -- )
+latest words-continue drop drop
+;
+
+: words
+0 words-since cr
+;
+
+
+( debug: See the ASM builtin words; needs "latest" dropped on stack when boot starts )
+( drop cr cr 0 swap words-continue drop drop cr cr crash )
+
 
 : false     ( -- b )        0 ;
 : true      ( -- b )        65535 ;
 : invert    ( b -- b )      if false exit then true ;   ( bool negation )
-: rot   >r swap r> swap ;
-: -rot  swap >r swap r> ;
 
-: bl        32 ;
-: space     bl emit ;
 : >         swap < ;
 
 
@@ -91,41 +156,6 @@ depth if
 then
 ;
 
-
-: show-if-not-hidden ( xt -- )
-dup hidden? if drop exit then xt->name type space
-;
-
-( Print available words -- newest first )
-: words-continue ( xtEarlier xt -- xtEarlier xt )
-over over = if exit then
-dup show-if-not-hidden
-xt->next words-continue
-;
-
-( Print available words -- oldest first )
-: words-continue ( xtEarlier xt -- xtEarlier xt )
-over over = if exit then
-dup -rot xt->next words-continue rot
-dup show-if-not-hidden
-drop
-;
-
-( Order the above two defs to pick printing order for "words". later def wins )
-
-: words-between ( xtEarlier xtLater )
-words-continue drop drop
-;
-
-: words-since ( xtEarlier -- )
-latest words-between
-;
-
-: words
-0 words-since cr
-;
-
-
 ( Repeated execution )
 
 : times ( xt n -- ) ( call xt, n times )
@@ -135,6 +165,12 @@ r> r> ( xt n )
 1 - tail times
 then drop drop
 ;
+
+( bracket tick -- where is the best place for this? )
+
+: ['] ( comp: "name" ) ( run: -- xt )
+tick: non-immediate-literal
+; immediate
 
 
 ( Pagination )
@@ -192,20 +228,13 @@ then
 latest ['] see10 pag
 ;
 
-: x-hide ( xt|0 -- )
-dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
-;
-
-: hide ( "name" -- )
-word find! x-hide
-;
-
 
 hide -rot
 hide .s-continue
 hide >
 hide @.hh
 hide @rel->abs
+hide [']
 hide and
 hide bl
 hide c3
@@ -230,14 +259,10 @@ hide rot
 hide see-all
 hide see1
 hide see10
-hide show-if-not-hidden
 hide space
 hide times
 hide true
-hide words-between
 hide words-continue
-hide words-continue
-hide x-hide
 hide x-see
 hide xxd-line
 hide xxd-page

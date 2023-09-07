@@ -19,7 +19,7 @@ echo-enabled @ variable echo-enabled echo-enabled !
 : echo echo-enabled @ if emit exit then drop ;
 
 : ok
-echo-enabled @ if ." ok" cr then ;
+echo-enabled @ if ."  ok" cr then ;
 
 : fill-loop ( a -- a' )
 raw-key ( a c )

@@ -375,7 +375,7 @@ db ((%%link - %%name - 1) | immediate_flag)
 ;; then drop '0' emit type '?' emit cr crash-only-during-startup tail interpreter
 ;; ;
 
-defword "0interpreter" ;; ok name?
+;;defword "0interpreter" ;; ok name?
 start:
     call init_param_stack
     call cls ;; TODO: only do this on cold start
@@ -1225,7 +1225,7 @@ builtin_data:
     incbin "f/predefined.f"
     ;incbin "f/own-mult.f"
     incbin "f/regression.f"
-    incbin "f/control.f"
+    ;incbin "f/control.f"
     incbin "f/buffer.f"
     incbin "f/examples.f"
     incbin "f/primes.f"
