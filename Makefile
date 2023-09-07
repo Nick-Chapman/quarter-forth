@@ -6,7 +6,7 @@ dump: _build _build/kernel.img
 
 run: _build _build/disk.img
 	@echo Runing QEMU
-	@qemu-system-i386 -hda _build/disk.img -ctrl-grab
+	@bash -c 'qemu-system-i386 -hda _build/disk.img -ctrl-grab > /dev/null 2>& 1'
 
 _build/disk.img: _build/bootloader.img _build/kernel.img
 	@echo Creating disk image
