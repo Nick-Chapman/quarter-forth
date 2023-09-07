@@ -46,80 +46,6 @@ check_ps_underflow:
     add bp, 2
 %endmacro
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; old start ;; TODO: kill
-
-;; old_start:
-;;     call init_param_stack
-;;     call cls ;; TODO: only do this on cold start
-;;     mov ax, _bye ;; _reset ;; or _bye ?
-;;     push ax
-;; .loop:
-;;     ;; mov al, 'K' ;; See when we are using the asm interpreter
-;;     ;; call print_char
-;;     ;; mov al, '>' ;; See when we are using the asm interpreter
-;;     ;; call print_char
-;;     call _word
-;;     call _dup
-;;     POP dx
-;;     call try_parse_as_number
-;;     jnz .nan
-;;     PUSH ax
-;;     call _swap
-;;     call _drop
-;;     jmp .loop
-;; .nan:
-;;     PUSH dx
-;;     call _find
-;;     POP bx
-;;     cmp bx, 0
-;;     jz .missing
-;;     call _drop
-;;     call bx
-;;     jmp .loop
-;; .missing:
-;;     print "**(Kernel:start) No such word: "
-;;     POP di
-;;     call internal_print_string
-;;     nl
-;;     call _crash_only_during_startup
-;;     jmp .loop
-
-;;; Try to parse a string as a number
-;;; [in DX=string-to-be-tested, out Z=yes-number, DX:AX=number]
-;;; [uses BL, SI, BX, CX]
-
-;; try_parse_as_number: ; TODO: code in forth
-;;     push dx
-;;     call .run
-;;     pop dx
-;;     ret
-;; .run:
-;;     mov si, dx
-;;     mov ax, 0
-;;     mov bh, 0
-;;     mov cx, 10
-;; .loop:
-;;     mov bl, [si]
-;;     cmp bl, 0 ; null
-;;     jnz .continue
-;;     ;; reached null; every char was a digit; return YES
-;;     ret
-;; .continue:
-;;     mul cx ; [ax = ax*10]
-;;     ;; current char is a digit?
-;;     sub bl, '0'
-;;     jc .no
-;;     cmp bl, 10
-;;     jnc .no
-;;     ;; yes: accumulate digit
-;;     add ax, bx
-;;     inc si
-;;     jmp .loop
-;; .no:
-;;     cmp bl, 0 ; return NO
-;;     ret
-
 
 ;;; Reading input...
 internal_read_char: ; -> AL
@@ -304,42 +230,6 @@ internal_write_byte:
     inc word [here]
     ret
 
-;; colon_intepreter: ; TODO: move this towards forth style
-;;     call _word
-;;     call _create_entry
-;; .loop:
-;;     call _word
-;;     POP dx
-;;     mov di, dx
-;;     call is_semi
-;;     jz .semi
-;;     call try_parse_as_number
-;;     jz .number
-;;     PUSH dx
-;;     call _find_or_crash ;;_safe_find
-;;     call _dup
-;;     call _immediate_query
-;;     POP ax
-;;     cmp ax, 0
-;;     jnz .immediate
-;;     call _write_abs_call
-;;     jmp .loop
-;; .immediate:
-;;     POP bx
-;;     call bx
-;;     jmp .loop
-;; .number:
-;;     PUSH ax
-;;     call _literal
-;;     jmp .loop
-;; .semi:
-;;     call _write_ret ;; optimization!
-;;     ret
-
-;; is_semi:
-;;     cmp word [di], ";"
-;;     ret
-
 %assign X ($-$$)
 ;%warning X "- After ASM"
 
@@ -422,12 +312,6 @@ _if:
     POP ax
     cmp ax, 0
     ret
-
-
-;; : find-or-crash ( "name" -- xt|0 )
-;; dup 0find dup if swap drop exit then
-;; drop type '?' emit cr crash-only-during-startup
-;; ;
 
 defword "find!"
 _find_or_crash:
@@ -572,28 +456,6 @@ _find:
     call _lit
     dw 0
     ret
-
-;; ;;defword "safe-find"
-;; _safe_find: ; ( string -> xt )
-;;     call _dup ; ( s s )
-;;     call _find ; ( s xt )
-;;     call _swap ; ( xt s )
-;;     call _over ; ( xt s xt )
-;;     call _warn_if_missing ; ( xt )
-;;     ret
-
-;; _warn_if_missing: ; ( s xt|0 -> )
-;;     POP ax
-;;     cmp ax, 0
-;;     jnz .ok
-;;     print "(kernel) No such word: "
-;;     call _type
-;;     nl
-;;     call _crash_only_during_startup
-;;     ret
-;; .ok:
-;;     call _drop
-;;     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; key
@@ -1000,19 +862,6 @@ _lit:
     jmp bx
 
 
-;; defwordimm "nah-literal"
-;; _literal:
-;;     POP ax
-;;     push ax ; save lit value
-;;     call _lit
-;;     dw _lit
-;;     call _write_abs_call
-;;     pop ax ; restore lit value
-;;     PUSH ax
-;;     call _comma
-;;     ret
-
-
 defwordimm "literal" ;; Much simpler/cleaner definition
 _literal:
     call _lit
@@ -1116,13 +965,6 @@ _write_string:
     call internal_write_byte ; null
     ret
 
-;;; not in dictionary
-;defword "missing"
-;_missing:
-;    print "**Missing**"
-;    nl
-;    ret
-
 defword "word" ; ( " blank-deliminted-word " -- string-addr ) ; TODO: earlier
 _word:
     call internal_read_word ;; TODO inline
@@ -1180,30 +1022,6 @@ _s_equals:
     dw 1
     ret
 
-;;defword "no-more::" ;; TODO: KILL THIS
-;;    jmp colon_intepreter
-
-;; defword "NOPE-number?" ; ( string -- string 0 )
-;;     mov ax, 0
-;;     PUSH ax
-;;     ret
-
-;; defword "NOPE-REAL-number?" ; ( string -- number 1 | string 0 )
-;;     call _dup
-;;     POP dx
-;;     call try_parse_as_number
-;;     jnz .nan
-;;     PUSH ax
-;;     call _swap
-;;     call _drop
-;;     mov ax, 1
-;;     PUSH ax
-;;     ret
-;; .nan:
-;;     mov ax, 0
-;;     PUSH ax
-;;     ret
-
 defword "bye"
 _bye:
     mov ax, 0x5307
@@ -1218,11 +1036,6 @@ _reset:
     int 0x19
 .loop:
     jmp .loop
-
-;; defword "deprecated-word-buffer" ; ( -- a )
-;;     mov ax, deprecated_word_buffer
-;;     PUSH ax
-;;     ret
 
 dictionary: dw lastlink
 
