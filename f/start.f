@@ -8,4 +8,15 @@ mem cr
 startup-is-complete
 hide startup-is-complete
 hide crash-only-during-startup
+
+{
+: test
+s" 54321" dup my-number?
+.s
+;
+
+.." Testing..." cr
+test
+}
+
 echo-on

@@ -1,89 +1,11 @@
 .." Loading tools.f ( " latest
 
-: bl        32 ;
-: space     bl emit ;
-: rot       >r swap r> swap ;
-: -rot      swap >r swap r> ;
-
-( hide )
-
-: x-hide ( xt|0 -- )
-dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
-;
-
-: hide ( "name" -- ) word find! x-hide ;
-hide x-hide
-
-( hide some internals from boot.f and string.f )
-
-hide 'A'
-hide 'B'
-hide '?'
-hide ')'
-hide string[
-hide string;
-hide ]]
-hide almost:
-hide compile-or-execute
-hide 1compiling
-hide start]
-hide [']
-hide collect-string
-
-
-( words )
-
-: show-if-not-hidden ( xt -- )
-dup hidden? if drop exit then xt->name type space
-;
-
-( Print available words -- newest first )
-: words-continue ( xtEarlier xt -- xtEarlier xt )
-over over = if exit then
-dup show-if-not-hidden
-xt->next words-continue
-;
-hide words-continue
-
-( Print available words -- oldest first )
-: words-continue ( xtEarlier xt -- xtEarlier xt )
-over over = if exit then
-dup -rot xt->next words-continue rot
-dup show-if-not-hidden
-drop
-;
-hide show-if-not-hidden
-
-
-( Order the above two defs to pick printing order for "words". later def wins )
-
-: words-since ( xtEarlier -- )
-latest words-continue drop drop
-;
-
-: words
-0 words-since cr
-;
-
-
-( debug: See the ASM builtin words; needs "latest" dropped on stack when boot starts )
-( drop cr cr 0 swap words-continue drop drop cr cr crash )
-
-
-: false     ( -- b )        0 ;
-: true      ( -- b )        65535 ;
-: invert    ( b -- b )      if false exit then true ;   ( bool negation )
-
-: >         swap < ;
-
-
 ( Expect... )
 
 : x
 over = if drop exit then
 ." Expect failed, got: " . cr crash ( -only-during-startup )
 ;
-
 
 ( Tools for exploring mem and defs )
 
@@ -129,7 +51,6 @@ dis
 
 : see
 word find x-see cr ; immediate
-
 
 ( Show stack non destructively )
 
@@ -213,7 +134,6 @@ dup .hh ." : " dup ['] db 16 times space drop ['] dc 16 times cr ;
 : xxd-page ( a -- a+1K ) ['] xxd-line 16 times ;
 : xxd ( start-addr -- ) ['] xxd-page pag ;
 
-
 ( See all defs, paginated in batches of 10 )
 
 : see1 ( xt -- xt' )
@@ -228,15 +148,11 @@ then
 latest ['] see10 pag
 ;
 
-
-hide -rot
 hide .s-continue
-hide >
 hide @.hh
 hide @rel->abs
 hide [']
 hide and
-hide bl
 hide c3
 hide db
 hide dc
@@ -247,22 +163,16 @@ hide dis
 hide e8
 hide emit-byte
 hide emit-printable-or-dot
-hide false
-hide invert
 hide is-call
 hide is-escape
 hide is-printable?
 hide is-ret
 hide pag
 hide pag-continue
-hide rot
 hide see-all
 hide see1
 hide see10
-hide space
 hide times
-hide true
-hide words-continue
 hide x-see
 hide xxd-line
 hide xxd-page

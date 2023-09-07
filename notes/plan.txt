@@ -38,6 +38,7 @@ Done:
 - bootstrap from simplest word-find-execute loop
 - finally killed ASM def of colon compiler
 - support [ and ] to switch compiler/interpreter without being state-aware!
+- recode number? in forth (and kill from ASM) - just basic unsigned
 
 Next:
 
@@ -45,7 +46,8 @@ Next:
 - cleanup of TODOs everywhere
 - refactor builtin words to be in forthy style where possible (and thus candidates for .f)
 
-- recode number? in forth (and kill from ASM) - signed and hex
+- split bools.f and stack-manip.f to avoid repeating
+- signed and hex numbers
 
 - primordal mode (-1), access to fixed array of single-char words
 - allowing bootstrap def of word/find

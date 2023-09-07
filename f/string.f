@@ -1,21 +1,10 @@
-char s emit
-char t emit
-char r emit
-char i emit
-char n emit
-char g emit
-char . emit
-char f emit
-cr
 
 ( Strings Literals... )
-
 
 : ['] ( comp: "name" ) ( run: -- xt )  ( TODO: must we use this here? )
 ( word find non-immediate-literal )
 tick: non-immediate-literal             ( Nice to use tick: ? )
 ; immediate
-
 
 : collect-string
 key dup [char] " = if exit
@@ -33,14 +22,12 @@ then c, tail collect-string
 ( push string at runtime )      ['] lit compile, ,
 ; immediate
 
-
 ( Compile code to emit a literal string )
 
 : ." ( ..." )
 ['] s" execute
 ['] type compile,
 ; immediate
-
 
 ( Crash with string message )
 
@@ -50,7 +37,6 @@ then c, tail collect-string
 ['] cr compile,
 ['] crash compile,
 ; immediate
-
 
 ( Print literal string while interpreting )
 

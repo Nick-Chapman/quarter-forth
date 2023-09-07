@@ -88,36 +88,37 @@ check_ps_underflow:
 ;;; Try to parse a string as a number
 ;;; [in DX=string-to-be-tested, out Z=yes-number, DX:AX=number]
 ;;; [uses BL, SI, BX, CX]
-try_parse_as_number: ; TODO: code in forth
-    push dx
-    call .run
-    pop dx
-    ret
-.run:
-    mov si, dx
-    mov ax, 0
-    mov bh, 0
-    mov cx, 10
-.loop:
-    mov bl, [si]
-    cmp bl, 0 ; null
-    jnz .continue
-    ;; reached null; every char was a digit; return YES
-    ret
-.continue:
-    mul cx ; [ax = ax*10]
-    ;; current char is a digit?
-    sub bl, '0'
-    jc .no
-    cmp bl, 10
-    jnc .no
-    ;; yes: accumulate digit
-    add ax, bx
-    inc si
-    jmp .loop
-.no:
-    cmp bl, 0 ; return NO
-    ret
+
+;; try_parse_as_number: ; TODO: code in forth
+;;     push dx
+;;     call .run
+;;     pop dx
+;;     ret
+;; .run:
+;;     mov si, dx
+;;     mov ax, 0
+;;     mov bh, 0
+;;     mov cx, 10
+;; .loop:
+;;     mov bl, [si]
+;;     cmp bl, 0 ; null
+;;     jnz .continue
+;;     ;; reached null; every char was a digit; return YES
+;;     ret
+;; .continue:
+;;     mul cx ; [ax = ax*10]
+;;     ;; current char is a digit?
+;;     sub bl, '0'
+;;     jc .no
+;;     cmp bl, 10
+;;     jnc .no
+;;     ;; yes: accumulate digit
+;;     add ax, bx
+;;     inc si
+;;     jmp .loop
+;; .no:
+;;     cmp bl, 0 ; return NO
+;;     ret
 
 
 ;;; Reading input...
@@ -471,6 +472,21 @@ defword "0" ; ( -- 0 )
     dw 0
     ret
 
+defword "1"
+    call _lit
+    dw 1
+    ret
+
+defword "10"
+    call _lit
+    dw 10
+    ret
+
+defword "32"
+    call _lit
+    dw 0x20
+    ret
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; dictionary header layout ;; TODO: comment/picture
 
@@ -626,7 +642,7 @@ defword "echo-on"
 
 defword "crash"
 _crash:
-    print "**(kernel) We have crashed!"
+    print "We have crashed."
     nl
 .loop:
     call echo_off
@@ -1167,21 +1183,26 @@ _s_equals:
 ;;defword "no-more::" ;; TODO: KILL THIS
 ;;    jmp colon_intepreter
 
-defword "number?" ; ( string -- number 1 | string 0 ) ;; TODO: now can recoded in forth
-    call _dup
-    POP dx
-    call try_parse_as_number
-    jnz .nan
-    PUSH ax
-    call _swap
-    call _drop
-    mov ax, 1
-    PUSH ax
-    ret
-.nan:
-    mov ax, 0
-    PUSH ax
-    ret
+;; defword "NOPE-number?" ; ( string -- string 0 )
+;;     mov ax, 0
+;;     PUSH ax
+;;     ret
+
+;; defword "NOPE-REAL-number?" ; ( string -- number 1 | string 0 )
+;;     call _dup
+;;     POP dx
+;;     call try_parse_as_number
+;;     jnz .nan
+;;     PUSH ax
+;;     call _swap
+;;     call _drop
+;;     mov ax, 1
+;;     PUSH ax
+;;     ret
+;; .nan:
+;;     mov ax, 0
+;;     PUSH ax
+;;     ret
 
 defword "bye"
 _bye:
@@ -1217,12 +1238,14 @@ builtin: dw builtin_data
 builtin_data:
     incbin "f/boot.f"
     incbin "f/string.f"
-    incbin "f/tools.f"
+    incbin "f/dict.f"
+    incbin "f/numbers.f"
+    incbin "f/interpreter.f"
+    incbin "f/colon.f"
     incbin "f/word.f"
     incbin "f/find.f"
-    incbin "f/interpreter.f"
-    ; incbin "f/colon.f" ; works, but not necessary
     incbin "f/predefined.f"
+    incbin "f/tools.f"
     ;incbin "f/own-mult.f"
     incbin "f/regression.f"
     ;incbin "f/control.f"

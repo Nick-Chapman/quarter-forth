@@ -1,8 +1,6 @@
-.." Loading colon.f ( " cr
+.." Loading colon.f ( " latest
 
 ( Define reference implementation of ] and : )
-
-char C constant 'C'
 
 : compile-or-execute ( xt -- )
 dup immediate? if
@@ -18,8 +16,10 @@ tick: non-immediate-literal             ( Nice to use tick: ? )
 
 ( We make use of the previous  "]" whilst defining ths one )
 
+here char ; , 0 , constant string;
+
 : compiling
-0word ( name ) dup
+word ( name ) dup
 
 ( s" ;" )               ( IF WE HAD STRINGS )
 ( lit [ string; , ] )   ( THE SAME AS THE NEXT LINE )
@@ -29,7 +29,7 @@ s= if drop ret, ( OPTIMIZED ) exit
 
 then ( name )
 
-dup 0find dup if ( name xt )
+dup find dup if ( name xt )
 swap drop ( xt )
 compile-or-execute tail compiling
 then drop ( name )
@@ -39,9 +39,15 @@ number? if
 then ( name )
 
 ( word not defined )
-'C' emit type '?' emit cr
+." ** Colon compiler: '" type ." ' ?" cr
 crash-only-during-startup
 tail compiling
 ;
 
-: : 0word entry, compiling ;
+: : word entry, compiling ;
+
+hide [']
+hide compile-or-execute
+hide compiling
+hide string;
+words-since char ) emit cr

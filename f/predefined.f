@@ -32,6 +32,8 @@
 ( Numbers )
 
 : >         swap < ;
+: <=        > invert ;
+: >=        < invert ;
 
 : 0<      ( n -- flag )     0 < ;                       ( n is less than zero )
 : 0=      ( n -- flag )     0 = ;                       ( n is zero )
