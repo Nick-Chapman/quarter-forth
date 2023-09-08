@@ -1,6 +1,8 @@
 
-BITS 16
-org 0x500
+    %include "layout.asm"
+
+    bits 16
+    org kernel_load_address
 
     jmp start
 
@@ -932,32 +934,34 @@ defword "constant"
     call _write_abs_call
     ret
 
-
 dictionary: dw lastlink
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Embedded string data (TODO: move to higher mem, above [here])
-
-%assign X ($-$$)
-;%warning X "- Before embedded"
-
-builtin: dw builtin_data
-builtin_data:
-    incbin "_build/forth.f"
-    db 0
-
-%assign X ($-$$)
-;%warning X "- After Embedded"
+builtin: dw embedded_load_address
+here_start:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Check Size
 
-%assign R ($-$$)  ;; Space required for above code
-%assign S 50      ;; Number of sectors the bootloader loads
-%assign A (S*512) ;; Therefore: Maximum space allowed
-;%warning "Kernel size" required=R, allowed=A (#sectors=S)
+%assign R ($ - $$) ; Space required so far in this section
+%assign N kernel_size_in_sectors
+%assign A (N * sector_size)
+;%warning "Kernel size" required=R, allowed=A (#sectors=N)
 %if R>A
-%error "Kernel too big!" required=R, allowed=A (#sectors=S)
+%error "Kernel too big!" required=R, allowed=A (#sectors=N)
 %endif
 
-here_start:
+    times (A - R) db 0xba ;; because embedded string data follows directory
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Embedded string data. Loaded at 0x8000
+
+builtin_data:
+    incbin "_build/forth.f"
+    db 0
+
+%assign R ($ - $$) ; Space required so far in this section
+%assign N kernel_size_in_sectors + embedded_size_in_sectors
+%assign A (N * sector_size)
+;%warning "Embedded data size" required=R, allowed=A (#sectors=N)
+%if R>A
+%error "Embedded data too big!" required=R, allowed=A (#sectors=N)
+%endif

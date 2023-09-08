@@ -43,10 +43,10 @@ Done:
 - nicer ? message from interpreter "[" as already have for colon compiler
 - memv: verbose mem info
 - concat *.f in sep make stage, have file list allowing comments - just one incbin
+- load embedded text at high mem address. requires small rejig to boot loader. much more space available now!
 
 Next:
 
-- load embedded text at high mem address
 - fix over-delete/hang in keyboard buffer
 
 - module" end-module

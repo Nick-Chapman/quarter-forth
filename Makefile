@@ -14,7 +14,7 @@ _build/disk.img: _build/bootloader.img _build/kernel.img
 
 NASM_FLAGS = -Werror
 
-_build/%.img: %.asm Makefile
+_build/%.img: %.asm Makefile layout.asm
 	@echo Assembling $<
 	@nasm $(NASM_FLAGS) -o $@ $< || rm -f $@
 
