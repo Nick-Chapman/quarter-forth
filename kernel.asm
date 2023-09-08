@@ -943,24 +943,7 @@ dictionary: dw lastlink
 
 builtin: dw builtin_data
 builtin_data:
-    incbin "f/boot.f"
-    incbin "f/string.f"
-    incbin "f/dict.f"
-    incbin "f/numbers.f"
-    incbin "f/interpreter.f"
-    incbin "f/colon.f"
-    incbin "f/word.f"
-    incbin "f/find.f"
-    incbin "f/predefined.f"
-    incbin "f/tools.f"
-    ;incbin "f/own-mult.f"
-    incbin "f/regression.f"
-    ;incbin "f/control.f"
-    incbin "f/buffer.f"
-    incbin "f/examples.f"
-    incbin "f/primes.f"
-    incbin "f/start.f"
-    incbin "f/play.f"
+    incbin "_build/forth.f"
     db 0
 
 %assign X ($-$$)

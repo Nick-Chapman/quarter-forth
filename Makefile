@@ -18,10 +18,13 @@ _build/%.img: %.asm Makefile
 	@echo Assembling $<
 	@nasm $(NASM_FLAGS) -o $@ $< || rm -f $@
 
-_build/kernel.img : $(wildcard f/*)
+_build/kernel.img : _build/forth.f
+
+_build/forth.f : forth.list $(wildcard f/*)
+	@echo Combining Forth files
+	@bash -c 'cat $< | sed s/#.*// | xargs cat > $@' || rm -f $@
 
 _build: ; @mkdir -p $@
-
 
 burn: _build/disk.img
 	sudo dd if=$< of=/dev/sdb1

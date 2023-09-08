@@ -1,0 +1,51 @@
+# List of Forth files making up nforth. These get embedded into _build/kernel.img
+
+# Kernel starts basic WFX-loop (word-find-execute-loop). There is no ":".
+f/boot.f
+# Now we have a colon compiler ":" supporting immediate words (but no numerics).
+
+f/string.f
+# Now we have string literal syntax; handy for messages!
+
+f/dict.f
+# Now we can inspect ("words") and manage ("hide") our dictionary.
+
+f/numbers.f
+# Numbers at last...
+
+f/interpreter.f
+# Now we are running a working top level interpreter, "[", supporting numerics.
+# "exit" and "]" exit back to the kernel WFX-loop; "[" will restart.
+
+f/colon.f
+# Now we have a working colon compiler ":" supporting numerics and immediate words.
+# And of course allowing nested interpretation with [ ... ].
+
+# Forth level reference implementations for "find" and "word".
+# My BIG GOAL is to improve the bootstrap so we don't need asm defs for these.
+f/word.f
+f/find.f
+
+# Lots of standard words...
+f/predefined.f
+
+# Examine stack (.s), memory (mem,dump,xxd); decompiling (see); regression support ("x")
+f/tools.f
+
+# f/own-mult.f  # WIP multiplication defined using shift and add
+
+# Mostly for the standard words
+f/regression.f
+
+# Line based keyboard entry, with backspace! (You miss this when you don't have it!)
+f/buffer.f
+
+f/examples.f    # various examples
+f/primes.f      # compute all 16bit primes
+# f/control.f   # fun with return stack operators
+
+# Displays welcome message, enables echo, and marks startup-is-complete.
+f/start.f
+
+# Helpful for dev.
+f/play.f
