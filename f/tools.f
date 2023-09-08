@@ -175,7 +175,9 @@ hide db
 hide dc
 hide dc-oneK
 hide dc64
+hide default-0
 hide dis
+hide drop-if-not-zero
 hide e8
 hide emit-byte
 hide emit-printable-or-dot
