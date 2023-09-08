@@ -126,12 +126,21 @@ then cr tail pag-continue ;
 dup is-printable? if emit exit then
 drop [char] . emit ;
 
+
+: drop-if-not-zero ( 0 -- | -- )
+dup if drop then
+;
+
+: default-0 ( push a zero on the stack if it empty )
+depth drop-if-not-zero
+;
+
 ( Ascii char dump, paginated on 1k blocks )
 
 : dc ( a -- a+1 ) dup c@ emit-printable-or-dot 1 + ;
 : dc64 ( a -- a+64 ) dup .hh ." : " ['] dc 64 times cr ;
 : dc-oneK ( a -- a+1K ) ['] dc64 16 times ;
-: dump ( start-addr -- ) ['] dc-oneK pag ;
+: dump ( start-addr -- ) default-0 ['] dc-oneK pag ;
 
 ( xxd-style dump : hex-bytes + ascii to the side, paginated at 256 bytes )
 
@@ -140,7 +149,7 @@ drop [char] . emit ;
 : xxd-line ( a -- a+16 )
 dup .hh ." : " dup ['] db 16 times space drop ['] dc 16 times cr ;
 : xxd-page ( a -- a+1K ) ['] xxd-line 16 times ;
-: xxd ( start-addr -- ) ['] xxd-page pag ;
+: xxd ( start-addr -- ) default-0 ['] xxd-page pag ;
 
 ( See all defs, paginated in batches of 10 )
 
