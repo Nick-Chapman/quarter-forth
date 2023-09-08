@@ -829,42 +829,6 @@ _s_equals:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Printing numbers (TODO: should be in Forth)
 
-defword "." ; ( u -- ) Print number in decimal format.
-    POP ax
-    call internal_print_number ; TODO: inline
-    mov al, ' '
-    call print_char
-    ret
-
-internal_print_number: ; in: AX=number; TODO: inline
-    push ax
-    push bx
-    push dx
-    call .go
-    pop dx
-    pop bx
-    pop ax
-    ret
-.go:
-    mov bx, 10
-.nest:
-    mov dx, 0
-    div bx ; ax=ax/10; dx=ax%10
-    cmp ax, 0 ; last digit?
-    jz .print_digit ; YES, so print it
-    ;; NO, deal with more significant digits first
-    push dx
-    call .nest
-    pop dx
-    ;; then drop to print this one
-.print_digit:
-    push ax
-    mov al, dl
-    add al, '0'
-    call print_char
-    pop ax
-    ret
-
 defword ".h" ; ( byte -- ) ; emit as 2-digit hex
     POP ax
     mov ah, 0

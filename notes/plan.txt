@@ -38,16 +38,26 @@ Done:
 - bootstrap from simplest word-find-execute loop
 - finally killed ASM def of colon compiler
 - support [ and ] to switch compiler/interpreter without being state-aware!
+- big cleanup of ASM file
 - recode number? in forth (and kill from ASM) - just basic unsigned
 
 Next:
 
-- big cleanup of ASM file
-- cleanup of TODOs everywhere
-- refactor builtin words to be in forthy style where possible (and thus candidates for .f)
+- nicer ? message from interpreter "[" as already have for colon compiler
+- memv: verbose mem info
+- module" end-module
+- kill transient deprecated_word_buffer -- just use here
+- load embedded text at high mem address
+- concat *.f in sep make stage, have file list allowing comments - just one incbin
+- .h in forth - hex, decimal
 
 - split bools.f and stack-manip.f to avoid repeating
-- signed and hex numbers
+- signed printing
+- rework again the colon compiler code. it is a mess
+- stage 0 compiler: change form ]..[ to {..}
+- stage 1 compiler.. this code is such a mess!
+- cleanup/workthrough of TODOs everywhere
+- refactor builtin words to be in forthy style where possible (and thus candidates for .f)
 
 - primordal mode (-1), access to fixed array of single-char words
 - allowing bootstrap def of word/find
@@ -55,7 +65,6 @@ Next:
 - state aware combined interpreter/colon-compiler ?
 - if not, then recode/cleanup the reference imp
 
-- kill transient deprecated_word_buffer -- just use here
 - check return under/stack overflow
 
 - work through examples from starting forth
