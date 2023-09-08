@@ -40,10 +40,10 @@ Done:
 - support [ and ] to switch compiler/interpreter without being state-aware!
 - big cleanup of ASM file
 - recode number? in forth (and kill from ASM) - just basic unsigned
+- nicer ? message from interpreter "[" as already have for colon compiler
 
 Next:
 
-- nicer ? message from interpreter "[" as already have for colon compiler
 - memv: verbose mem info
 - module" end-module
 - kill transient deprecated_word_buffer -- just use here

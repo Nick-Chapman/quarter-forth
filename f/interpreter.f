@@ -29,8 +29,7 @@ tail [
 
 ( NO; name undefined, so message, skip and loop... )
 
-then [char] >                   ( make it clear where the error is coming from )
-emit type [char] ? emit cr      ( standard ? error )
+then ." ** Interpreter: '" type ." ' ?" cr
 crash-only-during-startup tail [
 
 ; immediate
