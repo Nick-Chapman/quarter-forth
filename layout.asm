@@ -18,4 +18,4 @@
     embedded_load_address equ 0x8000
 
     kernel_size_in_sectors equ 5 ; max 59
-    embedded_size_in_sectors equ 41 ; max 128
+    embedded_size_in_sectors equ 43 ; max 128

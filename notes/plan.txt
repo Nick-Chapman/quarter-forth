@@ -44,14 +44,14 @@ Done:
 - memv: verbose mem info
 - concat *.f in sep make stage, have file list allowing comments - just one incbin
 - load embedded text at high mem address. requires small rejig to boot loader. much more space available now!
+- fix over-type & over-delete hang-bug in keyboard buffer
 
 Next:
 
-- fix over-delete/hang in keyboard buffer
-
+- kill transient deprecated_word_buffer -- just use here
+- fix double-echo-after-buffer bug
 - module" end-module
 
-- kill transient deprecated_word_buffer -- just use here
 - .h in forth - hex, decimal
 - split bools.f and stack-manip.f to avoid repeating
 - signed printing

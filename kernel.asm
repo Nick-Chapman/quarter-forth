@@ -711,7 +711,7 @@ _if:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; word (GOAL: not in Asm)
 
-deprecated_word_buffer: times 64 db 0 ;; TODO: kill
+deprecated_word_buffer: times 80 db 0 ;; TODO: kill
 
 defword "word" ; ( " blank-deliminted-word " -- string-addr )
 _word:

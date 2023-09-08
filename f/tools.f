@@ -4,7 +4,7 @@
 
 : x
 over = if drop exit then
-." Expect failed, got: " . cr crash ( -only-during-startup )
+." Expect failed, got: " . cr crash-only-during-startup
 ;
 
 : @.hh ( a -- ) dup c@ .h 1 - c@ .h ;
@@ -107,12 +107,15 @@ tick: non-immediate-literal
 
 ( Pagination )
 
+get-key constant old-key
+: raw-key  old-key execute ;
+
 : is-escape  27 = ;
 
 : pag-continue ( xt a -- a' )
 over execute
-cr ." (waiting...)" cr
-key is-escape if drop drop exit ( quit when escape key pressed )
+cr ." (press any key; escape to exit)" cr
+raw-key is-escape if drop drop exit ( quit when escape key pressed )
 then cr tail pag-continue ;
 
 ( Paginated dump )
@@ -185,8 +188,10 @@ hide is-call
 hide is-escape
 hide is-printable?
 hide is-ret
+hide old-key
 hide pag
 hide pag-continue
+hide raw-key
 hide see-all
 hide see1
 hide see10

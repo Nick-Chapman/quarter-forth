@@ -1,16 +1,21 @@
 .." Loading buffer ( " latest
 
 get-key constant old-key
-
 : raw-key  old-key execute ;
 
+79 constant key-buffer-size ( not 80, so blinking cursor remains on line )
+
 here
-200 allot
+key-buffer-size 2 + allot ( +2 for the newline & null )
 constant key-buffer
 0 key-buffer c!
 
+: at-start-of-buffer      ( a -- flag ) key-buffer = ;
+: is-space-left-in-buffer ( a -- flag ) key-buffer - key-buffer-size < ;
+
 : is-newline dup 13 = swap 10 = or ;
 : is-backspace 8 = ;
+: is-printable dup 32 >= swap 127 <= and ;
 
 ( Replace the inner echo-{enabled,on,off} )
 echo-enabled @ variable echo-enabled echo-enabled !
@@ -30,8 +35,15 @@ echo 1 + ( show newline and record in buffer )
 exit ( stop filling )
 
 then ( a c ) dup is-backspace if ( a c )
-dup echo space echo ( Handle the backspace visually )
-1 - tail fill-loop ( Move the pointer back one step - TODO: check we dont go too far )
+
+over at-start-of-buffer if drop tail fill-loop ( ignore backspace )
+
+then dup echo space echo ( Handle the backspace visually )
+1 - tail fill-loop ( Move the pointer back one step  )
+
+then dup is-printable 0= if drop tail fill-loop ( ignore non-printable )
+
+then over is-space-left-in-buffer 0= if drop tail fill-loop ( ignore char )
 
 then ( a c )
 echo 1 + ( show char and record in buffer )
@@ -62,15 +74,22 @@ reset-kb-pointer fill buffered-key
 ( Install the new buffered-key input routine )
 ' buffered-key set-key
 
+( All text which follows must be within the max line length )
+
+hide at-start-of-buffer
 hide buffered-key
 hide echo
 hide fill
 hide fill-loop
 hide is-backspace
 hide is-newline
+hide is-printable
+hide is-space-left-in-buffer
 hide kb-pointer
 hide key-buffer
+hide key-buffer-size
 hide ok
 hide old-key
+hide raw-key
 hide reset-kb-pointer
 words-since char ) emit cr
