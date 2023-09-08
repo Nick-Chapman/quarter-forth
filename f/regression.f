@@ -69,6 +69,12 @@ false false and  false x
 5 6 max 6 x
 6 5 max 6 x
 
+45 10 /mod    4 x 5 x
+45 7 /mod     6 x 3 x
+45 3 /mod    15 x 0 x
+45 2 /mod    22 x 1 x
+45 1 /mod    45 x 0 x
+
 0 1 - constant -1 ( helper word for minus one! )
 
 -1 0<       true x
