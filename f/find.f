@@ -1,4 +1,4 @@
-.." Loading find.f ( " latest
+.." Loading find ( " latest
 
 : nip   swap drop ;
 

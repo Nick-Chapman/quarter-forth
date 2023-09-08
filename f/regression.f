@@ -1,4 +1,4 @@
-.." Loading regression.f" cr
+.." Loading regression" cr
 
 ( Stack manipulation )
 

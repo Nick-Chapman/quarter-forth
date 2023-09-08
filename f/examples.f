@@ -1,4 +1,4 @@
-.." Loading examples.f ( " latest
+.." Loading examples ( " latest
 
 ( Large letter F. Adapted from "starting Forth", by Leo Brodie )
 

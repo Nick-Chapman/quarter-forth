@@ -1,4 +1,4 @@
-.." Loading interpeter.f ( " latest
+.." Loading interpeter ( " latest
 
 here char ] , 0 , constant string]
 

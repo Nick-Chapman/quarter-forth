@@ -1,5 +1,5 @@
 
-char b emit char o dup emit emit char t emit char . emit char f emit cr
+char b emit char o dup emit emit char t emit cr
 
 char A constant 'A'
 char B constant 'B'

@@ -1,4 +1,4 @@
-.." Loading control.f ( " latest
+.." Loading control ( " latest
 
 ( Duplicate the top item on the return stack )
 : r-dup

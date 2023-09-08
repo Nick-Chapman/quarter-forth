@@ -1,4 +1,4 @@
-.." Loading predefined.f ( ... )" cr
+.." Loading predefined ( ... )" cr
 
 : allot     here + here-pointer ! ;
 

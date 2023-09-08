@@ -1,5 +1,5 @@
 
-.." Loading primes.f ( " latest
+.." Loading primes ( " latest
 
 : divisible-by ( n1 n2  -- flag ) mod 0= ;
 

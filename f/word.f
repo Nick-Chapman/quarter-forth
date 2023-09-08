@@ -1,4 +1,4 @@
-.." Loading word.f ( " latest
+.." Loading word ( " latest
 
 ( Define "word" in Forth )
 

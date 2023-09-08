@@ -1,4 +1,4 @@
-.." Loading colon.f ( " latest
+.." Loading colon ( " latest
 
 ( Define reference implementation of ] and : )
 

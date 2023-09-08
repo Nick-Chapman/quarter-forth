@@ -1,5 +1,5 @@
 
-.." Loading own-mult.f ( " latest
+.." Loading own-mult ( " latest
 
 : double  dup + ;
 

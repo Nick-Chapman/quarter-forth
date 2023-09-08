@@ -1,4 +1,4 @@
-.." Loading dict.f ( " latest
+.." Loading dict ( " latest
 
 : bl        32 ;
 : space     bl emit ;

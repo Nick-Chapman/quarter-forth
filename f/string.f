@@ -48,4 +48,4 @@ dup execute
 here-pointer !
 ;
 
-.." Loaded  string.f" cr
+.." Loaded  string" cr

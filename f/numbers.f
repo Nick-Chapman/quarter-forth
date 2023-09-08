@@ -1,4 +1,4 @@
-.." Loading numbers.f ( " latest
+.." Loading numbers ( " latest
 
 : char+   ( n -- n )        1 + ;       ( increment by char size +1 )
 : rot   >r swap r> swap ;

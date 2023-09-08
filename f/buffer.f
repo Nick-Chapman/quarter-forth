@@ -1,4 +1,4 @@
-.." Loading buffer.f ( " latest
+.." Loading buffer ( " latest
 
 get-key constant old-key
 

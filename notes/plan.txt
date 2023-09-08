@@ -45,12 +45,13 @@ Done:
 
 Next:
 
-- module" end-module
-- kill transient deprecated_word_buffer -- just use here
-- load embedded text at high mem address
 - concat *.f in sep make stage, have file list allowing comments - just one incbin
-- .h in forth - hex, decimal
+- module" end-module
 
+- load embedded text at high mem address
+
+- kill transient deprecated_word_buffer -- just use here
+- .h in forth - hex, decimal
 - split bools.f and stack-manip.f to avoid repeating
 - signed printing
 - rework again the colon compiler code. it is a mess

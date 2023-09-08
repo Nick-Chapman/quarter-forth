@@ -1,4 +1,4 @@
-.." Loading start.f" cr
+.." Loading start" cr
 
 cr
 .." Welcome to nforth. A 16-bit Forth system running on x86." cr
