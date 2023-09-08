@@ -7,12 +7,23 @@ over = if drop exit then
 ." Expect failed, got: " . cr crash ( -only-during-startup )
 ;
 
+: @.hh ( a -- ) dup c@ .h 1 - c@ .h ;
+: .hh ( a ) sp 1 + @.hh drop ; ( THIS IS SUCH A HACK )
+
 ( Tools for exploring mem and defs )
 
 : mem ( report bytes available )
 sp here -
 ." Bytes available: "
 . cr
+;
+
+: memv ( report verbose memory usage info )
+." Memory (hex)" cr
+here      ." here      = " .hh cr
+sp        ." sp        = " .hh cr
+sp0       ." sp0       = " .hh cr
+sp here - ." Available = " .hh cr
 ;
 
 ( Dump colon definitions )
@@ -57,7 +68,7 @@ word find x-see cr ; immediate
 : .s-continue
 2 -
 dup 2 - sp > if ( the 2 is for the extra item while processing )
-dup @ .
+dup @ . space
 tail .s-continue
 then
 drop
@@ -108,9 +119,6 @@ then cr tail pag-continue ;
 : pag ( start-addr xt -- ) swap pag-continue ;
 
 
-: @.hh ( a -- ) dup c@ .h 1 - c@ .h ;
-: .hh ( a ) sp 1 + @.hh drop ; ( THIS IS SUCH A HACK )
-
 : and if exit then drop 0 ;
 : is-printable? ( c -- bool ) dup 31 > swap 128 < and ;
 
@@ -158,7 +166,6 @@ hide db
 hide dc
 hide dc-oneK
 hide dc64
-hide depth
 hide dis
 hide e8
 hide emit-byte

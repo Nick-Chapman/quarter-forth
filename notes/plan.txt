@@ -41,10 +41,10 @@ Done:
 - big cleanup of ASM file
 - recode number? in forth (and kill from ASM) - just basic unsigned
 - nicer ? message from interpreter "[" as already have for colon compiler
+- memv: verbose mem info
 
 Next:
 
-- memv: verbose mem info
 - module" end-module
 - kill transient deprecated_word_buffer -- just use here
 - load embedded text at high mem address
