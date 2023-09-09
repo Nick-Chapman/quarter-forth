@@ -47,14 +47,17 @@ Done:
 - fix over-type & over-delete hang-bug in keyboard buffer
 - rename predefined -> standard
 - move non-numeric standard words earlier in boot sequence
+- avoid repeat/hide standard words in later files
 
 Next:
-- avoid repeat/hide standard words in later files
+- cleanup 10/13 cr code in kernel
+- stage 0 compiler: change form ]..[ to {..}
+- stage 1 compiler.. this code is such a mess!
+
 - move from ASM / implement afresh, words like: char [char] [compile] create variable constant ' [']
 - implement "else" -- try use instead of if/exit/then idiom
 
 - .h in forth - hex, decimal
-- cleanup 10/13 cr code in kernel
 
 - add stack effect comment to all kernel words
 - write up more info in README
@@ -66,8 +69,6 @@ Next:
 - split bools.f and stack-manip.f to avoid repeating
 - signed printing
 - rework again the colon compiler code. it is a mess
-- stage 0 compiler: change form ]..[ to {..}
-- stage 1 compiler.. this code is such a mess!
 - refactor builtin words to be in forthy style where possible (and thus candidates for .f)
 
 - primordal mode (-1), access to fixed array of single-char words

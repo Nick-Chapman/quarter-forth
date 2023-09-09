@@ -1,24 +1,15 @@
 .." Loading numbers ( " latest
 
-: char+   ( n -- n )        1 + ;       ( increment by char size +1 )
-: rot   >r swap r> swap ;
-: 2drop drop drop ;
-: false     ( -- b )        0 ;
-: true      ( -- b )        0 1 - ;
-: and       ( b1 b2 -- b )  if exit then drop false ;   ( bool conjunction )
-: invert    ( b -- b )      if false exit then true ;   ( bool negation )
-: >         swap < ;
-: <=        > invert ;
-: >=        < invert ;
-: 0=   0 = ;
-
-: digit? ( c -- flag ) dup [char] 0 >= swap [char] 9 <= and ;
 
 1 1 +
 constant two
 
 two 1 + dup * 1 +
 constant ten
+
+( Parse an unsigned decimal )
+
+: digit? ( c -- flag ) dup [char] 0 >= swap [char] 9 <= and ;
 
 : number-loop ( acc str -- u 1 | 0 )
 dup c@ dup 0 = if 2drop ( acc ) 1 exit
@@ -34,7 +25,7 @@ dup if rot drop
 then
 ;
 
-( Print as unsigned )
+( Print as unsigned decimal )
 
 : print-digit ( 0-9 -- )
 [char] 0 + emit
@@ -52,21 +43,10 @@ dot-loop
 
 : ? ( addr -- ) @ . ;
 
-hide 0=
-hide 2drop
-hide <=
-hide >
-hide >=
-hide and
-hide char+
 hide digit?
 hide dot-loop
-hide false
-hide invert
 hide number-loop
 hide print-digit
-hide rot
 hide ten
-hide true
 hide two
 words-since char ) emit cr

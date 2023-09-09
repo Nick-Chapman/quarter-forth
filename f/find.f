@@ -1,7 +1,5 @@
 .." Loading find ( " latest
 
-: nip   swap drop ;
-
 : find-loop ( s x -- x )
 dup if ( s x )
 dup hidden? if xt->next tail find-loop then
@@ -20,5 +18,4 @@ drop type [char] ? emit cr crash-only-during-startup
 ;
 
 hide find-loop
-hide nip
 words-since char ) emit cr
