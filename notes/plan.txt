@@ -45,12 +45,11 @@ Done:
 - concat *.f in sep make stage, have file list allowing comments - just one incbin
 - load embedded text at high mem address. requires small rejig to boot loader. much more space available now!
 - fix over-type & over-delete hang-bug in keyboard buffer
+- rename predefined -> standard
+- move non-numeric standard words earlier in boot sequence
 
 Next:
-
-- cleanup interpreter - can use strings!
-- rename predefined -> standard
-- move non-numeric standard words earlier in boot sequence; avoid repeat/hide in other files
+- avoid repeat/hide standard words in later files
 - move from ASM / implement afresh, words like: char [char] [compile] create variable constant ' [']
 - implement "else" -- try use instead of if/exit/then idiom
 

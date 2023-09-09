@@ -44,6 +44,8 @@ dup 0= if print-digit exit then ( special case for single "0" )
 dot-loop
 ;
 
+: ? ( addr -- ) @ . ;
+
 hide print-digit
 hide dot-loop
 hide 0=

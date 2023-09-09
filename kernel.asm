@@ -165,7 +165,7 @@ defword "r>"
     jmp bx
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Special numbers : TODO: avoid need
+;;; Special numbers : TODO: remove 2,10,32
 
 defword "0"
     call _lit
@@ -175,6 +175,11 @@ defword "0"
 defword "1"
     call _lit
     dw 1
+    ret
+
+defword "2"
+    call _lit
+    dw 2
     ret
 
 defword "10"

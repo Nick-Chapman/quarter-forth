@@ -10,8 +10,11 @@ f/string.f
 f/dict.f
 # Now we can inspect ("words") and manage ("hide") our dictionary.
 
+# Standard words, without using numerals ( except 0, 1 )
+f/standard.f
+
+# Numeric literals and print (.)
 f/numbers.f
-# Numbers at last...
 
 f/interpreter.f
 # Now we are running a working top level interpreter, "[", supporting numerics.
@@ -26,16 +29,10 @@ f/colon.f
 f/word.f
 f/find.f
 
-# Lots of standard words...
-f/predefined.f
-
 # Examine stack (.s), memory (mem,dump,xxd); decompiling (see); regression support ("x")
 f/tools.f
 
 # f/own-mult.f  # WIP multiplication defined using shift and add
-
-# Mostly for the standard words
-f/regression.f
 
 f/examples.f    # various examples
 f/primes.f      # compute all 16bit primes
