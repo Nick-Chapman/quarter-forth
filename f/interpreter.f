@@ -1,24 +1,22 @@
 .." Loading interpeter ( " latest
 
-here char ] , 0 , constant string] ( TODO : use string syntax )
-
 : [
 ( debugging... ) ( [char] > emit )
 word ( string )
 
 ( Is the word the special "]" marker? )
-dup string] s= if ( string )
+dup s" ]" s= if ( string )
 
-( YES, exit the interpreter looop )
+( YES, exit the interpreter loop. )
 drop exit then
 
-( Is the name in the dictionary? )
+( Is the word in the dictionary? )
 dup find dup if ( string xt )
 
 ( YES, execute it, and loop... )
 swap drop ( xt ) execute tail [
 
-( NO, name is not in the dictionary )
+( NO, name is not in the dictionary... )
 then drop ( string )
 
 ( Maybe it's a number... )
@@ -27,7 +25,7 @@ number? if ( converted-number )
 ( YES; leave the converted number on the stack, and loop... )
 tail [
 
-( NO; name undefined, so message, skip and loop... )
+( NO, word is undefined, so message, skip and loop... )
 
 then ." ** Interpreter: '" type ." ' ?" cr
 crash-only-during-startup tail [
@@ -36,5 +34,4 @@ crash-only-during-startup tail [
 
 ( enter the interpreter ) [
 
-hide string]
 words-since char ) emit cr

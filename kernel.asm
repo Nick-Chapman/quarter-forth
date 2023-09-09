@@ -58,7 +58,7 @@ _bye:
 
 defword "crash" ; TODO: rename lock?
 _crash:
-    print "We have crashed."
+    print "We have crashed. (any key will quit)"
     call _cr
     call echo_off
 .loop:
