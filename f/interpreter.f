@@ -1,6 +1,6 @@
 .." Loading interpeter ( " latest
 
-here char ] , 0 , constant string]
+here char ] , 0 , constant string] ( TODO : use string syntax )
 
 : [
 ( debugging... ) ( [char] > emit )

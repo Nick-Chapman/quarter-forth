@@ -6,6 +6,8 @@ The [Makefile](Makefile) provided can build the system (`make`) and spin up with
 
 Plans are ideas are [here](notes/plan.txt).
 
+### TODO: nforth language and x86 implementation choices
+
 ### References useful to me:
 - [Threaded Interpretive Languages, R. G. Loeliger, 1981](https://archive.org/details/R.G.LoeligerThreadedInterpretiveLanguagesTheirDesignAndImplementationByteBooks1981)
 - [Starting Forth, Leo Brodie](https://www.forth.com/starting-forth)

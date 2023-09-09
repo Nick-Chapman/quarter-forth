@@ -21,26 +21,24 @@ tail                            ( "name" -- )           : tail-call (i.e jump!) 
 branch [LIT:xt]                 ( )                     : unconditional branch
 crash                           ( )                     : obv
 crash-only-during-startup       ( )                     : obv
-create-entry                    ( str --)               : write dict header at here. TODO: rename: entry,
+entry,                          ( str --)               : write dict header at here.
 echo-enabled                    ( -- a )                : address of flag to control echo
-echo-off                        ( )                     : TODO: move to forth
-echo-on                         ( )                     : TODO: move to forth
-flip-immediate-flag             ( xt -- )               : used by (standard word) immediate
+echo-off                        ( )                     : obv
+echo-on                         ( )                     : obv
+immediate^                      ( xt -- )               : used by (standard word) immediate
 get-key                         ( -- xt )               : for current impl of "key"
 here-pointer                    ( -- a )                : variable containing here
-immediate?                      ( "word" -- bool )      : TODO: dont expose this!
 latest-entry                    ( -- xt )               : added to dictionary
 lit [LIT:n]                     ( -- x )                : internal for compilation
 mem                             ( )                     : report #bytes available
-missing                         ( )                     : used by sae find. (TODO: kill)
 next-entry                      ( xt1 -- xt2 )          : walk dictionary
-non-immediate-literal           ( )                     : TODO: avoid this hack
 number?                         ( str -- n 1|str 0 )    : test if a string represents a number
 safe-find                       ( )                     : KILL
 set-key                         ( xt -- )               : replace imp for "key"
-sp                              ( -- a )                : param stack pointer (TODO: fix off by 2 bug)
+sp                              ( -- a )                : param stack pointer
 sp0                             ( -- a )                : base of stack
 startup-is-complete             ( )                     : notify startup is complete
 strlen                          ( str -- n )            : obv
-test-immediate-flag             ( xt -- bool )          : TODO: rename as immediate?
+immediate?                      ( xt -- bool )          : is this XT an immediate word?
+hidden?                         ( xt -- bool )          : is this XT hidden?
 xt->name                        ( xt -- string )        : name of dictionary entry

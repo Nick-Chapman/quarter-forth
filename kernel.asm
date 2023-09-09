@@ -62,8 +62,8 @@ _crash:
     call _cr
     call echo_off
 .loop:
-    call internal_read_char ; avoiding tight loop which spins laptop fans
-    jmp .loop
+    call read_char_interactive ; wait for a key to be pressed, then quit system
+    jmp _bye
 
 is_startup_complete: dw 0
 defword "startup-is-complete"
@@ -188,9 +188,9 @@ defword "32"
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Numeric operations; TODO: M*, shifts, bitwise-ops
+;;; Numeric operations; TODO: M*, general shifts, bitwise-ops
 
-defword "/2" ; (n -- n) TODO: should not be a prim
+defword "/2"
 _div2:
     POP ax
     shr ax, 1
@@ -285,7 +285,7 @@ defword "c!"
 
 here: dw here_start
 
-defword "here-pointer" ; TODO: dont expose; instead have alloc as prim
+defword "here-pointer"
     mov bx, here
     PUSH bx
     ret
@@ -330,8 +330,8 @@ _exit:
     pop bx ; and ignore
     ret
 
-defword "branchA" ; TODO: loose A suffix (TODO: need to be in dictionary?)
-_branchA:
+defword "branch"
+_branch:
     pop bx
     mov bx, [bx]
     jmp bx
@@ -359,7 +359,7 @@ _write_ret:
     ret
 
 defword "compile," ; ( absolute-address-to-call -- )
-_write_abs_call: ; TODO rename
+_compile_comma:
     call _abs_to_rel
     call _write_rel_call
     ret
@@ -575,12 +575,12 @@ read_char: ; first read from embedded string
     mov bx, [builtin]
     mov al, [bx]
     cmp al, 0
-    jz .switch_to_interactive
+    jz .become_interactive
     inc word [builtin]
     ret
-.switch_to_interactive:
-    mov word [read_char_indirection], .interactive
-.interactive:
+.become_interactive:
+    mov word [read_char_indirection], read_char_interactive
+read_char_interactive:
     mov ah, 0
     int 0x16
     ret
@@ -641,7 +641,7 @@ _cls:
     pop ax
     ret
 
-defword "type"
+defword "type" ;; TODO: move to forth
 _type:
     POP di
     call internal_print_string
@@ -715,7 +715,7 @@ deprecated_word_buffer: times 80 db 0 ;; TODO: kill
 
 defword "word" ; ( " blank-deliminted-word " -- string-addr )
 _word:
-    call internal_read_word ;; TODO inline
+    call internal_read_word
     mov ax, deprecated_word_buffer
     PUSH ax
     ret
@@ -795,13 +795,11 @@ _find_or_crash:
     ret
 .missing:
     call _drop
-    print "kernel.find-or-crash "
+    print "kernel.find! '"
     call _type
-    call _lit
-    dw '?'
-    call _emit
+    print "' ?"
     call _cr
-    call _crash ;;-only-during-startup ; TODO: decide
+    call _crash_only_during_startup
     ret
 
 defword "s="
@@ -876,15 +874,15 @@ defwordimm "[char]"
 defword "0branch,"
     call _lit
     dw _0branch
-    call _write_abs_call
+    call _compile_comma
     ret
 
 defwordimm "tail"
     call _word
     call _find_or_crash
     call _lit
-    dw _branchA
-    call _write_abs_call
+    dw _branch
+    call _compile_comma
     call _comma
     ret
 
@@ -901,7 +899,7 @@ defword "entry:"
 defword "call:" ; TODO: Is this [compile] ?
     call _word
     call _find_or_crash
-    call _write_abs_call
+    call _compile_comma
     ret
 
 defword "cr"
@@ -915,7 +913,7 @@ defwordimm "literal"
 _literal:
     call _lit
     dw _lit
-    call _write_abs_call
+    call _compile_comma
     call _comma
     ret
 
@@ -927,11 +925,11 @@ defword "constant"
     call _create_entry
     call _lit
     dw _lit
-    call _write_abs_call
+    call _compile_comma
     call _comma
     call _lit
     dw _exit
-    call _write_abs_call
+    call _compile_comma
     ret
 
 dictionary: dw lastlink

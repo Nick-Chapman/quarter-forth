@@ -6,15 +6,13 @@ Done, asm...
 +                   ( n1 n2 -- n )          : Asm   : add
 ,                   ( x -- )                : Asm   : write to here
 -                   ( n1 n2 -- n )          : Asm   : subtract
-.                   ( n -- )                : Asm   : signed print (TODO: instead of unsigned)
-:                   ( "word" )              : Asm   : replaced in forth. TODO: kill. better [, ]
 <                   ( n1 n2 -- bool )       : Asm   : less-than
 =                   ( n1 n2 -- bool )       : Asm   : equality
 >r                  ( x -- )                : Asm   : move to return stack
 @                   ( a -- x )              : Asm   : fetch
 [char]              ( "c" -- )              : Asm   : immediate, char literal while compiling
 c!                  ( c a -- )              : Asm   : char store
-c,                  ( c -- )                : Asm   : write char to here -- TODO reg test
+c,                  ( c -- )                : Asm   : write char to here
 c@                  ( a -- c )              : Asm   : char fetch
 char                ( "c" -- char )         : Asm   : char literal
 compile,            ( xt -- )               : Asm   : write code to call XT
@@ -24,11 +22,11 @@ dup                 ( x -- x x )            : Asm   : stack manip
 emit                ( char -- )             : Asm   : emit a char in ascii
 execute             ( xt -- )               : Asm   : call XT
 exit                ( )                     : Asm   : return from current definition
-find                ( string -- 0|xt )      : Asm   : TODO: This is non standard interface
+find                ( string -- 0|xt )      : Asm   : This is non standard interface
 immediate           ( b -- b )              : Asm   : mark last dict entry as immediate
 key                 ( -- char )             : Asm   : get next char from keyboard
 literal             ( x -- )                : Asm   : immediate, ( r: -- x )
-over                ( x y -- x y x )        : Asm   : duplicate 2nd stack elem on top. TODO: forth
+over                ( x y -- x y x )        : Asm   : duplicate 2nd stack elem on top
 r>                  ( -- x )                : Asm   : move from return stack
 s=                  ( s1 s1 -- bool )       : Asm   : string equality
 swap                ( x y -- y x )          : Asm   : obs
@@ -41,6 +39,7 @@ Done, Forth...
 '                   ( "name" -- xt )        : Forth : XT for next word in input stream
 (                   ( )                     : Forth : begin comment
 +!                  ( n a -- )              : Forth : increment variable by n
+.                   ( n -- )                : Forth : unsigned print (should be signed)
 0<                  ( n -- flag )           : Forth : n is less than zero
 0=                  ( n -- flag )           : Forth : n is zero
 1+                  ( n1 -- n2 )            : Forth : increment
@@ -65,8 +64,8 @@ false               ( -- b )                : Forth : bool
 here                ( -- a )                : Forth : address of next free heap cell
 if                  ( )                     : Forth : immediate, control flow (COND)
 invert              ( b -- b )              : Forth : bool op
-max                 ( n1 n2 -- n )          : Forth : signed max (TODO: my imp is currently unsigned)
-min                 ( n1 n2 -- n )          : Forth : signed min
+max                 ( n1 n2 -- n )          : Forth : unsigned max (should be signed)
+min                 ( n1 n2 -- n )          : Forth : unsigned min
 negate              ( n1 -- n2 )            : Forth : arithmetic negation
 or                  ( b1 b2 -- b )          : Forth : bool op
 rot                 ( x y z -- y z x )      : Forth : rotate top 3 stack elems

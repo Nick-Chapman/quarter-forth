@@ -48,17 +48,26 @@ Done:
 
 Next:
 
+- cleanup interpreter - can use strings!
+- rename predefined -> standard
+- move non-numeric standard words earlier in boot sequence; avoid repeat/hide in other files
+- move from ASM / implement afresh, words like: char [char] [compile] create variable constant ' [']
+- implement "else" -- try use instead of if/exit/then idiom
+
+- .h in forth - hex, decimal
+- cleanup 10/13 cr code in kernel
+
+- write up more info in README
+
 - kill transient deprecated_word_buffer -- just use here
 - fix double-echo-after-buffer bug
 - module" end-module
 
-- .h in forth - hex, decimal
 - split bools.f and stack-manip.f to avoid repeating
 - signed printing
 - rework again the colon compiler code. it is a mess
 - stage 0 compiler: change form ]..[ to {..}
 - stage 1 compiler.. this code is such a mess!
-- cleanup/workthrough of TODOs everywhere
 - refactor builtin words to be in forthy style where possible (and thus candidates for .f)
 
 - primordal mode (-1), access to fixed array of single-char words

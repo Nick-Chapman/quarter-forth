@@ -111,6 +111,7 @@ variable v
 v c@       254 x
 v c@ 1 +   255 x
 
+( TODO : test char store c! )
 
 ( Cell and Char size )
 
@@ -145,8 +146,6 @@ b @     22 x
 33 a !
 a @     33 x
 b @     22 x
-
-( TODO : test char fetch/store -- c@, c! )
 
 
 ( Constants )
