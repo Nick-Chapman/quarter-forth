@@ -1,23 +1,24 @@
 .." Loading word ( " latest
 
-( Define "word" in Forth )
+: is-white ( c -- flag ) 33 < ;
 
-: word-loop-2 ( a -- ) ( Keep chars until whitespace )
-key dup 33 < if ( a c ) ( whitespace )
-drop 0 swap c! exit ( null-terminator )
-then over c! ( a ) 1 + tail word-loop-2 ( keep collecting... )
+: collect-char ( a c -- a' ) over c! 1 + ;
+
+: skip-leading-whitespace ( a -- a' )
+key dup is-white if ( a c )
+drop tail skip-leading-whitespace ( keep skipping... )
+then collect-char ( collect first char )
 ;
 
-: word-loop-1 ( a -- ) ( Skip leading whitespace )
-key dup 33 < if ( a c ) ( whitespace )
-drop tail word-loop-1 ( keep skipping... )
-then over c! ( a ) 1 +
-tail word-loop-2 ( collect first char and keep collect... )
+: collect-while-not-whitespace ( a -- )
+key dup is-white if ( a c )
+drop 0 swap c! exit ( add null-terminator )
+then collect-char tail collect-while-not-whitespace ( keep collecting... )
 ;
 
 : word ( "name" -- str )
-here 100 + dup word-loop-1 ; ( TODO : why 100+ )
+here dup skip-leading-whitespace collect-while-not-whitespace ;
 
-hide word-loop-1
-hide word-loop-2
+hide skip-leading-whitespace
+hide collect-while-not-whitespace
 words-since char ) emit cr
