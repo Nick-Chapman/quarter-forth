@@ -14,11 +14,17 @@
 
 : digit? ( c -- flag ) dup [char] 0 >= swap [char] 9 <= and ;
 
+1 1 +
+constant two
+
+two 1 + dup * 1 +
+constant ten
+
 : number-loop ( acc str -- u 1 | 0 )
 dup c@ dup 0 = if 2drop ( acc ) 1 exit
 then ( acc str c ) dup digit? ( acc str c flag )
 dup 0 = if 2drop 2drop 0 exit
-then drop [char] 0 - rot 10 * + swap char+ ( acc' str' )
+then drop [char] 0 - rot ten * + swap char+ ( acc' str' )
 tail number-loop
 ;
 
@@ -36,7 +42,7 @@ then
 
 : dot-loop ( u -- )
 dup 0= if drop exit ( stop; don't print leading zeros ) then
-10 /mod ( u%10 u/10 -- ) dot-loop print-digit
+ten /mod ( u%10 u/10 -- ) dot-loop print-digit
 ;
 
 : . ( u -- )
@@ -46,8 +52,6 @@ dot-loop
 
 : ? ( addr -- ) @ . ;
 
-hide print-digit
-hide dot-loop
 hide 0=
 hide 2drop
 hide <=
@@ -56,9 +60,13 @@ hide >=
 hide and
 hide char+
 hide digit?
+hide dot-loop
 hide false
 hide invert
 hide number-loop
+hide print-digit
 hide rot
+hide ten
 hide true
+hide two
 words-since char ) emit cr

@@ -1,6 +1,5 @@
 .." Loading dict ( " latest
 
-: bl        32 ;
 : space     bl emit ;
 : rot       >r swap r> swap ;
 : -rot      swap >r swap r> ;
@@ -16,8 +15,6 @@ hide x-hide
 
 ( hide some internals from boot.f and string.f )
 
-hide 'A'
-hide 'B'
 hide '?'
 hide ')'
 hide string[
@@ -62,7 +59,6 @@ hide show-if-not-hidden
 ( debug: See the ASM builtin words; needs "latest" dropped on stack when boot starts )
 ( drop cr cr 0 swap words-continue drop drop cr cr crash )
 
-hide bl
 hide space
 hide rot
 hide -rot

@@ -165,7 +165,7 @@ defword "r>"
     jmp bx
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Special numbers : TODO: remove 2,10,32
+;;; Special numbers
 
 defword "0"
     call _lit
@@ -177,19 +177,9 @@ defword "1"
     dw 1
     ret
 
-defword "2"
+defword "bl" ; ascii code for space
     call _lit
-    dw 2
-    ret
-
-defword "10"
-    call _lit
-    dw 10
-    ret
-
-defword "32"
-    call _lit
-    dw 0x20
+    dw 32
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

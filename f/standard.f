@@ -4,7 +4,7 @@
 
 ( This is a 16bit Forth; cell size is 2. Chars have size 1 )
 
-: cell    ( -- n )          2 ;         ( cell size )
+: cell    ( -- n )          1 1 + ;     ( cell size )
 : cells   ( n -- n )        cell * ;    ( multiply by cell size )
 : cell+   ( n -- n )        cell + ;    ( increment by cell size +2 )
 : char+   ( n -- n )        1 + ;       ( increment by char size +1 )
@@ -12,7 +12,6 @@
 
 ( Output )
 
-: bl        32 ;
 : space     bl emit ;
 : spaces    dup if space 1 - tail spaces then drop ;
 

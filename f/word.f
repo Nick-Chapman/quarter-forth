@@ -19,6 +19,8 @@ then collect-char tail collect-while-not-whitespace ( keep collecting... )
 : word ( "name" -- str )
 here dup skip-leading-whitespace collect-while-not-whitespace ;
 
-hide skip-leading-whitespace
+hide collect-char
 hide collect-while-not-whitespace
+hide is-white
+hide skip-leading-whitespace
 words-since char ) emit cr

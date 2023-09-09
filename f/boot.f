@@ -1,15 +1,22 @@
 
-char b emit char o dup emit emit char t emit cr
-
-char A constant 'A'
-char B constant 'B'
-char ? constant '?'
-char ) constant ')'
-
 entry: here
 call: here-pointer
 call: @
 ret,
+
+here
+char b c,
+char o c,
+char o c,
+char t c,
+0 ,
+constant boot-string
+
+boot-string type cr
+
+char ? constant '?'
+char ) constant ')'
+char : constant ':'
 
 here char [ , 0 , constant string[
 here char ; , 0 , constant string;
@@ -82,13 +89,15 @@ call: compile,
 tail ]]
 then
 call: drop
-call: 'A'
+call: boot-string
+call: type
+call: ':'
 call: emit
 call: type
 call: '?'
 call: emit
 call: cr
-call: crash ( -only-during-startup )
+call: crash-only-during-startup
 tail ]]
 ret,
 
@@ -117,7 +126,7 @@ s= [ if ]] drop ret, exit
 dup find dup [ if ]]
 swap drop compile-or-execute 1compiling exit
 [ then ]] drop
-'B' emit type '?' emit cr
+boot-string type ':' emit type '?' emit cr
 crash 1compiling exit
 [ ret,
 
