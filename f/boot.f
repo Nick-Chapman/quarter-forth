@@ -10,16 +10,16 @@ char o c,
 char o c,
 char t c,
 0 ,
-constant boot-string
+constant: boot-string
 
 boot-string type cr
 
-char ? constant '?'
-char ) constant ')'
-char : constant ':'
+char ? constant: '?'
+char ) constant: ')'
+char : constant: ':'
 
-here char [ , 0 , constant string[
-here char ; , 0 , constant string;
+here char [ , 0 , constant: string[
+here char ; , 0 , constant: string;
 
 entry: immediate
 call: latest
@@ -54,7 +54,7 @@ call: =
 if
 call: exit
 then
-tail (
+tail: (
 ret,
 
 
@@ -70,7 +70,7 @@ Defining a level 0 colon-compiler
 ( Compiles words until a "[" marker is reached )
 
 
-entry: ]]
+entry: ]] ( TODO: rename { ... } )
 call: word
 call: dup
 call: string[
@@ -86,7 +86,7 @@ if
 call: swap
 call: drop
 call: compile,
-tail ]]
+tail: ]]
 then
 call: drop
 call: boot-string
@@ -98,7 +98,7 @@ call: '?'
 call: emit
 call: cr
 call: crash-only-during-startup
-tail ]]
+tail: ]]
 ret,
 
 entry: almost: ( "almost" because caller has to compile the final ret, )

@@ -34,11 +34,13 @@ hide x-hide
 hide ')'
 hide '?'
 hide 1compiling
-hide [']
 hide ]]
 hide almost:
+hide call:
 hide collect-string
 hide compile-or-execute
+hide constant:
+hide entry:
 hide start]
 hide string;
 hide string[

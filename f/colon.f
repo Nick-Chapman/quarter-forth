@@ -8,15 +8,9 @@ execute exit
 then compile,
 ;
 
-: ['] ( comp: "name" ) ( run: -- xt )  ( TODO: must we use this here? )
-( word find non-immediate-literal )
-tick: non-immediate-literal             ( Nice to use tick: ? )
-; immediate
-
-
 ( We make use of the previous  "]" whilst defining ths one )
 
-here char ; , 0 , constant string;
+here char ; , 0 , constant string; ( TODO: string lits are available now )
 
 : compiling
 word ( name ) dup
@@ -46,7 +40,6 @@ tail compiling
 
 : : word entry, compiling ;
 
-hide [']
 hide compile-or-execute
 hide compiling
 hide string;

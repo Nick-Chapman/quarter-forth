@@ -98,13 +98,6 @@ r> r> ( xt n )
 then drop drop
 ;
 
-( bracket tick -- where is the best place for this? )
-
-: ['] ( comp: "name" ) ( run: -- xt )
-tick: non-immediate-literal
-; immediate
-
-
 ( Pagination )
 
 get-key constant old-key
@@ -171,8 +164,6 @@ latest ['] see10 pag
 hide .s-continue
 hide @.hh
 hide @rel->abs
-hide [']
-hide and
 hide c3
 hide db
 hide dc

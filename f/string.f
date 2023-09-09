@@ -1,11 +1,6 @@
 
 ( Strings Literals... )
 
-: ['] ( comp: "name" ) ( run: -- xt )  ( TODO: must we use this here? )
-( word find non-immediate-literal )
-tick: non-immediate-literal             ( Nice to use tick: ? )
-; immediate
-
 : collect-string
 key dup [char] " = if exit
 then c, tail collect-string

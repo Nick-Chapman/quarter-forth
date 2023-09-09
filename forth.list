@@ -4,6 +4,9 @@
 f/boot.f
 # Now we have a colon compiler ":" supporting immediate words (but no numerics).
 
+# A few important system words which we define early (before string and dict)
+f/early.f
+
 f/string.f
 # Now we have string literal syntax; handy for messages!
 

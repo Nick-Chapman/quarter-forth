@@ -872,30 +872,6 @@ defword "0branch,"
     call _compile_comma
     ret
 
-defwordimm "tail"
-    call _word
-    call _find_or_crash
-    call _lit
-    dw _branch
-    call _compile_comma
-    call _comma
-    ret
-
-defword "tick:"
-    call _word
-    call _find_or_crash
-    ret
-
-defword "entry:"
-    call _word
-    call _create_entry
-    ret
-
-defword "call:" ; TODO: Is this [compile] ?
-    call _word
-    call _find_or_crash
-    call _compile_comma
-    ret
 
 defword "cr"
 _cr:
@@ -912,10 +888,21 @@ _literal:
     call _comma
     ret
 
-defword "non-immediate-literal" ; TODO: avoid use & kill def
-    jmp _literal
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; words for booting
 
-defword "constant"
+defword "entry:"
+    call _word
+    call _create_entry
+    ret
+
+defword "call:" ; A non immediate version of [compile] used in boot.f
+    call _word
+    call _find_or_crash
+    call _compile_comma
+    ret
+
+defword "constant:"
     call _word
     call _create_entry
     call _lit
@@ -925,6 +912,15 @@ defword "constant"
     call _lit
     dw _exit
     call _compile_comma
+    ret
+
+defwordimm "tail:"
+    call _word
+    call _find_or_crash
+    call _lit
+    dw _branch
+    call _compile_comma
+    call _comma
     ret
 
 dictionary: dw lastlink

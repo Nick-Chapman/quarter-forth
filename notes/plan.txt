@@ -50,11 +50,14 @@ Done:
 - avoid repeat/hide standard words in later files
 
 Next:
+
+- WIP move from ASM / implement afresh, words like: char [char] [compile] create variable constant ' [']
+- can we avoid defs of the special words for boot (entry: call: tail: constant:) or make them in xboot
+
 - cleanup 10/13 cr code in kernel
 - stage 0 compiler: change form ]..[ to {..}
 - stage 1 compiler.. this code is such a mess!
 
-- move from ASM / implement afresh, words like: char [char] [compile] create variable constant ' [']
 - implement "else" -- try use instead of if/exit/then idiom
 
 - .h in forth - hex, decimal
