@@ -20,10 +20,10 @@ char [compile] literal ; immediate
 : ['] ( comp: "name" ) ( run: -- xt )
 ' [compile] literal ; immediate
 
+: tail ( "name" )
+word find! ['] branch compile, , ; immediate
+
 : constant ( x "name" -- )
 word entry,
 ['] lit compile, ,
 ['] exit compile, ;
-
-: tail ( "name" )
-word find! ['] branch compile, , ; immediate

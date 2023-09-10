@@ -15,9 +15,10 @@
 : space     bl emit ;
 : spaces    dup if space 1 - tail spaces then drop ;
 
-( Definitions )
+( Defining words )
 
-: variable  here cell allot constant ;
+: variable ( initialized to 0 )
+here 0 , constant ;
 
 ( Bools )
 

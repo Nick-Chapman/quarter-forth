@@ -7,9 +7,6 @@ over = if drop exit then
 ." Expect failed, got: " . cr crash-only-during-startup
 ;
 
-: @.hh ( a -- ) dup c@ .h 1 - c@ .h ;
-: .hh ( a ) sp 1 + @.hh drop ; ( THIS IS SUCH A HACK )
-
 ( Tools for exploring mem and defs )
 
 : mem ( report bytes available )
@@ -20,10 +17,10 @@ sp here -
 
 : memv ( report verbose memory usage info )
 ." Memory (hex)" cr
-here      ." here      = " .hh cr
-sp        ." sp        = " .hh cr
-sp0       ." sp0       = " .hh cr
-sp here - ." Available = " .hh cr
+here      ." here      = " .hex4 cr
+sp        ." sp        = " .hex4 cr
+sp0       ." sp0       = " .hex4 cr
+sp here - ." Available = " .hex4 cr
 ;
 
 ( Dump colon definitions )
@@ -49,7 +46,7 @@ then
     [char] ; emit
     exit
   then
-    .h ( a ) space
+    .hex2 ( a ) space
     1 + tail dis
 ;
 
@@ -68,7 +65,7 @@ word find x-see cr ; immediate
 : .s-continue
 2 -
 dup 2 - sp > if ( the 2 is for the extra item while processing )
-dup @ . space
+dup @ .
 tail .s-continue
 then
 drop
@@ -134,16 +131,16 @@ depth drop-if-not-zero
 ( Ascii char dump, paginated on 1k blocks )
 
 : dc ( a -- a+1 ) dup c@ emit-printable-or-dot 1 + ;
-: dc64 ( a -- a+64 ) dup .hh ." : " ['] dc 64 times cr ;
+: dc64 ( a -- a+64 ) dup .hex4 ." : " ['] dc 64 times cr ;
 : dc-oneK ( a -- a+1K ) ['] dc64 16 times ;
 : dump ( start-addr -- ) default-0 ['] dc-oneK pag ;
 
 ( xxd-style dump : hex-bytes + ascii to the side, paginated at 256 bytes )
 
-: emit-byte ( c -- ) .h space ;
+: emit-byte ( c -- ) .hex2 space ;
 : db ( a -- a+1 ) dup c@ emit-byte 1 + ;
 : xxd-line ( a -- a+16 )
-dup .hh ." : " dup ['] db 16 times space drop ['] dc 16 times cr ;
+dup .hex4 ." : " dup ['] db 16 times space drop ['] dc 16 times cr ;
 : xxd-page ( a -- a+1K ) ['] xxd-line 16 times ;
 : xxd ( start-addr -- ) default-0 ['] xxd-page pag ;
 
@@ -162,7 +159,6 @@ latest ['] see10 pag
 ;
 
 hide .s-continue
-hide @.hh
 hide @rel->abs
 hide c3
 hide db

@@ -820,28 +820,6 @@ _s_equals:
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Printing numbers (TODO: should be in Forth)
-
-defword ".h" ; ( byte -- ) ; emit as 2-digit hex
-    pspop ax
-    mov ah, 0
-    push ax
-    push ax
-    ;; hi nibble
-    pop di
-    and di, 0xf0
-    shr di, 4
-    mov al, [.hex+di]
-    call print_char
-    ;; lo nibble
-    pop di
-    and di, 0xf
-    mov al, [.hex+di]
-    call print_char
-    ret
-.hex db "0123456789abcdef"
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Pure Forth style
 
 defword "0branch,"
