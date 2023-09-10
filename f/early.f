@@ -21,9 +21,20 @@ char [compile] literal ; immediate
 ' [compile] literal ; immediate
 
 : tail ( "name" )
-word find! ['] branch compile, , ; immediate
+word find! ['] branchA compile, , ; immediate
 
 : constant ( x "name" -- )
 word entry,
 ['] lit compile, ,
 ['] exit compile, ;
+
+( We have already defined "if" and "then" in boot.f )
+( But we'll define them again here using standard Forth )
+( and also "else: )
+
+
+: if     0branch, here 0 ,      ; immediate
+: then   dup here swap - swap ! ; immediate
+: else   branchR, here 0 , swap dup here swap - swap ! ; immediate
+
+( TODO: factorize )

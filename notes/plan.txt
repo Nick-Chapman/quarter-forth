@@ -59,14 +59,17 @@ Done:
 - write up more info in new.md
 - decide NO - state aware combined interpreter/colon-compiler
 - NO: check return under/stack overflow
+- support "else"
 
 Next:
+
+
+- (factor "ahead" for then/else - find posting on control flow imp in forth)
 
 - hex converion on input
 - tidy up colon.f
 - module" end-module
 - support: create, use for variable (constant will be it's own def still)
-- support "else" (factor "ahead" - find posting on control flow imp in forth)
 - do/loop -- make F example work using original code
 
 - finish/merge write up in nex.text into README

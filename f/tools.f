@@ -53,10 +53,10 @@ then
 
 : x-see ( xt -- )
 ." : "
-dup
-xt->name type
+dup xt->name type
 ."    "
-dis
+dup dis
+immediate? if ."  immediate" then
 ;
 
 : see
@@ -181,7 +181,6 @@ hide old-key
 hide pag
 hide pag-continue
 hide raw-key
-hide see-all
 hide see1
 hide see10
 hide times

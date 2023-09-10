@@ -337,13 +337,7 @@ _exit:
     pop bx ; and ignore
     ret
 
-defword "branch"
-_branch:
-    pop bx
-    mov bx, [bx]
-    jmp bx
-
-_0branch:
+_0branch: ; relative
     pop bx
     pspop cx
     cmp cx, 0
@@ -351,9 +345,22 @@ _0branch:
     add bx, 2 ; skip over target pointer, and continue
     jmp bx
 .no:
-    add bx, [bx] ; add relative offset (will be backpatched in by "then")
+    add bx, [bx] ; add relative offset (will be backpatched in by "then/else")
     jmp bx ; branch to target
 
+
+defword "branchR" ; used by else
+_branchR:
+    pop bx
+    add bx, [bx] ; add relative offset
+    jmp bx ; branch to target
+
+
+defword "branchA" ; used by tail & string compilation
+_branchA:
+    pop bx
+    mov bx, [bx]
+    jmp bx
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Compilation
@@ -832,6 +839,12 @@ defword "0branch,"
     call _compile_comma
     ret
 
+defword "branchR,"
+    call _lit
+    dw _branchR
+    call _compile_comma
+    ret
+
 
 defword "cr"
 _cr:
@@ -866,7 +879,7 @@ defwordimm "tail:"
     call _word
     call _find_or_crash
     call _lit
-    dw _branch
+    dw _branchA
     call _compile_comma
     call _comma
     ret

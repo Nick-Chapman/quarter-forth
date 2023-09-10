@@ -2,12 +2,6 @@
 
 ( Define reference implementation of ] and : )
 
-: compile-or-execute ( xt -- )
-dup immediate? if
-execute exit
-then compile,
-;
-
 ( We make use of the previous  "]" whilst defining ths one )
 
 here char ; , 0 , constant string; ( TODO: string lits are available now )
@@ -25,7 +19,12 @@ then ( name )
 
 dup find dup if ( name xt )
 swap drop ( xt )
-compile-or-execute tail compiling
+
+dup immediate?
+  if execute
+  else compile,
+  then tail compiling
+
 then drop ( name )
 
 number? if
@@ -40,7 +39,6 @@ tail compiling
 
 : : word entry, compiling ;
 
-hide compile-or-execute
 hide compiling
 hide string;
 words-since char ) emit cr
