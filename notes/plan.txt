@@ -45,69 +45,54 @@ Done:
 - concat *.f in sep make stage, have file list allowing comments - just one incbin
 - load embedded text at high mem address. requires small rejig to boot loader. much more space available now!
 - fix over-type & over-delete hang-bug in keyboard buffer
+- fix double-echo-after-buffer bug
 - rename predefined -> standard
 - move non-numeric standard words earlier in boot sequence
 - avoid repeat/hide standard words in later files
+- refactor builtin words to be in forthy style where possible (and thus candidates for .f)
+- WIP move from ASM / implement afresh, words like: char [char] [compile] create variable constant ' [']
+- move def of constant: to boot
+- stage 0 compiler: change form ]..[ to {..}
+- kill transient deprecated_word_buffer -- just use here
+- kill kernel hex output code in favour of new Forth def
+- make . be hex/decimal modal (with words hex decimal to switch)
+- write up more info in new.md
+- decide NO - state aware combined interpreter/colon-compiler
+- NO: check return under/stack overflow
 
 Next:
 
-- WIP move from ASM / implement afresh, words like: char [char] [compile] create variable constant ' [']
-- can we avoid defs of the special words for boot (entry: call: tail: constant:) or make them in xboot
-
-- cleanup 10/13 cr code in kernel
-- stage 0 compiler: change form ]..[ to {..}
-- stage 1 compiler.. this code is such a mess!
-
-- implement "else" -- try use instead of if/exit/then idiom
-
-- .h in forth - hex, decimal
-
-- add stack effect comment to all kernel words
-- write up more info in README
-
-- kill transient deprecated_word_buffer -- just use here
-- fix double-echo-after-buffer bug
+- hex converion on input
+- tidy up colon.f
 - module" end-module
+- support: create, use for variable (constant will be it's own def still)
+- support "else" (factor "ahead" - find posting on control flow imp in forth)
+- do/loop -- make F example work using original code
 
-- split bools.f and stack-manip.f to avoid repeating
-- signed printing
-- rework again the colon compiler code. it is a mess
-- refactor builtin words to be in forthy style where possible (and thus candidates for .f)
+- finish/merge write up in nex.text into README
+- add stack effect comment to all kernel words
+
+- can we move entry: call: tail: to boot?
+- alt tail imps. currenly compile branch. try "jump," or "jump (xt -- )" builtin word (like execute)
+- cleanup 10/13 cr code in kernel
 
 - primordal mode (-1), access to fixed array of single-char words
 - allowing bootstrap def of word/find
 
-- state aware combined interpreter/colon-compiler ?
-- if not, then recode/cleanup the reference imp
-
-- check return under/stack overflow
-
-- work through examples from starting forth
-
-- signed numeric conversion
-- signed print by default. unsigned on u.
-- smart print that can see if numbers are XT addresses
-- hex converion on input
-
-- support "else" (factor "ahead" - find posting on control flow imp in forth)
-- do/loop -- make F example work using original code
+- support nested parens in comments
 - "quit" - clear return stack and restart interpreter loop
 - "abort" - clear param stack and call quit
-- support nested parens in comments
+- signed printing & numeric conversion ?
+- smart print that can see if numbers are XT addresses
 
-- postpone
-- create
-    create X
-    X here expect
-- does>
-
-
-- macros/defs in prep to explore threaded interpreter
-- threaded interpreter: direct or indirect?
+- postpone ???
+- does> ???
 
 - run for real. not in qemu
 - port everything to 6502. bbc or own-6502-computer
 
 - stretch: continue BBC meteors game
-
 - stretch: static type checker (in Haskell)
+
+- macros/defs in prep to explore threaded interpreter
+- threaded interpreter: direct or indirect?
