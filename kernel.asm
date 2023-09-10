@@ -38,6 +38,13 @@ db ((%%link - %%name - 1) | immediate_flag)
 %define lastlink %%link
 %endmacro
 
+%macro defwordhidden 1
+%%name: db %1, 0 ; null
+%%link: dw lastlink
+db ((%%link - %%name - 1) | hidden_flag)
+%define lastlink %%link
+%endmacro
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Termination
 
@@ -90,6 +97,7 @@ init_param_stack:
     mov [bp], %1
 %endmacro
 
+defwordhidden "underflow?"
 check_ps_underflow:
     cmp bp, param_stack_base
     jb .ok

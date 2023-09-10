@@ -46,19 +46,21 @@ then
     [char] ; emit
     exit
   then
-    .hex2 ( a ) space
+    .hex2
+    ( a ) space
     1 + tail dis
 ;
 
 : x-see ( xt -- )
 ." : "
-dup xt->name type
+dup
+xt->name type
 ."    "
 dis
 ;
 
 : see
-word find x-see cr ; immediate
+word find! dup if x-see cr then ; immediate
 
 ( Show stack non destructively )
 

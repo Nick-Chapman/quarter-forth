@@ -43,10 +43,9 @@ dup 0= if drop exit ( stop; don't print leading zeros ) then
 10 /mod ( u%10 u/10 -- ) dot-loop print-digit
 ;
 
-: .decimal ( n -- ) ( output a value in decimal, with trailing space )
+: .decimal ( n -- ) ( output a value in decimal )
 dup 0= if print-digit exit then ( special case for single "0" )
 dot-loop
-space
 ;
 
 : .hex1 ( nibble -- ) ( output nibble as a length-1 hex string )
@@ -58,8 +57,8 @@ dup 10 < if print-digit exit then 10 - [char] a + emit ;
 : .hex4 ( n -- ) ( output 16-bit cell-value as a length-4 hex string )
 256 /mod .hex2 .hex2 ;
 
-: .hex ( n -- ) ( output a value in hex, with trailing space )
-.hex4 space ;
+: .hex ( n -- ) ( output a value in hex )
+.hex4 ;
 
 
 ( Modal . )
@@ -69,7 +68,8 @@ variable hex-mode
 : hex       true  hex-mode ! ;
 : decimal   false hex-mode ! ;
 
-: . ( u -- ) hex-mode @ if .hex exit then .decimal ;
+: . ( u -- ) ( output value in hex/decimal, with trailing space )
+hex-mode @ if .hex space exit then .decimal space ;
 
 : ? ( addr -- ) @ . ;
 
