@@ -902,18 +902,6 @@ defword "call:" ; A non immediate version of [compile] used in boot.f
     call _compile_comma
     ret
 
-defword "constant:"
-    call _word
-    call _create_entry
-    call _lit
-    dw _lit
-    call _compile_comma
-    call _comma
-    call _lit
-    dw _exit
-    call _compile_comma
-    ret
-
 defwordimm "tail:"
     call _word
     call _find_or_crash

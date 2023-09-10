@@ -33,17 +33,10 @@ hide x-hide
 
 hide call:
 hide entry:
-hide constant:
-
-hide ')'
-hide '?'
-hide ':'
 
 hide {{
-hide "}}"
-hide compiling
-hide ";"
 hide compile-or-execute
+hide compiling
 
 hide ~
 hide collect-string

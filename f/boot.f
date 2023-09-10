@@ -10,13 +10,13 @@ char o c,
 char o c,
 char t c,
 0 ,
-constant: boot-string
 
-boot-string type cr
+entry: ."boot"
+literal
+call: type
+ret,
 
-char ? constant: '?'
-char ) constant: ')'
-char : constant: ':'
+."boot" cr
 
 
 entry: immediate
@@ -45,9 +45,10 @@ call: r>
 call: drop
 ret,
 
+char )
 entry: (        immediate
 call: key
-call: ')'
+literal
 call: =
 if
 call: exit
@@ -66,12 +67,14 @@ ret,
 ( By default we are interpreting, but can nest short busts of compilation )
 ( It makes use of the control flow words defined above: "if", "then" and "exit" )
 
-here char } c, char } c, 0 , constant: "}}"
+char ?
+char :
+here char } c, char } c, 0 ,
 
 entry: {{
 call: word
 call: dup
-call: "}}"
+literal ( "}}" )
 call: s=
 if
 call: drop
@@ -87,12 +90,11 @@ call: compile,
 tail: {{
 then
 call: drop
-call: boot-string
-call: type
-call: ':'
+call: ."boot"
+literal ( ':' )
 call: emit
 call: type
-call: '?'
+literal ( '?' )
 call: emit
 call: cr
 call: crash-only-during-startup
@@ -109,14 +111,20 @@ entry: compile-or-execute
 {{ compile, }}
 ret,
 
-here char ; , 0 , constant: ";"
+
+char ?
+char :
+here char ; , 0 ,
 
 entry: compiling
-{{ word dup ";" s= }} if
+literal ( ";" )
+{{ word swap over s= }} if
 {{ drop ret, exit }} then
 {{ dup find dup }} if
 {{ swap drop compile-or-execute compiling exit }} then
-{{ drop boot-string type ':' emit type '?' emit cr crash compiling exit }}
+{{ drop ."boot" }} literal ( ':' )
+{{ emit type }} literal ( '?' )
+{{ emit cr crash compiling exit }}
 ret,
 
 ( This is our first definition of a colon-compiler )
