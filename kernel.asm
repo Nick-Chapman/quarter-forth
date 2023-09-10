@@ -85,7 +85,7 @@ init_param_stack:
     mov bp, param_stack_base
     ret
 
-%macro PUSH 1 ; TODO: rename pspush?
+%macro pspush 1
     sub bp, 2
     mov [bp], %1
 %endmacro
@@ -101,7 +101,7 @@ check_ps_underflow:
 .ok:
     ret
 
-%macro POP 1
+%macro pspop 1
     call check_ps_underflow
     mov %1, [bp]
     add bp, 2
@@ -109,12 +109,12 @@ check_ps_underflow:
 
 defword "sp" ; ( -- addr )
     mov ax, bp
-    PUSH ax
+    pspush ax
     ret
 
 defword "sp0" ; ( -- addr )
     mov ax, param_stack_base
-    PUSH ax
+    pspush ax
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -122,38 +122,38 @@ defword "sp0" ; ( -- addr )
 
 defword "dup"
 _dup:
-    POP ax
-    PUSH ax
-    PUSH ax
+    pspop ax
+    pspush ax
+    pspush ax
     ret
 
 defword "swap"
 _swap:
-    POP bx
-    POP ax
-    PUSH bx
-    PUSH ax
+    pspop bx
+    pspop ax
+    pspush bx
+    pspush ax
     ret
 
 defword "drop"
 _drop:
-    POP ax
+    pspop ax
     ret
 
 defword "over"
 _over:
-    POP ax
-    POP bx
-    PUSH bx
-    PUSH ax
-    PUSH bx
+    pspop ax
+    pspop bx
+    pspush bx
+    pspush ax
+    pspush bx
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Return stack; hardware stack (call,ret,push,pop)
 
 defword ">r"
-    POP ax
+    pspop ax
     pop bx
     push ax
     jmp bx
@@ -161,7 +161,7 @@ defword ">r"
 defword "r>"
     pop bx
     pop ax
-    PUSH ax
+    pspush ax
     jmp bx
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -187,63 +187,63 @@ defword "bl" ; ascii code for space
 
 defword "/2"
 _div2:
-    POP ax
+    pspop ax
     shr ax, 1
-    PUSH ax
+    pspush ax
     ret
 
 defword "+"
 _add:
-    POP bx
-    POP ax
+    pspop bx
+    pspop ax
     add ax, bx
-    PUSH ax
+    pspush ax
     ret
 
 defword "-"
 _minus:
-    POP bx
-    POP ax
+    pspop bx
+    pspop ax
     sub ax, bx
-    PUSH ax
+    pspush ax
     ret
 
 defword "*"
-    POP bx
-    POP ax
+    pspop bx
+    pspop ax
     mul bx ; ax = ax*bx
-    PUSH ax
+    pspush ax
     ret
 
 defword "/mod"
-    POP bx
-    POP ax
+    pspop bx
+    pspop ax
     mov dx, 0
     div bx ; dx:ax / bx. quotiant->ax, remainder->dx
-    PUSH dx
-    PUSH ax
+    pspush dx
+    pspush ax
     ret
 
 defword "<"
-    POP bx
-    POP ax
+    pspop bx
+    pspop ax
     cmp ax, bx
     mov ax, 0xffff ; true
     jl isLess
     mov ax, 0 ; false
 isLess:
-    PUSH ax
+    pspush ax
     ret
 
 defword "="
-    POP bx
-    POP ax
+    pspop bx
+    pspop ax
     cmp ax, bx
     mov ax, 0xffff ; true
     jz isEq
     mov ax, 0 ; false
 isEq:
-    PUSH ax
+    pspush ax
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -251,27 +251,27 @@ isEq:
 
 defword "@"
 _fetch:
-    POP bx
+    pspop bx
     mov ax, [bx]
-    PUSH ax
+    pspush ax
     ret
 
 defword "!"
-    POP bx
-    POP ax
+    pspop bx
+    pspop ax
     mov [bx], ax
     ret
 
 defword "c@"
-    POP bx
+    pspop bx
     mov ah, 0
     mov al, [bx]
-    PUSH ax
+    pspush ax
     ret
 
 defword "c!"
-    POP bx
-    POP ax
+    pspop bx
+    pspop ax
     mov [bx], al
     ret
 
@@ -282,12 +282,12 @@ here: dw here_start
 
 defword "here-pointer"
     mov bx, here
-    PUSH bx
+    pspush bx
     ret
 
 defword "," ; write a 16-bit word to [here]
 _comma:
-    POP ax
+    pspop ax
     mov bx, [here]
     mov [bx], ax
     add word [here], 2
@@ -295,7 +295,7 @@ _comma:
 
 defword "c," ; write byte to [here]
 _write_byte:
-    POP al
+    pspop al
     call internal_write_byte ;; TODO: inline when only caller
     ret
 
@@ -312,13 +312,13 @@ defword "lit" ; embed literal in threaded instruction stream ; TODO: byte versio
 _lit:
     pop bx
     mov ax, [bx]
-    PUSH ax
+    pspush ax
     add bx, 2
     jmp bx
 
 defword "execute"
 _execute:
-    POP bx
+    pspop bx
     jmp bx
 
 _exit:
@@ -333,7 +333,7 @@ _branch:
 
 _0branch:
     pop bx
-    POP cx
+    pspop cx
     cmp cx, 0
     jz .no
     add bx, 2 ; skip over target pointer, and continue
@@ -371,10 +371,10 @@ _write_rel_call_byte:
     ret
 
 _abs_to_rel: ; ( addr-abs -> addr-rel )
-    POP ax
+    pspop ax
     sub ax, [here] ; make it relative
     sub ax, 3      ; to the end of the 3 byte instruction
-    PUSH ax
+    pspush ax
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -382,13 +382,13 @@ _abs_to_rel: ; ( addr-abs -> addr-rel )
 
 defword "xt->name" ; ( xt -- string )
 _xt_name:
-    POP bx
+    pspop bx
     mov ch, 0
     mov cl, [bx-1] ; size byte -1 from xt
     and cl, ~(immediate_flag | hidden_flag)
     sub bx, 4 ; (1) null, (2) link pointer, (1) size byte
     sub bx, cx
-    PUSH bx
+    pspush bx
     ret
 
 ;; : xt->next ( 0|xt1 -- 0|xt2 )
@@ -419,39 +419,39 @@ _xt_next:
 
 defword "immediate?" ; ( xt -- bool )
 _immediate_query:
-    POP bx
+    pspop bx
     mov al, [bx-1]
     cmp al, immediate_flag
     ja .yes
     jmp .no
 .yes:
     mov ax, 0xffff ; true
-    PUSH ax
+    pspush ax
     ret
 .no:
     mov ax, 0 ; false
-    PUSH ax
+    pspush ax
     ret
 
 defword "hidden?" ; ( xt -- bool )
 _hidden_query:
-    POP bx
+    pspop bx
     mov al, [bx-1]
     cmp al, hidden_flag
     ja .yes
     jmp .no
 .yes:
     mov ax, 0xffff ; true
-    PUSH ax
+    pspush ax
     ret
 .no:
     mov ax, 0 ; false
-    PUSH ax
+    pspush ax
     ret
 
 defword "immediate^"
 _immediate_flip:
-    POP bx
+    pspop bx
     ;; size/flag byte -1 from xt
     mov al, [bx-1]
     xor al, immediate_flag
@@ -460,7 +460,7 @@ _immediate_flip:
 
 defword "hidden^"
 _hidden_flip:
-    POP bx
+    pspop bx
     ;; size/flag byte -1 from xt
     mov al, [bx-1]
     xor al, hidden_flag
@@ -482,8 +482,8 @@ _create_entry:
     ret
 
 _cover_string:
-    POP cx ; length
-    POP di ; string
+    pspop cx ; length
+    pspop di ; string
     add [here], cx
     mov ax, 0
     call internal_write_byte ; null
@@ -491,9 +491,9 @@ _cover_string:
 
 defword "strlen" ; ( name-addr -- n ) ; length of a null-terminated string
 _strlen:
-    POP di
+    pspop di
     call internal_strlen ;; INLINE
-    PUSH ax
+    pspush ax
     ret
 
 internal_strlen: ; in DI=string; out AX=length
@@ -512,7 +512,7 @@ _write_link:
     mov ax, [dictionary]
     mov bx, [here]
     mov [dictionary], bx
-    PUSH ax
+    pspush ax
     call _comma ; link
     ret
 
@@ -520,7 +520,7 @@ defword "latest" ; ( -- xt )
 _latest:
     mov bx, [dictionary]
     add bx, 3
-    PUSH bx
+    pspush bx
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -533,19 +533,19 @@ _key:
     jmp [key_indirect]
 
 defword "set-key" ; ( xt -- )
-    POP ax
+    pspop ax
     mov [key_indirect], ax
     ret
 
 defword "get-key" ; ( -- xt )
     mov ax, [key_indirect]
-    PUSH ax
+    pspush ax
     ret
 
 _key0:
     call internal_read_char
     mov ah, 0
-    PUSH ax
+    pspush ax
     ret
 
 internal_read_char: ; -> AL
@@ -579,7 +579,7 @@ echo_enabled: dw 0
 
 defword "echo-enabled" ; ( -- addr )
     mov bx, echo_enabled
-    PUSH bx
+    pspush bx
     ret
 
 defword "echo-off"
@@ -593,7 +593,7 @@ defword "echo-on"
 
 defword "emit" ; ( char -- ) ; emit ascii char
 _emit:
-    POP ax
+    pspop ax
     call print_char ; TODO: avoid internal use so can inline
     ret
 
@@ -630,7 +630,7 @@ _cls:
 
 defword "type" ;; TODO: move to forth
 _type:
-    POP di
+    pspop di
     call internal_print_string
     ret
 
@@ -686,7 +686,7 @@ start:
     jmp .loop
 
 _if:
-    POP ax
+    pspop ax
     cmp ax, 0
     ret
 
@@ -702,14 +702,14 @@ defword "word" ; ( "word " -- here )
 _word:
     call internal_read_word
     mov ax, [here]
-    PUSH ax
+    pspush ax
     ret
 
 internal_read_word: ; using "key" into buffer memory
     mov di, [here]
 .skip:
     call .key
-    POP ax
+    pspop ax
     cmp al, 0x21
     jb .skip ; skip leading white-space
 .loop:
@@ -718,7 +718,7 @@ internal_read_word: ; using "key" into buffer memory
     mov [di], al
     inc di
     call .key
-    POP ax
+    pspop ax
     jmp .loop
 .done:
     mov byte [di], 0 ; null
@@ -789,8 +789,8 @@ _find_or_crash:
 
 defword "s="
 _s_equals:
-    POP si
-    POP di
+    pspop si
+    pspop di
 .loop:
     mov al, [si]
     mov bl, [di]
@@ -815,7 +815,7 @@ _s_equals:
 ;;; Printing numbers (TODO: should be in Forth)
 
 defword ".h" ; ( byte -- ) ; emit as 2-digit hex
-    POP ax
+    pspop ax
     mov ah, 0
     push ax
     push ax
@@ -838,18 +838,18 @@ defword ".h" ; ( byte -- ) ; emit as 2-digit hex
 
 defword "char"
     call _word
-    POP bx
+    pspop bx
     mov ah, 0
     mov al, [bx]
-    PUSH ax
+    pspush ax
     ret
 
 defwordimm "[char]"
     call _word
-    POP bx
+    pspop bx
     mov ah, 0
     mov al, [bx]
-    PUSH ax
+    pspush ax
     call _literal
     ret
 
