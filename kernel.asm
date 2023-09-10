@@ -56,14 +56,14 @@ _bye:
 .loop:
     jmp .loop
 
-defword "crash" ; TODO: rename lock?
+defword "crash"
 _crash:
     print "We have crashed. (any key will quit)"
     call _cr
     call echo_off
 .loop:
     call read_char_interactive ; wait for a key to be pressed, then quit system
-    jmp _bye
+    jmp _bye ;; TODO: reset
 
 is_startup_complete: dw 0
 defword "startup-is-complete"
@@ -662,7 +662,7 @@ start:
 .cold:
     call _cls
     mov word [warm_addr], warm_mark
-.warm:
+.warm: ;; TODO: try preserve defined words on warm reset. by not resetiing latest and here
     call init_param_stack
     push _bye
 .loop:
@@ -795,7 +795,7 @@ _find_or_crash:
     call _crash_only_during_startup
     ret
 
-defword "s="
+defword "s=" ;; TODO: recode in Forth
 _s_equals:
     pspop si
     pspop di
