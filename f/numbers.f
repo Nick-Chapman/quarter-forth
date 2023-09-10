@@ -14,15 +14,43 @@ constant 16
 16 dup *
 constant 256
 
-( Parse an unsigned decimal )
 
-: digit? ( c -- flag ) dup [char] 0 >= swap [char] 9 <= and ;
+( Behaviour of . and number? is modal  )
+
+variable hex-mode
+
+: hex       true  hex-mode ! ;
+: decimal   false hex-mode ! ;
+
+
+( Parse an unsigned hex or decimal number )
+
+: decimal-digit? ( c -- flag ) dup [char] 0 >= swap [char] 9 <= and ;
+
+: extended-digit? ( c -- flag ) dup [char] a >= swap [char] f <= and ;
+
+: hex-digit? ( c -- flag )
+dup decimal-digit? swap extended-digit? or ;
+
+: digit? ( c -- flag )
+hex-mode @ if hex-digit? else decimal-digit? then ;
+
+: convert-digit
+dup extended-digit?
+if [char] a - 10 +
+else [char] 0 -
+then
+;
+
+: base ( -- n )
+hex-mode @ if 16 else 10 then ;
+
 
 : number-loop ( acc str -- u 1 | 0 )
 dup c@ dup 0 = if 2drop ( acc ) 1 exit
 then ( acc str c ) dup digit? ( acc str c flag )
 dup 0 = if 2drop 2drop 0 exit
-then drop [char] 0 - rot 10 * + swap char+ ( acc' str' )
+then drop convert-digit rot base * + swap char+ ( acc' str' )
 tail number-loop
 ;
 
@@ -61,26 +89,25 @@ dup 10 < if print-digit exit then 10 - [char] a + emit ;
 .hex4 ;
 
 
-( Modal . )
-
-variable hex-mode
-
-: hex       true  hex-mode ! ;
-: decimal   false hex-mode ! ;
 
 : . ( u -- ) ( output value in hex/decimal, with trailing space )
-hex-mode @ if .hex space exit then .decimal space ;
+hex-mode @ if .hex else .decimal then space ;
 
 : ? ( addr -- ) @ . ;
 
+hide .hex1
 hide 10
 hide 16
 hide 2
 hide 256
+hide base
+hide convert-digit
+hide decimal-digit?
 hide digit?
 hide dot-loop
+hide extended-digit?
+hide hex-digit?
+hide hex-mode
 hide number-loop
 hide print-digit
-hide hex-mode
-hide .hex1
 words-since char ) emit cr

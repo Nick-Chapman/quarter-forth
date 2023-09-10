@@ -62,10 +62,10 @@ Done:
 - support "else"
 - factor ahead>  and <mark for then/else
 - tidy up colon.f
+- hex converion on input (if hex mode is selected)
 
 Next:
 
-- hex converion on input
 - module" end-module
 - support: create, use for variable (constant will be it's own def still)
 - do/loop -- make F example work using original code
