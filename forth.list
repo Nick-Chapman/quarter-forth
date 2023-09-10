@@ -41,6 +41,9 @@ f/examples.f    # various examples
 f/primes.f      # compute all 16bit primes
 # f/control.f   # fun with return stack operators
 
+# Some regression tests for standard words.
+f/regression.f
+
 # Line based keyboard entry, with backspace! (You miss this when you don't have it!)
 f/buffer.f
 
