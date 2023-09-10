@@ -5,10 +5,10 @@ call: @
 ret,
 
 here
-char b c,
-char o c,
-char o c,
-char t c,
+key b c,
+key o c,
+key o c,
+key t c,
 0 ,
 
 entry: ."boot"
@@ -45,7 +45,7 @@ call: r>
 call: drop
 ret,
 
-char )
+key )
 entry: (        immediate
 call: key
 literal
@@ -67,9 +67,9 @@ ret,
 ( By default we are interpreting, but can nest short busts of compilation )
 ( It makes use of the control flow words defined above: "if", "then" and "exit" )
 
-char ?
-char :
-here char } c, char } c, 0 ,
+key ?
+key :
+here key } c, key } c, 0 ,
 
 entry: {{
 call: word
@@ -112,9 +112,9 @@ entry: compile-or-execute
 ret,
 
 
-char ?
-char :
-here char ; , 0 ,
+key ?
+key :
+here key ; , 0 ,
 
 entry: compiling
 literal ( ";" )

@@ -263,6 +263,7 @@ defword "!"
     ret
 
 defword "c@"
+_c_fetch:
     pspop bx
     mov ah, 0
     mov al, [bx]
@@ -839,26 +840,6 @@ defword ".h" ; ( byte -- ) ; emit as 2-digit hex
     call print_char
     ret
 .hex db "0123456789abcdef"
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; (Almost) Pure Forth style -- TODO: make them so!
-
-defword "char"
-    call _word
-    pspop bx
-    mov ah, 0
-    mov al, [bx]
-    pspush ax
-    ret
-
-defwordimm "[char]"
-    call _word
-    pspop bx
-    mov ah, 0
-    mov al, [bx]
-    pspush ax
-    call _literal
-    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Pure Forth style
