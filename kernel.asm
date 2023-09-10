@@ -652,11 +652,18 @@ internal_print_string: ; in: DI=string; print null-terminated string.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Start (word-find-execute-loop)
 
+warm_addr equ 0x8000
+warm_mark equ 0x2a2a ; "**"
+
 start:
+    cmp word [warm_addr], warm_mark
+    jz .warm
+.cold:
+    call _cls
+    mov word [warm_addr], warm_mark
+.warm:
     call init_param_stack
-    call _cls ;; TODO: only do this on cold start
-    mov ax, _bye
-    push ax ; on return stack
+    push _bye
 .loop:
     cmp byte [is_startup_complete], 0
     jz .go
