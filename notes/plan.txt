@@ -61,11 +61,11 @@ Done:
 - NO: check return under/stack overflow
 - support "else"
 - factor ahead>  and <mark for then/else
+- tidy up colon.f
 
 Next:
 
 - hex converion on input
-- tidy up colon.f
 - module" end-module
 - support: create, use for variable (constant will be it's own def still)
 - do/loop -- make F example work using original code

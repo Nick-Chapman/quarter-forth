@@ -1,44 +1,40 @@
 .." Loading colon ( " latest
 
-( Define reference implementation of ] and : )
-
-( We make use of the previous  "]" whilst defining ths one )
-
-here char ; , 0 , constant string; ( TODO: string lits are available now )
-
 : compiling
-word ( name ) dup
+word ( string )
 
-( s" ;" )               ( IF WE HAD STRINGS )
-( lit [ string; , ] )   ( THE SAME AS THE NEXT LINE )
-[ string; ] literal
+( Is the word the special ";" marker? )
+dup s" ;" s= if ( string )
 
-s= if drop ret, ( OPTIMIZED ) exit
+( YES, exit the compiler loop. )
+drop ret, exit then
 
-then ( name )
+( Is the word in the dictionary? )
+dup find dup if ( string xt )
 
-dup find dup if ( name xt )
+( YES, test the immediate flag: and either execute or compile )
 swap drop ( xt )
+dup immediate? if execute else compile,
 
-dup immediate?
-  if execute
-  else compile,
-  then tail compiling
+( And continue compiling )
+then tail compiling
 
-then drop ( name )
+( NO, name is not in the dictionary... )
+then drop ( string )
 
-number? if
+( Maybe it's a number... )
+number? if ( converted-number )
+
+( YES; compile the number as a literal, and loop... )
 ['] lit compile, , tail compiling
-then ( name )
 
-( word not defined )
-." ** Colon compiler: '" type ." ' ?" cr
-crash-only-during-startup
-tail compiling
+( NO, word is undefined, so message, skip and loop... )
+
+then ." ** Colon compiler: '" type ." ' ?" cr
+crash-only-during-startup tail compiling
 ;
 
 : : word entry, compiling ;
 
 hide compiling
-hide string;
 words-since char ) emit cr
