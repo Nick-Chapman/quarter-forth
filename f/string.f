@@ -9,11 +9,11 @@ then c, tail collect-string
 ( Compile code for a literal string, leaving address on stack )
 
 : s" ( ..." -- string )
-( make a branch slot )          ['] branchA compile, here 0 ,  ( TODO: use rel branch )
+( make a branch slot )          branchR, ahead>
 ( note where string starts )    here swap
 ( collect the string chars )    collect-string drop ( the closing " )
 ( add a null )                  0 c,
-( fill in the branch slot )     here swap !
+( fill in the branch slot )     <patch
 ( push string at runtime )      ['] lit compile, ,
 ; immediate
 

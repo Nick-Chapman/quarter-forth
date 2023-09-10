@@ -33,8 +33,8 @@ word entry,
 ( and also "else" )
 
 : ahead> ( -- a ) here 0 , ;
-: <mark  ( a -- ) here swap - swap ! ;
+: <patch ( a -- ) dup here swap - swap ! ;
 
-: if     0branch, ahead>                ; immediate
-: then   dup <mark                      ; immediate
-: else   branchR, ahead> swap dup <mark ; immediate
+: if     0branch, ahead>             ; immediate
+: then   <patch                      ; immediate
+: else   branchR, ahead> swap <patch ; immediate
