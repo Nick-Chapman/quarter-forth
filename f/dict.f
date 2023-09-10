@@ -29,21 +29,24 @@ dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
 : hide ( "name" -- ) word find! x-hide ;
 hide x-hide
 
-( hide some internals from boot.f and string.f )
+( hide some words defined by kernel, boot.f and string.f and this file )
+
+hide call:
+hide entry:
+hide constant:
 
 hide ')'
 hide '?'
-hide 1compiling
-hide ]]
-hide almost:
-hide call:
-hide collect-string
+hide ':'
+
+hide {{
+hide "}}"
+hide compiling
+hide ";"
 hide compile-or-execute
-hide constant:
-hide entry:
-hide start]
-hide string;
-hide string[
+
+hide ~
+hide collect-string
 
 hide -rot
 hide rot
@@ -51,3 +54,4 @@ hide show-if-not-hidden
 hide space
 hide words-continue
 words-since char ) emit cr
+

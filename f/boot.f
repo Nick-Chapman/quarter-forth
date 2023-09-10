@@ -18,8 +18,6 @@ char ? constant: '?'
 char ) constant: ')'
 char : constant: ':'
 
-here char [ , 0 , constant: string[
-here char ; , 0 , constant: string;
 
 entry: immediate
 call: latest
@@ -58,22 +56,22 @@ tail: (
 ret,
 
 
-( Now we can write comments! Woo hoo! )
+( Now we can write comments )
 
 
-( ----------------------------------------------------------------------
-Defining a level 0 colon-compiler
----------------------------------------------------------------------- )
+( Next we define a compiler of sorts... )
+( To avoid writing by hand the sequence of "call:" as we did above. )
+( "{{" compiles words until a matching marker "}}" is reached. )
+( Note the sense of {{..}} is reversed from the standard [..]. )
+( By default we are interpreting, but can nest short busts of compilation )
+( It makes use of the control flow words defined above: "if", "then" and "exit" )
 
-( Define most basic colon-compiler "]" using entry: and call: )
-( Does report missing words at least! )
-( Compiles words until a "[" marker is reached )
+here char } c, char } c, 0 , constant: "}}"
 
-
-entry: ]] ( TODO: rename { ... } )
+entry: {{
 call: word
 call: dup
-call: string[
+call: "}}"
 call: s=
 if
 call: drop
@@ -86,7 +84,7 @@ if
 call: swap
 call: drop
 call: compile,
-tail: ]]
+tail: {{
 then
 call: drop
 call: boot-string
@@ -98,44 +96,33 @@ call: '?'
 call: emit
 call: cr
 call: crash-only-during-startup
-tail: ]]
-ret,
-
-entry: almost: ( "almost" because caller has to compile the final ret, )
-call: entry:
-call: ]]
+tail: {{
 ret,
 
 
-( This compiler supports immediateness, but not numbers.
-  It compiles words until ";" marker is reached.
-  It can't take advantage of immediateness in it's own definition )
+( Now using {{..}} it is easier/cleaner to write more complicated definitions. )
+( And in particular a definition for ":" )
 
-almost: compile-or-execute
-dup immediate? [ if ]]
-execute exit
-[ then ]] compile,
-[ ret,
+entry: compile-or-execute
+{{ dup immediate? }} if
+{{ execute exit }} then
+{{ compile, }}
+ret,
 
-almost: 1compiling
-word
-dup
-string;
-s= [ if ]] drop ret, exit
-[ then ]]
-dup find dup [ if ]]
-swap drop compile-or-execute 1compiling exit
-[ then ]] drop
-boot-string type ':' emit type '?' emit cr
-crash 1compiling exit
-[ ret,
+here char ; , 0 , constant: ";"
 
-almost: start]
-1compiling [ ret,
+entry: compiling
+{{ word dup ";" s= }} if
+{{ drop ret, exit }} then
+{{ dup find dup }} if
+{{ swap drop compile-or-execute compiling exit }} then
+{{ drop boot-string type ':' emit type '?' emit cr crash compiling exit }}
+ret,
 
+( This is our first definition of a colon-compiler )
+( It compiles words until ";" marker is reached. )
+( It supports immediate words, but still no numeric literals. )
 
-( This is out first definition of a semi-working colon compiler )
-
-almost: :
-word entry, start]
-[ ret,
+entry: :
+{{ word entry, compiling ret, }}
+ret,
