@@ -476,9 +476,17 @@ _create_entry:
     call _strlen        ; ( a n )
     call _swap          ; ( n a )
     call _over          ; ( n a n )
-    call _write_string  ; ( n )
+    call _cover_string  ; ( n )
     call _write_link    ; ( n )
     call _write_byte
+    ret
+
+_cover_string:
+    POP cx ; length
+    POP di ; string
+    add [here], cx
+    mov ax, 0
+    call internal_write_byte ; null
     ret
 
 defword "strlen" ; ( name-addr -- n ) ; length of a null-terminated string
@@ -498,22 +506,6 @@ internal_strlen: ; in DI=string; out AX=length
     inc di
     jmp .loop
 .ret:
-    ret
-
-_write_string: ; to "here" ; TODO: avoid need by having the string already be here!
-    POP cx ; length
-    POP di ; string
-.loop:
-    cmp cx, 0
-    jz .done
-    mov ax, [di]
-    call internal_write_byte
-    inc di
-    dec cx
-    jmp .loop
-.done:
-    mov ax, 0
-    call internal_write_byte ; null
     ret
 
 _write_link:
@@ -706,17 +698,15 @@ _if:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; word (GOAL: not in Asm)
 
-deprecated_word_buffer: times 80 db 0 ;; TODO: kill
-
-defword "word" ; ( " blank-deliminted-word " -- string-addr )
+defword "word" ; ( "word " -- here )
 _word:
     call internal_read_word
-    mov ax, deprecated_word_buffer
+    mov ax, [here]
     PUSH ax
     ret
 
 internal_read_word: ; using "key" into buffer memory
-    mov di, deprecated_word_buffer
+    mov di, [here]
 .skip:
     call .key
     POP ax
