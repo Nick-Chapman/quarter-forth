@@ -30,11 +30,11 @@ word entry,
 
 ( We have already defined "if" and "then" in boot.f )
 ( But we'll define them again here using standard Forth )
-( and also "else: )
+( and also "else" )
 
+: ahead> ( -- a ) here 0 , ;
+: <mark  ( a -- ) here swap - swap ! ;
 
-: if     0branch, here 0 ,      ; immediate
-: then   dup here swap - swap ! ; immediate
-: else   branchR, here 0 , swap dup here swap - swap ! ; immediate
-
-( TODO: factorize )
+: if     0branch, ahead>                ; immediate
+: then   dup <mark                      ; immediate
+: else   branchR, ahead> swap dup <mark ; immediate

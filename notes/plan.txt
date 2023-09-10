@@ -60,11 +60,9 @@ Done:
 - decide NO - state aware combined interpreter/colon-compiler
 - NO: check return under/stack overflow
 - support "else"
+- factor ahead>  and <mark for then/else
 
 Next:
-
-
-- (factor "ahead" for then/else - find posting on control flow imp in forth)
 
 - hex converion on input
 - tidy up colon.f
