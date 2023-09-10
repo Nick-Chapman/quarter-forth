@@ -1,6 +1,10 @@
 
 ( A few important words which we define early )
 
+: ~ char emit ;
+~ e ~ a ~ r ~ l ~ y
+cr
+
 
 : ' ( "name" -- xt )
 word find!
