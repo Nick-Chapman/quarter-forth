@@ -51,4 +51,4 @@ And I do have plans to re-target my forth to 6502. For both my BBC Micro. And al
 - 16 bit. cell = 2bytes
 - threading model: subroutine threaded
 - x86. call instructions are 3 bytes. A 1 byte op-code + 2 bytes relative address.
-- Dictionary header format: (null-terminated) string, link-cell, length/flag-byte, followed directly by the executable code. The address of the executable code is used as the representation for execution tokens. The link cell is 0 or points to the previous link cell, but (TODO) it will be better to point directly to the previous XT.
+- Dictionary header format: (null-terminated) string, link-cell, length/flag-byte, followed directly by the executable code. The address of the executable code is used as the representation for execution tokens. The link cell is 0 or points to the previous XT.

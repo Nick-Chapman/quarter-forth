@@ -19,13 +19,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Defining primitive words
 
-%define lastlink 0
+%define lastxt 0
 
 %macro defword 1
 %%name: db %1, 0 ; null
-%%link: dw lastlink
+%%link: dw lastxt
 db (%%link - %%name - 1) ; dont include null in count
-%define lastlink %%link
+%%xt:
+%define lastxt %%xt
 %endmacro
 
 immediate_flag equ 0x40
@@ -33,16 +34,18 @@ hidden_flag equ 0x80
 
 %macro defwordimm 1
 %%name: db %1, 0 ; null
-%%link: dw lastlink
+%%link: dw lastxt
 db ((%%link - %%name - 1) | immediate_flag)
-%define lastlink %%link
+%%xt:
+%define lastxt %%xt
 %endmacro
 
 %macro defwordhidden 1
 %%name: db %1, 0 ; null
-%%link: dw lastlink
+%%link: dw lastxt
 db ((%%link - %%name - 1) | hidden_flag)
-%define lastlink %%link
+%%xt:
+%define lastxt %%xt
 %endmacro
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -402,8 +405,7 @@ _xt_name:
 
 ;; : xt->next ( 0|xt1 -- 0|xt2 )
 ;; dup if 3 - @
-;; dup if 3 +
-;; then then;
+;; then;
 
 defword "xt->next" ; ( 0|xt1 -- 0|xt2 ) ; TODO: improve layout to simplify this
 _xt_next:
@@ -414,12 +416,6 @@ _xt_next:
     dw 3
     call _minus
     call _fetch
-    call _dup
-    call _if
-    jz .ret ; zero
-    call _lit
-    dw 3
-    call _add
 .ret:
     ret
 
@@ -520,6 +516,7 @@ internal_strlen: ; in DI=string; out AX=length
 _write_link:
     mov ax, [dictionary]
     mov bx, [here]
+    add bx, 3
     mov [dictionary], bx
     pspush ax
     call _comma ; link
@@ -528,7 +525,6 @@ _write_link:
 defword "latest" ; ( -- xt )
 _latest:
     mov bx, [dictionary]
-    add bx, 3
     pspush bx
     ret
 
@@ -875,7 +871,7 @@ defwordimm "tail:"
     call _comma
     ret
 
-dictionary: dw lastlink
+dictionary: dw lastxt
 builtin: dw embedded_load_address
 here_start:
 
