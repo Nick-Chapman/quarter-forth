@@ -17,35 +17,33 @@
 %endmacro
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Defining primitive words
+;;; Dictionary entry
+;;; Header layout:
+;;; (1) name (null terminated string)
+;;; (2) link-word (pointer to previous XT or 0)
+;;; (3) name-length/flags byte : length (not including null), max 63
+;;; Compiled code follow directly. Links and XT point here.
 
-%define lastxt 0
-
-%macro defword 1
-%%name: db %1, 0 ; null
-%%link: dw lastxt
-db (%%link - %%name - 1) ; dont include null in count
-%%xt:
-%define lastxt %%xt
-%endmacro
-
+no_flags equ 0
 immediate_flag equ 0x40
 hidden_flag equ 0x80
 
-%macro defwordimm 1
-%%name: db %1, 0 ; null
+%define lastxt 0
+
+%macro defwordWithFlags 2
+%%name: db %2, 0 ; null
 %%link: dw lastxt
-db ((%%link - %%name - 1) | immediate_flag)
+db ((%%link - %%name - 1) | %1) ; dont include null in count; or-in flags
 %%xt:
 %define lastxt %%xt
 %endmacro
 
-%macro defwordhidden 1
-%%name: db %1, 0 ; null
-%%link: dw lastxt
-db ((%%link - %%name - 1) | hidden_flag)
-%%xt:
-%define lastxt %%xt
+%macro defword 1
+defwordWithFlags (no_flags), %1
+%endmacro
+
+%macro defwordHidden 1
+defwordWithFlags (hidden_flag), %1
 %endmacro
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -100,7 +98,7 @@ init_param_stack:
     mov [bp], %1
 %endmacro
 
-defwordhidden "underflow?"
+defwordHidden "underflow?"
 check_ps_underflow:
     cmp bp, param_stack_base
     jb .ok
@@ -394,7 +392,7 @@ _abs_to_rel: ; ( addr-abs -> addr-rel )
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Dictionary header ; TODO: document layout
+;;; Dictionary: traversal + name/flag access
 
 defword "xt->name" ; ( xt -- string )
 _xt_name:
@@ -407,24 +405,17 @@ _xt_name:
     pspush bx
     ret
 
-;; : xt->next ( 0|xt1 -- 0|xt2 )
-;; dup if 3 - @
-;; then;
-
 defword "xt->next" ; ( 0|xt1 -- 0|xt2 )
 _xt_next:
     call _dup
     call _if
-    jz .ret ; zero
+    jz .ret
     call _lit
     dw 3
     call _minus
     call _fetch
 .ret:
     ret
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Dictionary flags: immediate, hidden
 
 defword "immediate?" ; ( xt -- bool )
 _immediate_query:
