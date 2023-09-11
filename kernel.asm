@@ -553,7 +553,7 @@ internal_read_char: ; -> AL
     call [read_char_indirection]
     cmp byte [echo_enabled], 0
     jz .ret
-    call print_char ; echo
+    call raw_output_char ; echo
 .ret:
     ret
 
@@ -595,31 +595,22 @@ defword "echo-on"
 defword "emit" ; ( char -- ) ; emit ascii char
 _emit:
     pspop ax
-    call print_char ; TODO: avoid internal use so can inline
+    call raw_output_char
     ret
 
-print_char: ; in: AL=char, special case 13 as 10(NL);13(CR)
-    push ax
-    push bx
-    call .go
-    pop bx
-    pop ax
+defword "cr"
+_cr:
+    mov al,  10
+    call raw_output_char
+    mov al,  13
+    call raw_output_char
     ret
-.go:
-    cmp al, 13
-    jz .nl_cr
-    cmp al, 10
-    jz .nl_cr
-.raw:
+
+raw_output_char: ; in: AL=char,
     mov ah, 0x0e ; Function: Teletype output
     mov bh, 0
     int 0x10
     ret
-.nl_cr:
-    mov al, 10 ; NL
-    call .raw
-    mov al, 13 ; CR
-    jmp .raw
 
 defword "cls" ; clear screen
 _cls:
@@ -642,7 +633,7 @@ internal_print_string: ; in: DI=string; print null-terminated string.
     mov al, [di]
     cmp al, 0 ; null?
     je .done
-    call print_char
+    call raw_output_char
     inc di
     jmp .loop
 .done:
@@ -813,13 +804,6 @@ _s_equals:
 .same:
     call _lit
     dw 1
-    ret
-
-defword "cr"
-_cr:
-    call _lit
-    dw 13
-    call _emit
     ret
 
 defword "entry:"

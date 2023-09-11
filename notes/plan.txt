@@ -64,6 +64,7 @@ Done:
 - tidy up colon.f
 - hex converion on input (if hex mode is selected)
 - move call: (renamed [compile]) and literal: from kernel to boot (need ' in kernel)
+- cleanup 10/13 cr code in kernel
 
 Next:
 
@@ -75,7 +76,6 @@ Next:
 - add stack effect comment to all kernel words
 
 - alt tail imps. currenly compile branch. try "jump," or "jump (xt -- )" builtin word (like execute)
-- cleanup 10/13 cr code in kernel
 
 - primordal mode (-1), access to fixed array of single-char words
 - allowing bootstrap def of word/find
