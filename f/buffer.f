@@ -18,7 +18,7 @@ constant key-buffer
 : is-printable dup 32 >= swap 127 <= and ;
 
 ( Replace the inner echo-{enabled,on,off} )
-echo-enabled @ variable echo-enabled echo-enabled !
+echo-enabled @ variable echo-enabled echo-enabled ! echo-off
 : echo-on true echo-enabled ! ;
 : echo-off false echo-enabled ! ;
 : echo echo-enabled @ if emit exit then drop ;
