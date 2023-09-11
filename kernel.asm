@@ -68,7 +68,6 @@ defword "crash"
 _crash:
     print "We have crashed. (any key will quit)"
     call _cr
-    call echo_off
 .loop:
     call read_char_interactive ; wait for a key to be pressed, then quit system
     jmp _bye
@@ -527,8 +526,6 @@ _latest:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Input
 
-key_indirect: dw _key0
-
 defword "key"
 _key:
     jmp [key_indirect]
@@ -543,23 +540,34 @@ defword "get-key" ; ( -- xt )
     pspush ax
     ret
 
+key_indirect: dw _key0
+
 _key0:
-    call internal_read_char
+    call _read_char
+    call _echo_when_enabled
+    ret
+
+_echo_when_enabled:
+    call _echo_enabled
+    call _fetch
+    call _if
+    jnz _echo
+    ret
+
+_echo:
+    call _dup
+    call _emit
+    ret
+
+_read_char:
+    call [read_char_indirection]
     mov ah, 0
     pspush ax
     ret
 
-internal_read_char: ; -> AL
-    call [read_char_indirection]
-    cmp byte [echo_enabled], 0
-    jz .ret
-    call raw_output_char ; echo
-.ret:
-    ret
+read_char_indirection: dw read_char_0  ; out: -> AL
 
-read_char_indirection: dw read_char
-
-read_char: ; first read from embedded string
+read_char_0: ; first read from embedded string
     mov bx, [builtin]
     mov al, [bx]
     cmp al, 0
@@ -579,12 +587,12 @@ read_char_interactive:
 echo_enabled: dw 0
 
 defword "echo-enabled" ; ( -- addr )
+_echo_enabled:
     mov bx, echo_enabled
     pspush bx
     ret
 
-defword "echo-off"
-echo_off:
+defword "echo-off" ;; TODO: To Forth
     mov byte [echo_enabled], 0
     ret
 
@@ -595,8 +603,11 @@ defword "echo-on"
 defword "emit" ; ( char -- ) ; emit ascii char
 _emit:
     pspop ax
-    call raw_output_char
-    ret
+    cmp ax, 13
+    jz _cr
+    cmp ax, 10
+    jz _cr
+    jmp raw_output_char
 
 defword "cr"
 _cr:
