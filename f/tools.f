@@ -114,7 +114,6 @@ then cr tail pag-continue ;
 : pag ( start-addr xt -- ) swap pag-continue ;
 
 
-: and if exit then drop 0 ;
 : is-printable? ( c -- bool ) dup 31 > swap 128 < and ;
 
 : emit-printable-or-dot ( c -- )
@@ -181,6 +180,7 @@ hide old-key
 hide pag
 hide pag-continue
 hide raw-key
+hide see-all
 hide see1
 hide see10
 hide times

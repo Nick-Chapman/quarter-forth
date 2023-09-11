@@ -47,6 +47,8 @@ f/regression.f
 # Line based keyboard entry, with backspace! (You miss this when you don't have it!)
 f/buffer.f
 
+f/relocate.f
+
 # Displays welcome message, enables echo, and marks startup-is-complete.
 f/start.f
 

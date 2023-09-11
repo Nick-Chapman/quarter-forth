@@ -337,6 +337,7 @@ _exit:
     pop bx ; and ignore
     ret
 
+defword "0branch" ; or else looks "see" displays wrong
 _0branch: ; relative
     pop bx
     pspop cx
