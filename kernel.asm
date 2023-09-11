@@ -854,14 +854,6 @@ _cr:
     call _emit
     ret
 
-defwordimm "literal"
-_literal:
-    call _lit
-    dw _lit
-    call _compile_comma
-    call _comma
-    ret
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; words for booting
 
@@ -870,10 +862,10 @@ defword "entry:"
     call _create_entry
     ret
 
-defword "call:" ; A non immediate version of [compile] used in boot.f
+defword "'"
+_tick:
     call _word
     call _find_or_crash
-    call _compile_comma
     ret
 
 defwordimm "tail:"

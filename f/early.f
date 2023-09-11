@@ -8,12 +8,6 @@ word c@ ;
 ~ e ~ a ~ r ~ l ~ y
 cr
 
-: ' ( "name" -- xt )
-word find! ;
-
-: [compile] ( "name" -- )
-' compile, ; immediate
-
 : [char] ( comp: "name" -- ) ( run: -- c )
 char [compile] literal ; immediate
 

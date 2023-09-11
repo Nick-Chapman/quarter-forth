@@ -1,7 +1,24 @@
 
+entry: immediate
+' latest compile,
+' immediate^ compile,
+ret,
+
+entry: [compile]    immediate
+' ' compile,
+' compile, compile,
+ret,
+
 entry: here
-call: here-pointer
-call: @
+[compile] here-pointer
+[compile] @
+ret,
+
+entry: literal  immediate
+[compile] lit
+' lit ,
+[compile] compile,
+[compile] ,
 ret,
 
 here
@@ -13,45 +30,40 @@ key t c,
 
 entry: ."boot"
 literal
-call: type
+[compile] type
 ret,
 
 ."boot" cr
 
-
-entry: immediate
-call: latest
-call: immediate^
-ret,
-
 entry: if       immediate
-call: 0branch,
-call: here
-call: 0
-call: ,
+[compile] 0branch,
+[compile] here
+[compile] 0
+[compile] ,
 ret,
 
 entry: then     immediate
-call: dup
-call: here
-call: swap
-call: -
-call: swap
-call: !
+[compile] dup
+[compile] here
+[compile] swap
+[compile] -
+[compile] swap
+[compile] !
 ret,
 
 entry: exit
-call: r>
-call: drop
+[compile] r>
+[compile] drop
 ret,
+
 
 key )
 entry: (        immediate
-call: key
+[compile] key
 literal
-call: =
+[compile] =
 if
-call: exit
+[compile] exit
 then
 tail: (
 ret,
@@ -61,7 +73,7 @@ ret,
 
 
 ( Next we define a compiler of sorts... )
-( To avoid writing by hand the sequence of "call:" as we did above. )
+( To avoid writing by hand the sequence of "[compile]" as we did above. )
 ( "{{" compiles words until a matching marker "}}" is reached. )
 ( Note the sense of {{..}} is reversed from the standard [..]. )
 ( By default we are interpreting, but can nest short busts of compilation )
@@ -72,32 +84,32 @@ key :
 here key } c, key } c, 0 ,
 
 entry: {{
-call: word
-call: dup
+[compile] word
+[compile] dup
 literal ( "}}" )
-call: s=
+[compile] s=
 if
-call: drop
-call: exit
+[compile] drop
+[compile] exit
 then
-call: dup
-call: find
-call: dup
+[compile] dup
+[compile] find
+[compile] dup
 if
-call: swap
-call: drop
-call: compile,
+[compile] swap
+[compile] drop
+[compile] compile,
 tail: {{
 then
-call: drop
-call: ."boot"
+[compile] drop
+[compile] ."boot"
 literal ( ':' )
-call: emit
-call: type
+[compile] emit
+[compile] type
 literal ( '?' )
-call: emit
-call: cr
-call: crash-only-during-startup
+[compile] emit
+[compile] cr
+[compile] crash-only-during-startup
 tail: {{
 ret,
 

@@ -63,6 +63,7 @@ Done:
 - factor ahead>  and <mark for then/else
 - tidy up colon.f
 - hex converion on input (if hex mode is selected)
+- move call: (renamed [compile]) and literal: from kernel to boot (need ' in kernel)
 
 Next:
 
@@ -73,7 +74,6 @@ Next:
 - finish/merge write up in nex.text into README
 - add stack effect comment to all kernel words
 
-- can we move entry: call: tail: to boot?
 - alt tail imps. currenly compile branch. try "jump," or "jump (xt -- )" builtin word (like execute)
 - cleanup 10/13 cr code in kernel
 
