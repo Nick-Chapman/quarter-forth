@@ -434,8 +434,8 @@ defword "immediate?" ; ( xt -- bool )
 _immediate_query:
     pspop bx
     mov al, [bx-1]
-    cmp al, immediate_flag
-    ja .yes
+    and al, immediate_flag
+    jnz .yes
     jmp .no
 .yes:
     mov ax, 0xffff ; true
@@ -450,8 +450,8 @@ defword "hidden?" ; ( xt -- bool )
 _hidden_query:
     pspop bx
     mov al, [bx-1]
-    cmp al, hidden_flag
-    ja .yes
+    and al, hidden_flag
+    jnz .yes
     jmp .no
 .yes:
     mov ax, 0xffff ; true

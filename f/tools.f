@@ -184,7 +184,7 @@ hide see-all
 hide see1
 hide see10
 hide times
-hide x-see
+{ hide x-see }
 hide xxd-line
 hide xxd-page
 words-since char ) emit cr
