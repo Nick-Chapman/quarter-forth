@@ -868,15 +868,6 @@ _tick:
     call _find_or_crash
     ret
 
-defwordimm "tail:"
-    call _word
-    call _find_or_crash
-    call _lit
-    dw _branchA
-    call _compile_comma
-    call _comma
-    ret
-
 dictionary: dw lastxt
 builtin: dw embedded_load_address
 here_start:

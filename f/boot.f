@@ -57,6 +57,15 @@ entry: exit
 ret,
 
 
+entry: tail    immediate
+[compile] '
+[compile] lit
+' branchA ,
+[compile] compile,
+[compile] ,
+ret,
+
+
 key )
 entry: (        immediate
 [compile] key
@@ -65,7 +74,7 @@ literal
 if
 [compile] exit
 then
-tail: (
+tail (
 ret,
 
 
@@ -99,7 +108,7 @@ if
 [compile] swap
 [compile] drop
 [compile] compile,
-tail: {{
+tail {{
 then
 [compile] drop
 [compile] ."boot"
@@ -110,7 +119,7 @@ literal ( '?' )
 [compile] emit
 [compile] cr
 [compile] crash-only-during-startup
-tail: {{
+tail {{
 ret,
 
 

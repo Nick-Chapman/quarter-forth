@@ -14,9 +14,6 @@ char [compile] literal ; immediate
 : ['] ( comp: "name" ) ( run: -- xt )
 ' [compile] literal ; immediate
 
-: tail ( "name" )
-word find! ['] branchA compile, , ; immediate
-
 : constant ( x "name" -- )
 word entry,
 ['] lit compile, ,
