@@ -36,7 +36,9 @@ ret,
 ."boot" cr
 
 entry: if       immediate
-[compile] 0branch,
+[compile] lit
+' 0branch ,
+[compile] compile,
 [compile] here
 [compile] 0
 [compile] ,

@@ -831,22 +831,6 @@ _s_equals:
     dw 1
     ret
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Pure Forth style
-
-defword "0branch,"
-    call _lit
-    dw _0branch
-    call _compile_comma
-    ret
-
-defword "branchR,"
-    call _lit
-    dw _branchR
-    call _compile_comma
-    ret
-
-
 defword "cr"
 _cr:
     call _lit
@@ -854,16 +838,12 @@ _cr:
     call _emit
     ret
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; words for booting
-
 defword "entry:"
     call _word
     call _create_entry
     ret
 
 defword "'"
-_tick:
     call _word
     call _find_or_crash
     ret

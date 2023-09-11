@@ -26,6 +26,6 @@ word entry,
 : ahead> ( -- a ) here 0 , ;
 : <patch ( a -- ) dup here swap - swap ! ;
 
-: if     0branch, ahead>             ; immediate
+: if     ['] 0branch compile, ahead> ; immediate
 : then   <patch                      ; immediate
-: else   branchR, ahead> swap <patch ; immediate
+: else   ['] branchR compile, ahead> swap <patch ; immediate
