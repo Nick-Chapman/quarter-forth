@@ -73,7 +73,7 @@ _crash:
     call echo_off
 .loop:
     call read_char_interactive ; wait for a key to be pressed, then quit system
-    jmp _bye ;; TODO: reset
+    jmp _bye
 
 is_startup_complete: dw 0
 defword "startup-is-complete"
@@ -306,12 +306,8 @@ _comma:
     ret
 
 defword "c," ; write byte to [here]
-_write_byte:
+_c_comma:
     pspop al
-    call internal_write_byte ;; TODO: inline when only caller
-    ret
-
-internal_write_byte: ; in AL=byte, uses BX
     mov bx, [here]
     mov [bx], al
     inc word [here]
@@ -320,7 +316,7 @@ internal_write_byte: ; in AL=byte, uses BX
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Threading model and control flow
 
-defword "lit" ; embed literal in threaded instruction stream ; TODO: byte version?
+defword "lit" ; embed literal in threaded instruction stream
 _lit:
     pop bx
     mov ax, [bx]
@@ -350,14 +346,14 @@ _0branch: ; relative
     jmp bx ; branch to target
 
 
-defword "branchR" ; used by else
+defword "branchR" ; used by else & string compilation
 _branchR:
     pop bx
     add bx, [bx] ; add relative offset
     jmp bx ; branch to target
 
 
-defword "branchA" ; used by tail & string compilation
+defword "branchA" ; used by tail -- TODO: avoid
 _branchA:
     pop bx
     mov bx, [bx]
@@ -370,7 +366,7 @@ defword "ret," ; TODO: add "jump," and use for "tail"
 _write_ret:
     call _lit
     dw 0xc3 ; x86 encoding for "ret"
-    call _write_byte
+    call _c_comma
     ret
 
 defword "compile," ; ( absolute-address-to-call -- )
@@ -387,7 +383,7 @@ _write_rel_call:
 _write_rel_call_byte:
     call _lit
     dw 0xe8 ; x86 encoding for "call"; uses relative addressing
-    call _write_byte
+    call _c_comma
     ret
 
 _abs_to_rel: ; ( addr-abs -> addr-rel )
@@ -415,7 +411,7 @@ _xt_name:
 ;; dup if 3 - @
 ;; then;
 
-defword "xt->next" ; ( 0|xt1 -- 0|xt2 ) ; TODO: improve layout to simplify this
+defword "xt->next" ; ( 0|xt1 -- 0|xt2 )
 _xt_next:
     call _dup
     call _if
@@ -491,15 +487,16 @@ _create_entry:
     call _over          ; ( n a n )
     call _cover_string  ; ( n )
     call _write_link    ; ( n )
-    call _write_byte
+    call _c_comma
     ret
 
 _cover_string:
     pspop cx ; length
-    pspop di ; string
+    pspop di ; string, ignored -- assumed to be at [here]
     add [here], cx
-    mov ax, 0
-    call internal_write_byte ; null
+    call _lit
+    dw 0
+    call _c_comma
     ret
 
 defword "strlen" ; ( name-addr -- n ) ; length of a null-terminated string
@@ -678,11 +675,6 @@ start:
     call init_param_stack
     push _bye
 .loop:
-    cmp byte [is_startup_complete], 0
-    jz .go
-    mov al, '%' ;; only see '%' after startup is complete
-    call print_char
-.go:
     call _word
     call _dup
     call _find
@@ -695,8 +687,9 @@ start:
     jmp .loop
 .missing:
     call _drop
-    mov al, '%' ;; make it clear who is reporting the error
-    call print_char
+    call _lit
+    dw '#'  ;; kernel is reporting the error
+    call _emit
     call _type
     call _lit
     dw '?' ;; standard ? error

@@ -111,7 +111,6 @@ variable v
 v c@       254 x
 v c@ 1 +   255 x
 
-( TODO : test char store c! )
 
 ( Cell and Char size )
 

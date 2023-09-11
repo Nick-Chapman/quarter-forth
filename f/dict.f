@@ -26,7 +26,7 @@ drop
 dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
 ;
 
-: hide ( "name" -- ) word find! x-hide ;
+: hide ( "name" -- ) ' x-hide ;
 hide x-hide
 
 ( hide some words defined by kernel, boot.f and string.f and this file )
