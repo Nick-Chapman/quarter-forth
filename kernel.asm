@@ -673,7 +673,7 @@ start:
     call init_param_stack
     push _bye
 .loop:
-    call _word
+    call _transient_word
     call _dup
     call _find
     call _dup
@@ -709,8 +709,8 @@ _if:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; word (GOAL: not in Asm)
 
-defword "word" ; ( "word " -- here )
-_word:
+defword "transient-word" ; ( "word " -- here )
+_transient_word:
     call internal_read_word
     mov ax, [here]
     pspush ax
@@ -823,12 +823,12 @@ _s_equals:
     ret
 
 defword "entry:"
-    call _word
+    call _transient_word ; TODO: use non-transient version, avoid strlen & _cover_string
     call _create_entry
     ret
 
 defword "'"
-    call _word
+    call _transient_word
     call _find_or_crash
     ret
 

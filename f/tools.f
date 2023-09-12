@@ -60,7 +60,7 @@ immediate? if ."  immediate" then
 ;
 
 : see
-word find! dup if x-see cr then ; immediate
+transient-word find! dup if x-see cr then ; immediate
 
 ( Show stack non destructively )
 

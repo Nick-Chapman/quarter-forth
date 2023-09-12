@@ -1,5 +1,7 @@
 .." Loading word ( " latest
 
+hide transient-word
+
 : is-white ( c -- flag ) bl swap < 0 1 - xor ; ( <= 32 )
 
 : collect-char ( a c -- a' ) over c! 1 + ;
@@ -16,7 +18,7 @@ drop 0 swap c! exit ( add null-terminator )
 then collect-char tail collect-while-not-whitespace ( keep collecting... )
 ;
 
-: word ( "name" -- str )
+: transient-word ( "name" -- str )
 here dup skip-leading-whitespace collect-while-not-whitespace ;
 
 hide collect-char

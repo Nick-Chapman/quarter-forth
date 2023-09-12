@@ -1,5 +1,8 @@
 .." Loading find ( " latest
 
+hide find
+hide find!
+
 : find-loop ( s x -- x )
 dup if ( s x )
 dup hidden? if xt->next tail find-loop then

@@ -68,6 +68,6 @@ here 0 , constant ;
 
 ( Tick )
 
-: ' ( "name" -- xt|0 ) word find! ;
+: ' ( "name" -- xt|0 ) transient-word find! ;
 
 { words-since char ) emit cr }

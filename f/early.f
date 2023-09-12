@@ -2,7 +2,7 @@
 ( A few important words which we define early )
 
 : char ( -- c )
-word c@ ;
+transient-word c@ ;
 
 : ~ char emit ;
 ~ e ~ a ~ r ~ l ~ y
@@ -15,7 +15,7 @@ char [compile] literal ; immediate
 ' [compile] literal ; immediate
 
 : constant ( x "name" -- )
-word entry,
+transient-word entry, ( TODO: use non-transient version )
 ['] lit compile, ,
 ['] exit compile, ;
 

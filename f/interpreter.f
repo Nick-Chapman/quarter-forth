@@ -1,7 +1,7 @@
 .." Loading interpeter" cr
 
 : [
-word
+transient-word
 dup s" ]" s= if drop exit then
 dup find dup if swap drop execute tail [
 then drop number? if tail [

@@ -26,7 +26,7 @@ then copy-byte tail copy-colon-body
 ;
 
 : copy-colon-def ( "src" "copy" -- )
-' word entry, copy-colon-body
+' transient-word entry, copy-colon-body
 ;
 
 hide @rel->abs

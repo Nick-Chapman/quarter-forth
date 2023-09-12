@@ -95,7 +95,7 @@ key :
 here key } c, key } c, 0 ,
 
 entry: {{
-[compile] word
+[compile] transient-word
 [compile] dup
 literal ( "}}" )
 [compile] s=
@@ -141,7 +141,7 @@ here key ; , 0 ,
 
 entry: compiling
 literal ( ";" )
-{{ word swap over s= }} if
+{{ transient-word swap over s= }} if
 {{ drop ret, exit }} then
 {{ dup find dup }} if
 {{ swap drop compile-or-execute compiling exit }} then
@@ -155,5 +155,5 @@ ret,
 ( It supports immediate words, but still no numeric literals. )
 
 entry: :
-{{ word entry, compiling ret, }}
+{{ transient-word entry, compiling ret, }}
 ret,
