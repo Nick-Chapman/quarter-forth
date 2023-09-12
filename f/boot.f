@@ -155,5 +155,5 @@ ret,
 ( It supports immediate words, but still no numeric literals. )
 
 entry: :
-{{ transient-word entry, compiling ret, }}
+{{ entry: compiling ret, }}
 ret,

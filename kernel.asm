@@ -474,45 +474,6 @@ _hidden_flip:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; New dictionary entries
 
-defword "entry," ; ( name-addr -- )
-_create_entry:
-    call _dup           ; ( a a )
-    call _strlen        ; ( a n )
-    call _swap          ; ( n a )
-    call _over          ; ( n a n )
-    call _cover_string  ; ( n )
-    call _write_link    ; ( n )
-    call _c_comma
-    ret
-
-_cover_string:
-    pspop cx ; length
-    pspop di ; string, ignored -- assumed to be at [here]
-    add [here], cx
-    call _lit
-    dw 0
-    call _c_comma
-    ret
-
-defword "strlen" ; ( name-addr -- n ) ; length of a null-terminated string
-_strlen:
-    pspop di
-    call internal_strlen ;; INLINE
-    pspush ax
-    ret
-
-internal_strlen: ; in DI=string; out AX=length
-    mov ax, 0
-.loop:
-    mov bl, [di]
-    cmp bl, 0
-    jz .ret
-    inc ax
-    inc di
-    jmp .loop
-.ret:
-    ret
-
 _write_link:
     mov ax, [dictionary]
     mov bx, [here]
@@ -822,14 +783,61 @@ _s_equals:
     dw 1
     ret
 
-defword "entry:"
-    call _transient_word ; TODO: use non-transient version, avoid strlen & _cover_string
-    call _create_entry
-    ret
-
 defword "'"
     call _transient_word
     call _find_or_crash
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TODO: move to non transient word...
+
+defword "entry:" ;; TODO: inline at callers
+    call _word_comma
+    call _entry_comma
+    ret
+
+defword "entry,"
+_entry_comma:
+    call _write_link    ; ( n )
+    call _c_comma
+    ret
+
+defword "word," ; ( "name" -- n ) ; NON-transient ","s word to here; leaves size on stackx
+_word_comma:
+    call _transient_word
+    call _dup           ; ( a a )
+    call _strlen        ; ( a n )
+    call _swap          ; ( n a )
+    call _over          ; ( n a n )
+    call _cover_string  ; ( n )
+    ret
+
+;;defword "strlen" ; ( name-addr -- n ) ; length of a null-terminated string
+_strlen:
+    pspop di
+    call internal_strlen ;; INLINE
+    pspush ax
+    ret
+
+internal_strlen: ; in DI=string; out AX=length
+    mov ax, 0
+.loop:
+    mov bl, [di]
+    cmp bl, 0
+    jz .ret
+    inc ax
+    inc di
+    jmp .loop
+.ret:
+    ret
+
+_cover_string:
+    pspop cx ; length
+    pspop di ; string, ignored -- assumed to be at [here]
+    add [here], cx
+    call _lit
+    dw 0
+    call _c_comma
     ret
 
 dictionary: dw lastxt

@@ -8,5 +8,5 @@ then drop number? if ['] lit compile, , tail compiling
 then ." ** Colon compiler: '" type ." ' ?" cr crash-only-during-startup tail compiling
 ;
 
-: : transient-word entry, compiling ; ( TODO: use non-transient version )
+: : entry: compiling ; ( TODO: use non-transient version )
 hide compiling

@@ -31,8 +31,6 @@ hide x-hide
 
 ( hide some words defined by kernel, boot.f and string.f and this file )
 
-hide entry:
-
 hide {{
 hide compile-or-execute
 hide compiling

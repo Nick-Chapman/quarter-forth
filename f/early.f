@@ -15,7 +15,7 @@ char [compile] literal ; immediate
 ' [compile] literal ; immediate
 
 : constant ( x "name" -- )
-transient-word entry, ( TODO: use non-transient version )
+entry:
 ['] lit compile, ,
 ['] exit compile, ;
 
