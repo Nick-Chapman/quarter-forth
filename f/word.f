@@ -1,6 +1,6 @@
 .." Loading word ( " latest
 
-: is-white ( c -- flag ) 33 < ;
+: is-white ( c -- flag ) bl swap < 0 1 - xor ; ( <= 32 )
 
 : collect-char ( a c -- a' ) over c! 1 + ;
 

@@ -13,6 +13,11 @@ f/string.f
 f/dict.f
 # Now we can inspect ("words") and manage ("hide") our dictionary.
 
+# Forth level reference implementations for "find" and "word".
+# My BIG GOAL is to improve the bootstrap so we don't need asm defs for these.
+f/word.f
+f/find.f
+
 # Standard words, without using numerals ( except 0, 1 )
 f/standard.f
 
@@ -26,11 +31,6 @@ f/interpreter.f
 f/colon.f
 # Now we have a working colon compiler ":" supporting numerics and immediate words.
 # And of course allowing nested interpretation with [ ... ].
-
-# Forth level reference implementations for "find" and "word".
-# My BIG GOAL is to improve the bootstrap so we don't need asm defs for these.
-f/word.f
-f/find.f
 
 # Examine stack (.s), memory (mem,dump,xxd); decompiling (see); regression support ("x")
 f/tools.f
