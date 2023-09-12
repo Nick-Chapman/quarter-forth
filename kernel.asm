@@ -193,15 +193,20 @@ defword "bl" ; ascii code for space
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Numeric operations; TODO: M*, general shifts, bitwise-ops
 
+defword "xor"
+    pspop bx
+    pspop ax
+    xor ax, bx
+    pspush ax
+    ret
+
 defword "/2"
-_div2:
     pspop ax
     shr ax, 1
     pspush ax
     ret
 
 defword "+"
-_add:
     pspop bx
     pspop ax
     add ax, bx

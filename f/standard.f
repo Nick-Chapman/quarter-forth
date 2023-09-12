@@ -26,7 +26,7 @@ here 0 , constant ;
 : true      ( -- b )        0 1 - ;
 : or        ( b1 b2 -- b )  if drop true then ;         ( bool disjunction )
 : and       ( b1 b2 -- b )  if exit then drop false ;   ( bool conjunction )
-: invert    ( b -- b )      if false exit then true ;   ( bool negation )
+: invert    ( b -- b )      true xor ;                  ( bool negation )
 
 ( Numbers )
 
