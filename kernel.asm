@@ -176,11 +176,13 @@ defword "r>"
 ;;; Special numbers
 
 defword "0"
+_zero:
     call _lit
     dw 0
     ret
 
 defword "1"
+_one:
     call _lit
     dw 1
     ret
@@ -207,6 +209,7 @@ defword "/2"
     ret
 
 defword "+"
+_add:
     pspop bx
     pspop ax
     add ax, bx
@@ -270,6 +273,7 @@ _fetch:
     ret
 
 defword "!"
+_store:
     pspop bx
     pspop ax
     mov [bx], ax
@@ -295,6 +299,7 @@ defword "c!"
 here: dw here_start
 
 defword "here-pointer"
+_here_pointer:
     mov bx, here
     pspush bx
     ret
@@ -473,6 +478,16 @@ _hidden_flip:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; New dictionary entries
+
+defword "entry," ; ( str -- )
+    call _here ; ( a a')
+    call _swap
+    call _minus ; ( n-string-with-null )
+    call _one
+    call _minus ; ( n )
+    call _write_link ; ( n ) -- unchanged
+    call _c_comma
+    ret
 
 _write_link:
     mov ax, [dictionary]
@@ -663,50 +678,6 @@ _if:
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-%assign X ($-$$)
-;%warning X "- After Sorted"
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; word (GOAL: not in Asm)
-
-defword "transient-word" ; ( "word " -- here )
-_transient_word:
-    call internal_read_word
-    mov ax, [here]
-    pspush ax
-    ret
-
-internal_read_word: ; using "key" into buffer memory
-    mov di, [here]
-.skip:
-    call .key
-    pspop ax
-    cmp al, 0x21
-    jb .skip ; skip leading white-space
-.loop:
-    cmp al, 0x21
-    jb .done ; stop at white-space
-    mov [di], al
-    inc di
-    call .key
-    pspop ax
-    jmp .loop
-.done:
-    mov byte [di], 0 ; null
-    ret
-.key:
-    ;; Here we are calling from low-level ASM to a _forth word
-    ;; And so we must preserve the registers being used here.
-    ;; Failure to do this was the cause of the assumed string literal bug.
-    push ax
-    push di
-    call _key
-    pop di
-    pop ax
-    ret
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; find (GOAL: not in Asm)
 
 defword "find" ; ( s -- xt' )
@@ -789,55 +760,51 @@ defword "'"
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; TODO: move to non transient word...
+;;; word (GOAL: not in Asm)
 
-defword "entry:" ;; TODO: inline at callers
+defword "transient-word" ; ( "name" -- a ) -- built on "word"
+_transient_word:
+    call _word
+    call _dup
+    call _here_pointer
+    call _store
+    ret
+
+defword "word" ; ( "name" -- a ) -- built on "word,"
+_word:
+    call _here
     call _word_comma
-    call _entry_comma
     ret
 
-defword "entry,"
-_entry_comma:
-    call _write_link    ; ( n )
+_here:
+    call _here_pointer
+    call _fetch
+    ret
+
+_word_comma: ; ( -- ) ;; Transcribed from Forth
+.loop1:
+    call _key
+    call _dup
+    call _is_white
+    jnb .loop2
+    call _drop
+    jmp .loop1
+.loop2:
     call _c_comma
+    call _key
+    call _dup
+    call _is_white
+    jb .finish
+    jmp .loop2
+.finish:
+    call _drop
+    call _zero
+    call _c_comma ; add null terminator
     ret
 
-defword "word," ; ( "name" -- n ) ; NON-transient ","s word to here; leaves size on stackx
-_word_comma:
-    call _transient_word
-    call _dup           ; ( a a )
-    call _strlen        ; ( a n )
-    call _swap          ; ( n a )
-    call _over          ; ( n a n )
-    call _cover_string  ; ( n )
-    ret
-
-;;defword "strlen" ; ( name-addr -- n ) ; length of a null-terminated string
-_strlen:
-    pspop di
-    call internal_strlen ;; INLINE
-    pspush ax
-    ret
-
-internal_strlen: ; in DI=string; out AX=length
-    mov ax, 0
-.loop:
-    mov bl, [di]
-    cmp bl, 0
-    jz .ret
-    inc ax
-    inc di
-    jmp .loop
-.ret:
-    ret
-
-_cover_string:
-    pspop cx ; length
-    pspop di ; string, ignored -- assumed to be at [here]
-    add [here], cx
-    call _lit
-    dw 0
-    call _c_comma
+_is_white: ; ( c -- ) --> Flag Below
+    pspop ax
+    cmp al, 0x21
     ret
 
 dictionary: dw lastxt

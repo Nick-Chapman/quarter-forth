@@ -1,4 +1,9 @@
 
+word entry: entry,
+' word compile,
+' entry, compile,
+ret,
+
 entry: immediate
 ' latest compile,
 ' immediate^ compile,
