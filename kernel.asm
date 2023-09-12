@@ -612,7 +612,7 @@ _cls:
     pop ax
     ret
 
-defword "type" ;; TODO: move to forth
+defword "type" ;; TODO: recode in forth
 _type:
     pspop di
     call internal_print_string
@@ -751,7 +751,7 @@ _s_equals:
     ret
 .same:
     call _lit
-    dw 1
+    dw -1
     ret
 
 defword "'"

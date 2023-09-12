@@ -13,8 +13,9 @@ f/string.f
 f/dict.f
 # Now we can inspect ("words") and manage ("hide") our dictionary.
 
-# Forth level reference implementations for "find" and "word".
+# Reference implementations for "s=", "type", "find" and "word".
 # My BIG GOAL is to improve the bootstrap so we don't need asm defs for these.
+f/string-ops.f
 f/word.f
 f/find.f
 
