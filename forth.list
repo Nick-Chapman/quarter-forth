@@ -15,9 +15,7 @@ f/dict.f
 
 # Reference implementations for "s=", "type", "find" and "word".
 # My BIG GOAL is to improve the bootstrap so we don't need asm defs for these.
-f/string-ops.f
-f/word.f
-f/find.f
+f/reference.f
 
 # Standard words, without using numerals ( except 0, 1 )
 f/standard.f
