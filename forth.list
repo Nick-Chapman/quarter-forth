@@ -1,21 +1,15 @@
 # List of Forth files making up nforth. These get embedded into _build/kernel.img
 
-# Kernel starts basic WFX-loop (word-find-execute-loop). There is no ":".
+# Coing in Quarter (not Forth yet), define a WFX-loop...
+f/quarter.q
+# Now we have a basic WFX (word-find-execute) loop. There is no ":".
+
+# Now, restart the existing WFX-upwards boot process...
 f/boot.f
 # Now we have a colon compiler ":" supporting immediate words (but no numerics).
 
 # A few important system words which we define early (before string and dict)
 f/early.f
-
-# Simulate and enter a KDX (key-dispatch-execute) loop -- TODO: move this to ASM
-f/kdx-loop.f
-# Now we are processing Quarter, not Forth.
-
-# Using quarter, define a WFX-loop...
-f/quarter.q
-
-# Now, restart the existing WFX-upwards boot process...
-f/boot.f # AGAIN
 
 f/string.f
 # Now we have string literal syntax; handy for messages!

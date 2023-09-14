@@ -4,8 +4,30 @@
     bits 16
     org kernel_load_address
 
+    warm_addr equ 0x8000
+    warm_mark equ 0x2a2a ; "**"
+
     call setup_dispatch_table
-    jmp start
+
+init:
+    cmp word [warm_addr], warm_mark
+    jz .warm
+.cold:
+    call _cls
+    mov word [warm_addr], warm_mark
+.warm: ;; TODO: try preserve defined words on warm reset. by not resetiing latest and here
+    call init_param_stack
+    push _bye
+    ;; jmp wfx_loop ;; TODO: kill old
+    jmp kdx_loop
+
+
+kdx_loop:
+    call _key
+    call _dispatch
+    call _execute
+    jmp kdx_loop
+
 
 %macro print 1
     push di
@@ -770,21 +792,11 @@ _dispatch:
     call _crash_only_during_startup
     ret
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Start (word-find-execute-loop)
+;;; WFX (word-find-execute) loop
 
-warm_addr equ 0x8000
-warm_mark equ 0x2a2a ; "**"
-
-start:
-    cmp word [warm_addr], warm_mark
-    jz .warm
-.cold:
-    call _cls
-    mov word [warm_addr], warm_mark
-.warm: ;; TODO: try preserve defined words on warm reset. by not resetiing latest and here
-    call init_param_stack
-    push _bye
+wfx_loop:
 .loop:
     call _transient_word
     call _dup
