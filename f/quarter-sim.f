@@ -27,8 +27,7 @@ drop ." dispatch: '" emit ." ' ?" cr crash
 ;
 
 : kdx-loop
-key dup [char] Q = if drop exit then
-dispatch execute tail kdx-loop
+key dispatch execute tail kdx-loop
 ;
 
 : set ( "c" "word" -- ) key ' swap set-dt ;

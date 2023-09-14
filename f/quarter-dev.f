@@ -78,16 +78,16 @@ i ~W~P~X
 t ~P~f
 ;
 
-h `W`F`X 0\ E :[
+:[              ( word-find-execute loop )
 (^$L~.)
 ~j~y ~D
 i ~V ~l^[?,~J
 t ~P ~l^[?,~J
 ;
 
-Q ( quit from kdx-loop )
+( enter the WFX-loop )
+[
 
 hide :
-WFX
 
 words-since char ) emit cr
