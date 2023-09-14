@@ -75,9 +75,8 @@ setup_dispatch_table:
     set 'E', _entry_comma
     set 'G', _xt_next
     set 'H', _here_pointer
-    set 'I', _immediate
     set 'J', _jump
-    set 'L', _literal
+    set 'L', _lit
     set 'M', _cr
     set 'N', _xt_name
     set 'O', _over
@@ -89,34 +88,6 @@ setup_dispatch_table:
     set 'Z', _latest
     set '\', _c_comma
     set '^', _key
-    ; lowercase... TODO: avoid
-    set 'b', _bl
-    set 'l', _lit
-    set 'x', _xor
-    ret
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; TODO: dispatch items -> quarter
-
-_literal:
-    POP ax
-    push ax
-    call _lit
-    dw _lit
-    call _compile_comma
-    pop ax
-    PUSH ax
-    call _comma
-    ret
-
-_immediate:
-    call _latest
-    call _immediate_flip
-    ret
-
-_here:
-    call _here_pointer
-    call _fetch
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -470,6 +441,11 @@ defword "here-pointer"
 _here_pointer:
     mov bx, here
     pspush bx
+    ret
+
+_here:
+    call _here_pointer
+    call _fetch
     ret
 
 defword "," ; write a 16-bit word to [here]
