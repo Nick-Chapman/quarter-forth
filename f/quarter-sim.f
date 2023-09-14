@@ -1,4 +1,3 @@
-.." Loading quarter-sim ( " latest
 
 : nop ;
 : blank ( n -- ) dup if 0 , 1 - tail blank then drop ;
@@ -18,12 +17,14 @@ here constant dt 256 blank ( dispatch table )
 : dt-cell ( c -- addr ) 2 * dt + ;
 : get-dt ( c -- xt ) dt-cell @ ;
 : set-dt ( xt' c -- )
-dup get-dt ( xt' c xt ) if ." set-dt '" emit ." ' -- already set!" cr crash exit then
+( dup get-dt if ." set-dt '" emit ." ' -- already set!" cr crash exit then )
 dt-cell ! ;
 
 : dispatch ( c -- xt )
-dup get-dt dup if ( c x ) swap drop exit then
-drop ." dispatch: '" emit ." ' ?" cr crash
+dup get-dt ( c xt|0 )
+( dup 0 = if drop ." dispatch: '" emit ." ' ?" cr crash exit then )
+dup 0 = if drop emit [char] ? emit cr crash exit then
+swap drop exit
 ;
 
 : kdx-loop
@@ -82,17 +83,4 @@ set l lit ( better code? )
 set b bl
 set x xor
 
-hide 10
-hide 2
-hide 256
-hide blank
-hide dispatch
-hide dt
-hide dt-cell
-hide get-dt
-hide nop
-hide set
-hide set-dt
-hide set-here
-
-words-since char ) emit cr
+kdx-loop

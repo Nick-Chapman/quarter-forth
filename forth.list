@@ -7,6 +7,10 @@ f/boot.f
 # A few important system words which we define early (before string and dict)
 f/early.f
 
+f/quarter-sim.f
+f/quarter-dev.f
+f/boot.f # AGAIN
+
 f/string.f
 # Now we have string literal syntax; handy for messages!
 
@@ -16,10 +20,6 @@ f/dict.f
 # Reference implementations for "s=", "type", "find" and "word".
 # My BIG GOAL is to improve the bootstrap so we don't need asm defs for these.
 #f/reference.f
-
-f/quarter-sim.f
-f/quarter-dev.f
-f/boot.f # AGAIN
 
 # Standard words, without using numerals ( except 0, 1 )
 f/standard.f

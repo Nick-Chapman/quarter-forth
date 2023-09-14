@@ -1,14 +1,3 @@
-.." Loading quarter-dev ( " latest
-
-hide s=
-hide type
-hide word
-hide transient-word
-hide find
-hide find!
-hide (
-
-kdx-loop
 
 :'  ^^?> ^??> ;
 :~  '^> '?> '>> ;
@@ -87,7 +76,3 @@ t ~P ~l^[?,~J
 
 ( enter the WFX-loop )
 [
-
-hide :
-
-words-since char ) emit cr
