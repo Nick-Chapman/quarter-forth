@@ -4,12 +4,15 @@
     bits 16
     org kernel_load_address
 
+    jmp start
+
+echo_enabled: dw 0 ;; Set to 1 to debug!
+
     warm_addr equ 0x8000
     warm_mark equ 0x2a2a ; "**"
 
+start:
     call setup_dispatch_table
-
-init:
     cmp word [warm_addr], warm_mark
     jz .warm
 .cold:
@@ -594,8 +597,6 @@ read_char_interactive:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Output
 
-echo_enabled: dw 0
-
 defword "echo-enabled" ; ( -- addr )
 _echo_enabled:
     mov bx, echo_enabled
@@ -668,14 +669,35 @@ internal_print_string: ; in: DI=string; print null-terminated string.
 tab: times 256 dw 0 ; TODO: half size!
 tab_end:
 
-_set_tab_entry_core:
-    pspop ax
-    pspop di
+
+set_tab_entry_checked: ; in: di(char), bx(XT)
+    mov ax, di
     shl di, 1
-    mov word [tab + di], ax
+    cmp word [tab + di], 0
+    jnz .duplicate
+    mov word [tab + di], bx
+    ret
+.duplicate:
+    print "duplicate set: '"
+    call raw_output_char
+    print "'"
+    call _cr
+    call _crash_only_during_startup
     ret
 
-_set_tab_entry: ; add trace/checking
+_set_tab_entry_core:
+    pspop bx
+    pspop di
+    jmp set_tab_entry_checked
+
+%macro set 2
+    ;;mov word [tab + 2* %1], %2
+    mov di, %1
+    mov bx, %2
+    call set_tab_entry_checked
+%endmacro
+
+_set_tab_entry:
     call _key
     ;print "_set_tab_entry '"
     ;call _dup
@@ -685,10 +707,6 @@ _set_tab_entry: ; add trace/checking
     call _here
     call _set_tab_entry_core
     ret
-
-%macro set 2
-    mov word [tab + 2* %1], %2
-%endmacro
 
 _nop: ret
 
@@ -703,7 +721,7 @@ _literal: ; TODO: not it Asm!
     call _comma
     ret
 
-_immediate: ;; TODO: Not Asm
+_immediate: ;; TODO: -> quarter
     call _latest
     call _immediate_flip
     ret
@@ -714,14 +732,13 @@ _jump: ;; TODO: simplify
     call _execute
     ret
 
-_here:
+_here: ;; TODO: -> quarter
     call _here_pointer
     call _fetch
     ret
 
 setup_dispatch_table:
     set 10, _nop
-    set ':', _crash_only_during_startup ; TODO: catch reassign bug
     set ':', _set_tab_entry
     set ' ', _nop
     set '^', _key
