@@ -75,5 +75,9 @@ i ~V ~l^[?,~J
 t ~P ~l^[?,~J
 ;
 
+h `' 0\ E
+~j~y  ( TODO: better names for the important defs )
+;
+
 ( enter the WFX-loop )
 [
