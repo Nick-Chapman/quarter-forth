@@ -160,7 +160,7 @@ check_ps_underflow:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; dispatch table (for KDX-loop)
 
-dispatch_table: times 256 dw 0 ; TODO: half size!
+dispatch_table: times 128 dw 0 ; indexed by char: 0..127
 
 _set_tab_entry:
     call _key
@@ -171,6 +171,7 @@ _set_tab_entry:
 
 set_tab_entry_checked: ; in: di(char), bx(XT)
     mov ax, di
+    and di, 0x7f ; clamp to ascii <128
     shl di, 1
     cmp word [dispatch_table + di], 0
     jnz .duplicate
