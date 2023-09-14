@@ -2,16 +2,14 @@
 :'  ^^?> ^??> ;
 :~  '^> '?> '>> ;
 :`  ~^ ~\ ;
-
 :h  ~H~@ ;
-
 :i  ~l ^B?, ~>~h 0L ~, ;
 :t  ~D~h~W~-~W~! ;
 
-h `( 0\ EI   :(   ~^ ^)L ~= i ~X t ~l^(?,~J ;
+:(  ~^ ^)L ~= i ~X t ~l^(?,~J ;
 
 ( This file is in Quarter syntax. )
-( The above squiggle gives us comments both in Quarter code and also at Forth level )
+( The above squiggle gives us comments both in Quarter code )
 
 h `s`= 0\ E         :q ( string equality )
 ~O~O~C~W~C~O~= i
