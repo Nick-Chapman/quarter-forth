@@ -23,7 +23,6 @@ start:
     push _bye
     jmp kdx_loop
 
-
 kdx_loop:
     call _key
     call _dispatch
@@ -40,6 +39,85 @@ kdx_loop:
     call internal_print_string
     pop di
 %endmacro
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Initialize dispatch table
+
+%macro set 2
+    ;;mov word [tab + 2* %1], %2
+    mov di, %1
+    mov bx, %2
+    call set_tab_entry_checked
+%endmacro
+
+setup_dispatch_table:
+    set 10, _nop
+    set ':', _set_tab_entry
+    set ' ', _nop
+    set '^', _key
+    set '?', _dispatch
+    set '>', _compile_comma
+    set ';', _write_ret
+    set '\', _c_comma
+    set 'H', _here_pointer
+    set '@', _fetch
+    set 'l', _lit ; lowercase
+    set 'B', _0branch
+    set ',', _comma
+    set '0', _zero
+    set 'L', _literal
+    set 'D', _dup
+    set 'W', _swap
+    set '-', _minus
+    set '!', _store
+    set 'E', _entry_comma
+    set 'I', _immediate
+    set '=', _equals
+    set 'X', _exit
+    set 'J', _jump
+    set 'O', _over
+    set 'C', _c_fetch
+    set 'P', _drop
+    set '1', _one
+    set '+', _add
+    set '.', _emit
+    set 'b', _bl ; lowercase
+    set '<', _less_than
+    set 'x', _xor ; lowercase
+    set 'Y', _hidden_query
+    set 'G', _xt_next
+    set 'M', _cr
+    set 'N', _xt_name
+    set 'Z', _latest
+    set '*', _multiply
+    set 'V', _execute
+    ret
+
+_nop: ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; TODO: dispatch items -> quarter
+
+_literal:
+    POP ax
+    push ax
+    call _lit
+    dw _lit
+    call _compile_comma
+    pop ax
+    PUSH ax
+    call _comma
+    ret
+
+_immediate:
+    call _latest
+    call _immediate_flip
+    ret
+
+_here:
+    call _here_pointer
+    call _fetch
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Dictionary entry
@@ -70,6 +148,97 @@ defwordWithFlags (no_flags), %1
 %macro defwordHidden 1
 defwordWithFlags (hidden_flag), %1
 %endmacro
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Parameter stack (register: bp)
+
+param_stack_base equ 0xf800  ; allows 2k for call stack
+
+init_param_stack:
+    mov bp, param_stack_base
+    ret
+
+%macro pspush 1
+    sub bp, 2
+    mov [bp], %1
+%endmacro
+
+defwordHidden "underflow?"
+check_ps_underflow:
+    cmp bp, param_stack_base
+    jb .ok
+    sub bp, 2
+    mov word [bp], 0
+    print "stack underflow."
+    call _cr
+    call _crash_only_during_startup
+.ok:
+    ret
+
+%macro pspop 1
+    call check_ps_underflow
+    mov %1, [bp]
+    add bp, 2
+%endmacro
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; dispatch table (for KDX-loop)
+
+dispatch_table: times 256 dw 0 ; TODO: half size!
+
+_set_tab_entry:
+    call _key
+    call _here
+    call _set_tab_entry_core
+    ret
+
+_set_tab_entry_core:
+    pspop bx
+    pspop di
+    jmp set_tab_entry_checked
+
+set_tab_entry_checked: ; in: di(char), bx(XT)
+    mov ax, di
+    shl di, 1
+    cmp word [dispatch_table + di], 0
+    jnz .duplicate
+    mov word [dispatch_table + di], bx
+    ret
+.duplicate:
+    print "duplicate set: '"
+    call raw_output_char
+    print "'"
+    call _cr
+    call _crash_only_during_startup
+    ret
+
+_dispatch_core:
+    pspop di
+    shl di, 1
+    mov bx, [dispatch_table + di]
+    pspush bx
+    ret
+
+defword "dispatch"
+_dispatch:
+    call _dup
+    call _dispatch_core
+    call _dup
+    call _if
+    jz .missing
+    call _swap
+    call _drop
+    ret
+.missing:
+    call _drop
+    call _cr
+    print "dispatch,missing: '"
+    call _emit
+    print "'"
+    call _cr
+    call _crash_only_during_startup
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Termination
@@ -107,38 +276,6 @@ _crash_only_during_startup:
     cmp byte [is_startup_complete], 0
     jz _crash
     ret
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Parameter stack (register: bp)
-
-param_stack_base equ 0xf800  ; allows 2k for call stack
-
-init_param_stack:
-    mov bp, param_stack_base
-    ret
-
-%macro pspush 1
-    sub bp, 2
-    mov [bp], %1
-%endmacro
-
-defwordHidden "underflow?"
-check_ps_underflow:
-    cmp bp, param_stack_base
-    jb .ok
-    sub bp, 2
-    mov word [bp], 0
-    print "stack underflow."
-    call _cr
-    call _crash_only_during_startup
-.ok:
-    ret
-
-%macro pspop 1
-    call check_ps_underflow
-    mov %1, [bp]
-    add bp, 2
-%endmacro
 
 defword "sp" ; ( -- addr )
     mov ax, bp
@@ -366,6 +503,12 @@ defword "execute"
 _execute:
     pspop bx
     jmp bx
+
+_jump: ;; TODO: simplify
+    call _from_rs
+    call _drop
+    call _execute
+    ret
 
 _exit:
     pop bx ; and ignore
@@ -642,7 +785,7 @@ _cls:
     pop ax
     ret
 
-defword "type" ;; TODO: recode in forth
+;;defword "type" ;; TODO: recode in forth
 _type:
     pspop di
     call internal_print_string
@@ -661,156 +804,6 @@ internal_print_string: ; in: DI=string; print null-terminated string.
 .done:
     pop di
     pop ax
-    ret
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; dispatch (for KDX-loop)
-
-tab: times 256 dw 0 ; TODO: half size!
-tab_end:
-
-
-set_tab_entry_checked: ; in: di(char), bx(XT)
-    mov ax, di
-    shl di, 1
-    cmp word [tab + di], 0
-    jnz .duplicate
-    mov word [tab + di], bx
-    ret
-.duplicate:
-    print "duplicate set: '"
-    call raw_output_char
-    print "'"
-    call _cr
-    call _crash_only_during_startup
-    ret
-
-_set_tab_entry_core:
-    pspop bx
-    pspop di
-    jmp set_tab_entry_checked
-
-%macro set 2
-    ;;mov word [tab + 2* %1], %2
-    mov di, %1
-    mov bx, %2
-    call set_tab_entry_checked
-%endmacro
-
-_set_tab_entry:
-    call _key
-    ;print "_set_tab_entry '"
-    ;call _dup
-    ;call _emit
-    ;print "'"
-    ;call _cr
-    call _here
-    call _set_tab_entry_core
-    ret
-
-_nop: ret
-
-_literal: ; TODO: not it Asm!
-    POP ax
-    push ax ; save lit value
-    call _lit
-    dw _lit
-    call _compile_comma
-    pop ax ; restore lit value
-    PUSH ax
-    call _comma
-    ret
-
-_immediate: ;; TODO: -> quarter
-    call _latest
-    call _immediate_flip
-    ret
-
-_jump: ;; TODO: simplify
-    call _from_rs
-    call _drop
-    call _execute
-    ret
-
-_here: ;; TODO: -> quarter
-    call _here_pointer
-    call _fetch
-    ret
-
-setup_dispatch_table:
-    set 10, _nop
-    set ':', _set_tab_entry
-    set ' ', _nop
-    set '^', _key
-    set '?', _dispatch
-    set '>', _compile_comma
-    set ';', _write_ret
-    set '\', _c_comma
-    set 'H', _here_pointer
-    set '@', _fetch
-    set 'l', _lit ; lowercase
-    set 'B', _0branch
-    set ',', _comma
-    set '0', _zero
-    set 'L', _literal ; TODO: nope!
-    set 'D', _dup
-    set 'W', _swap
-    set '-', _minus
-    set '!', _store
-    set 'E', _entry_comma
-    set 'I', _immediate
-    set '=', _equals
-    set 'X', _exit
-    set 'J', _jump
-    set 'O', _over
-    set 'C', _c_fetch
-    set 'P', _drop
-    set '1', _one
-    set '+', _add
-    set '.', _emit
-    set 'b', _bl ; lowercase - TODO: avoid
-    set '<', _less_than
-    set 'x', _xor ; lowercase
-    set 'Y', _hidden_query
-    set 'G', _xt_next
-    set 'M', _cr
-    set 'N', _xt_name
-    set 'Z', _latest
-    set '*', _multiply
-    set 'V', _execute
-    ret
-
-_dispatch_core:
-    pspop di
-    shl di, 1
-    mov bx, [tab + di]
-    pspush bx
-    ret
-
-defword "dispatch"
-_dispatch:
-    ;print "dispatch: '"
-    ;call _dup
-    ;call _emit
-    ;print "'"
-    call _dup
-    call _dispatch_core
-    call _dup
-    call _if
-    jz .missing
-    ;print " - ok"
-    ;call _cr
-    call _swap
-    call _drop
-    ret
-.missing:
-    call _drop
-    call _cr
-    print "dispatch,missing: '"
-    call _emit
-    print "'"
-    call _cr
-    call _crash_only_during_startup
     ret
 
 _if:
