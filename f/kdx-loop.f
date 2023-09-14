@@ -20,7 +20,7 @@ here constant dt 256 blank ( dispatch table )
 ( dup get-dt if ." set-dt '" emit ." ' -- already set!" cr crash exit then )
 dt-cell ! ;
 
-: dispatch ( c -- xt )
+: NOPE:dispatch ( c -- xt ) ( TODO: remove me! )
 dup get-dt ( c xt|0 )
 ( dup 0 = if drop ." dispatch: '" emit ." ' ?" cr crash exit then )
 dup 0 = if drop emit [char] ? emit cr crash exit then

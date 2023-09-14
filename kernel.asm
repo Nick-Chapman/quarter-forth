@@ -4,6 +4,7 @@
     bits 16
     org kernel_load_address
 
+    call setup_dispatch_table
     jmp start
 
 %macro print 1
@@ -167,6 +168,7 @@ defword ">r"
     jmp bx
 
 defword "r>"
+_from_rs:
     pop bx
     pop ax
     pspush ax
@@ -188,6 +190,7 @@ _one:
     ret
 
 defword "bl" ; ascii code for space
+_bl:
     call _lit
     dw 32
     ret
@@ -196,6 +199,7 @@ defword "bl" ; ascii code for space
 ;;; Numeric operations; TODO: M*, general shifts, bitwise-ops
 
 defword "xor"
+_xor:
     pspop bx
     pspop ax
     xor ax, bx
@@ -225,6 +229,7 @@ _minus:
     ret
 
 defword "*"
+_multiply:
     pspop bx
     pspop ax
     mul bx ; ax = ax*bx
@@ -241,6 +246,7 @@ defword "/mod"
     ret
 
 defword "<"
+_less_than:
     pspop bx
     pspop ax
     cmp ax, bx
@@ -252,6 +258,7 @@ isLess:
     ret
 
 defword "="
+_equals:
     pspop bx
     pspop ax
     cmp ax, bx
@@ -480,6 +487,7 @@ _hidden_flip:
 ;;; New dictionary entries
 
 defword "entry," ; ( str -- )
+_entry_comma:
     call _here ; ( a a')
     call _swap
     call _minus ; ( n-string-with-null )
@@ -631,6 +639,135 @@ internal_print_string: ; in: DI=string; print null-terminated string.
 .done:
     pop di
     pop ax
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; dispatch (for KDX-loop)
+
+tab: times 256 dw 0 ; TODO: half size!
+tab_end:
+
+_set_tab_entry_core:
+    pspop ax
+    pspop di
+    shl di, 1
+    mov word [tab + di], ax
+    ret
+
+_set_tab_entry: ; add trace/checking
+    call _key
+    ;print "_set_tab_entry '"
+    ;call _dup
+    ;call _emit
+    ;print "'"
+    ;call _cr
+    call _here
+    call _set_tab_entry_core
+    ret
+
+%macro set 2
+    mov word [tab + 2* %1], %2
+%endmacro
+
+_nop: ret
+
+_literal: ; TODO: not it Asm!
+    POP ax
+    push ax ; save lit value
+    call _lit
+    dw _lit
+    call _compile_comma
+    pop ax ; restore lit value
+    PUSH ax
+    call _comma
+    ret
+
+_immediate: ;; TODO: Not Asm
+    call _latest
+    call _immediate_flip
+    ret
+
+_jump: ;; TODO: simplify
+    call _from_rs
+    call _drop
+    call _execute
+    ret
+
+setup_dispatch_table:
+    set 10, _nop
+    set ':', _crash_only_during_startup ; TODO: catch reassign bug
+    set ':', _set_tab_entry
+    set ' ', _nop
+    set '^', _key
+    set '?', _dispatch
+    set '>', _compile_comma
+    set ';', _write_ret
+    set '\', _c_comma
+    set 'H', _here_pointer
+    set '@', _fetch
+    set 'l', _lit ; lowercase
+    set 'B', _0branch
+    set ',', _comma
+    set '0', _zero
+    set 'L', _literal ; TODO: nope!
+    set 'D', _dup
+    set 'W', _swap
+    set '-', _minus
+    set '!', _store
+    set 'E', _entry_comma
+    set 'I', _immediate
+    set '=', _equals
+    set 'X', _exit
+    set 'J', _jump
+    set 'O', _over
+    set 'C', _c_fetch
+    set 'P', _drop
+    set '1', _one
+    set '+', _add
+    set '.', _emit
+    set 'b', _bl ; lowercase - TODO: avoid
+    set '<', _less_than
+    set 'x', _xor ; lowercase
+    set 'Y', _hidden_query
+    set 'G', _xt_next
+    set 'M', _cr
+    set 'N', _xt_name
+    set 'Z', _latest
+    set '*', _multiply
+    set 'V', _execute
+    ret
+
+_dispatch_core:
+    pspop di
+    shl di, 1
+    mov bx, [tab + di]
+    pspush bx
+    ret
+
+defword "dispatch"
+_dispatch:
+    ;print "dispatch: '"
+    ;call _dup
+    ;call _emit
+    ;print "'"
+    call _dup
+    call _dispatch_core
+    call _dup
+    call _if
+    jz .missing
+    ;print " - ok"
+    ;call _cr
+    call _swap
+    call _drop
+    ret
+.missing:
+    call _drop
+    call _cr
+    print "dispatch,missing: '"
+    call _emit
+    print "'"
+    call _cr
+    call _crash_only_during_startup
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
