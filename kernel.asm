@@ -21,13 +21,17 @@ start:
 .warm: ;; TODO: try preserve defined words on warm reset. by not resetiing latest and here
     call init_param_stack
     push _bye
-    jmp kdx_loop
-
-kdx_loop:
+.loop:
     call _key
     call _dispatch
+    call _dup
+    call _if
+    jz .ignore
     call _execute
-    jmp kdx_loop
+    jmp .loop
+.ignore:
+    call _drop
+    jmp .loop
 
 %macro print 1
     push di
