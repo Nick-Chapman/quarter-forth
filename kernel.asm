@@ -981,9 +981,9 @@ builtin_data:
     db 0
 
 %assign R ($ - $$) ; Space required so far in this section
-%assign N kernel_size_in_sectors + embedded_size_in_sectors
-%assign A (N * sector_size)
-;%warning "Embedded data size" required=R, allowed=A (#sectors=N)
+%assign N embedded_size_in_sectors
+%assign A ((N + kernel_size_in_sectors) * sector_size)
+;%warning "Forth size" required=R, allowed=A (#sectors=N)
 %if R>A
-%error "Embedded data too big!" required=R, allowed=A (#sectors=N)
+%error "Embedded Forth too big!" required=R, allowed=A (#sectors=N)
 %endif
