@@ -53,6 +53,7 @@ _nop: ret
 
 setup_dispatch_table:
     set 10 , _nop
+    set 13 , _nop
     set ' ', _nop
     set '!', _store
     set '*', _multiply

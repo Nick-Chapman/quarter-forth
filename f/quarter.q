@@ -41,10 +41,12 @@ i ~\ ~L^c?,~J
 t ~P~0~\~X
 ;
 
-h `w`o`r`d 0\ E :a ~h~k~c
+h `w`o`r`d 0\ E     :v ( collect word on heap ) ( TODO: inline? )
+~h~k~c
 ;
 
-h `t`r`a`n`s`i`e`n`t`-`w`o`r`d 0\ E :j  ~a~D~H~!
+h `t`r`a`n`s`i`e`n`t`-`w`o`r`d 0\ E :w
+~v~D~H~!
 ;
 
 :g                          ( find-loop )
@@ -54,30 +56,25 @@ t ~G ~L^g?,~J
 t ~P~P~0
 ;
 
-h `f`i`n`d 0\ E :u
+h `f`i`n`d 0\ E :u  ( TODO: inline? )
 ~Z~g
 ;
 
-^?
-:f
-~p # ~.~M~*
-;
-
-h `f`i`n`d`! 0\ E :y
+h `f`i`n`d`! 0\ E :f
 ~D~u~D
 i ~W~P~X
-t ~P~f
+t ~P ~p ^?# ~.~M~*
 ;
 
 :[              ( word-find-execute loop )
 (^$#~.)
-~j~y ~D
+~w~f ~D
 i ~V ~L^[?,~J
 t ~P ~L^[?,~J
 ;
 
-h `' 0\ E
-~j~y  ( TODO: better names for the important defs )
+h `' 0\ E       ( Forth level ' -- transient-word find! )
+~w~f
 ;
 
 ( enter the WFX-loop )
