@@ -10,6 +10,7 @@
 
 h `( 0\ EI   :(   ~^ ^)L ~= i ~X t ~l^(?,~J ;
 
+( This file is in Quarter syntax. )
 ( The above squiggle gives us comments both in Quarter code and also at Forth level )
 
 h `s`= 0\ E         :q ( string equality )
