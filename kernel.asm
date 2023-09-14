@@ -29,7 +29,6 @@ kdx_loop:
     call _execute
     jmp kdx_loop
 
-
 %macro print 1
     push di
     jmp %%after
@@ -50,50 +49,51 @@ kdx_loop:
     call set_tab_entry_checked
 %endmacro
 
+_nop: ret
+
 setup_dispatch_table:
-    set 10, _nop
-    set ':', _set_tab_entry
+    set 10 , _nop
     set ' ', _nop
-    set '^', _key
-    set '?', _dispatch
-    set '>', _compile_comma
-    set ';', _write_ret
-    set '\', _c_comma
-    set 'H', _here_pointer
-    set '@', _fetch
-    set 'l', _lit ; lowercase
-    set 'B', _0branch
-    set ',', _comma
-    set '0', _zero
-    set 'L', _literal
-    set 'D', _dup
-    set 'W', _swap
-    set '-', _minus
     set '!', _store
-    set 'E', _entry_comma
-    set 'I', _immediate
-    set '=', _equals
-    set 'X', _exit
-    set 'J', _jump
-    set 'O', _over
-    set 'C', _c_fetch
-    set 'P', _drop
-    set '1', _one
+    set '*', _multiply
     set '+', _add
+    set ',', _comma
+    set '-', _minus
     set '.', _emit
-    set 'b', _bl ; lowercase
+    set '0', _zero
+    set '1', _one
+    set ':', _set_tab_entry
+    set ';', _write_ret
     set '<', _less_than
-    set 'x', _xor ; lowercase
-    set 'Y', _hidden_query
+    set '=', _equals
+    set '>', _compile_comma
+    set '?', _dispatch
+    set '@', _fetch
+    set 'B', _0branch
+    set 'C', _c_fetch
+    set 'D', _dup
+    set 'E', _entry_comma
     set 'G', _xt_next
+    set 'H', _here_pointer
+    set 'I', _immediate
+    set 'J', _jump
+    set 'L', _literal
     set 'M', _cr
     set 'N', _xt_name
-    set 'Z', _latest
-    set '*', _multiply
+    set 'O', _over
+    set 'P', _drop
     set 'V', _execute
+    set 'W', _swap
+    set 'X', _exit
+    set 'Y', _hidden_query
+    set 'Z', _latest
+    set '\', _c_comma
+    set '^', _key
+    ; lowercase... TODO: avoid
+    set 'b', _bl
+    set 'l', _lit
+    set 'x', _xor
     ret
-
-_nop: ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; TODO: dispatch items -> quarter
@@ -181,7 +181,6 @@ check_ps_underflow:
     add bp, 2
 %endmacro
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; dispatch table (for KDX-loop)
 
@@ -190,10 +189,6 @@ dispatch_table: times 256 dw 0 ; TODO: half size!
 _set_tab_entry:
     call _key
     call _here
-    call _set_tab_entry_core
-    ret
-
-_set_tab_entry_core:
     pspop bx
     pspop di
     jmp set_tab_entry_checked
@@ -206,7 +201,7 @@ set_tab_entry_checked: ; in: di(char), bx(XT)
     mov word [dispatch_table + di], bx
     ret
 .duplicate:
-    print "duplicate set: '"
+    print "dispatch table entry set already for: '"
     call raw_output_char
     print "'"
     call _cr
@@ -238,6 +233,11 @@ _dispatch:
     print "'"
     call _cr
     call _crash_only_during_startup
+    ret
+
+_if:
+    pspop ax
+    cmp ax, 0
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -785,12 +785,6 @@ _cls:
     pop ax
     ret
 
-;;defword "type" ;; TODO: recode in forth
-_type:
-    pspop di
-    call internal_print_string
-    ret
-
 internal_print_string: ; in: DI=string; print null-terminated string.
     push ax
     push di
@@ -804,11 +798,6 @@ internal_print_string: ; in: DI=string; print null-terminated string.
 .done:
     pop di
     pop ax
-    ret
-
-_if:
-    pspop ax
-    cmp ax, 0
     ret
 
 dictionary: dw lastxt
