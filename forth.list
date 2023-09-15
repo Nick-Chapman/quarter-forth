@@ -47,10 +47,12 @@ f/primes.f      # compute all 16bit primes
 # Some regression tests for standard words.
 f/regression.f
 
+f/relocate.f
+
+f/time.f
+
 # Line based keyboard entry, with backspace! (You miss this when you don't have it!)
 f/buffer.f
-
-f/relocate.f
 
 # Displays welcome message, enables echo, and marks startup-is-complete.
 f/start.f

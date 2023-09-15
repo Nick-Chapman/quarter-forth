@@ -782,6 +782,14 @@ internal_print_string: ; in: DI=string; print null-terminated string.
     pop ax
     ret
 
+defword "time"
+    hlt ; up to 1/16s
+    mov ah, 0
+    int 0x1A
+    pspush cx ; result in 1/16s granularity
+    pspush dx
+    ret
+
 dictionary: dw lastxt
 builtin: dw embedded_load_address
 here_start:
