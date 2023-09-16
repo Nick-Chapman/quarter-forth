@@ -28,6 +28,17 @@ here 0 , constant ;
 : and       ( b1 b2 -- b )  if exit then drop false ;   ( bool conjunction )
 : invert    ( b -- b )      true xor ;                  ( bool negation )
 
+( Stack manipulation )
+
+: ?dup  ( x -- 0 | x x )    dup if dup then ;   ( duplicate x if non-zero )
+: nip   ( a b -- b )        swap drop ;         ( drop item under stack top. )
+
+: rot   >r swap r> swap ;
+: -rot  swap >r swap r> ;
+
+: 2dup  over over ;
+: 2drop drop drop ;
+
 ( Numbers )
 
 : >         swap < ;
@@ -47,20 +58,11 @@ here 0 , constant ;
 
 : mod ( n n -- n ) /mod drop ;
 
+: /  ( a b -- a ) /mod nip ;
+
 ( Misc )
 
 : +! ( n a ) swap over @ + swap ! ;
-
-( Stack manipulation )
-
-: ?dup  ( x -- 0 | x x )    dup if dup then ;   ( duplicate x if non-zero )
-: nip   ( a b -- b )        swap drop ;         ( drop item under stack top. )
-
-: rot   >r swap r> swap ;
-: -rot  swap >r swap r> ;
-
-: 2dup  over over ;
-: 2drop drop drop ;
 
 ( Alternative comments, useful since parens don't nest )
 
@@ -69,5 +71,30 @@ here 0 , constant ;
 ( Tick )
 
 : ' ( "name" -- xt|0 ) transient-word find! ;
+
+( Repeated execution )
+
+: times ( xt n -- ) ( call xt, n times )
+dup if >r dup >r ( xt )
+execute
+r> r> ( xt n )
+1 - tail times
+then drop drop
+;
+
+( Tail recuse to current definition )
+
+: recurse ( "word" -- )
+latest
+['] lit compile, ,
+['] jump compile,
+; immediate
+
+
+1 1 + dup * dup * dup * constant 256
+
+: akey?   key? 256 mod ;
+: ekey?   key? 256 / ;
+
 
 { words-since char ) emit cr }

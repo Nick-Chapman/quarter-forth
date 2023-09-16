@@ -91,16 +91,6 @@ depth if
 then
 ;
 
-( Repeated execution )
-
-: times ( xt n -- ) ( call xt, n times ) ( TODO : move to standard )
-dup if >r dup >r ( xt )
-execute
-r> r> ( xt n )
-1 - tail times
-then drop drop
-;
-
 ( Pagination )
 
 get-key constant old-key

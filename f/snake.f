@@ -1,17 +1,6 @@
 
 ( Make a snake game... )
 
-: /  ( a b -- a ) /mod nip ; ( TODO: move to standard.f )
-
-: akey?   key? 256 mod ;
-: ekey?   key? 256 / ;
-
-: recurse ( TODO: move to standard )
-latest
-['] lit compile, ,
-['] jump compile,
-; immediate
-
 : set-block-cursor  7 set-cursor-shape ;
 : set-underline-cursor  [ 6 256 * 7 + ] literal set-cursor-shape ;
 : hide-cursor [ 7 256 * 6 + ] literal set-cursor-shape ;
