@@ -7,8 +7,6 @@
 
 : at-xy ( x y -- ) 256 * swap + set-cursor-position ;
 
-: wait [char] A emit key 0 0 at-xy set-underline-cursor ;
-
 variable x
 variable y
 
@@ -40,27 +38,38 @@ variable pause  '  tick  pause !
 : setV         ['] tick2 pause ! ; ( half speed when vertical )
 : do-pause  pause @ execute ;
 
-: control ( c -- )
+
+: is-escape  27 = ;
+
+variable escaped
+
+: control ( ascii scan-code -- )
+over is-escape if true escaped ! then
 dup 72 = if ['] up    set-dir setV then
 dup 75 = if ['] left  set-dir setH then
 dup 77 = if ['] right set-dir setH then
 dup 80 = if ['] down  set-dir setV then
-drop
+2drop
 ;
 
 : draw   x @ y @ at-xy [char] @ emit ;
 : clear  x @ y @ at-xy space ;
 
 : app-loop
-draw do-pause ekey? control clear move recurse
+draw do-pause key? 256 /mod control
+escaped @ if exit then
+clear move recurse
 ;
 
 : set-start-pos 25 x ! 10 y ! ;
+set-start-pos
 
 : snake
-cls
-hide-cursor
-set-start-pos
+cls hide-cursor
+false escaped !
 app-loop
-wait
+0 0 at-xy set-underline-cursor
+." Escaped " cr
 ;
+
+: go   tick key? .hex space recurse ;
