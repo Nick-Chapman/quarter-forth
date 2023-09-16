@@ -1,6 +1,6 @@
 
-word entry: entry,
-' word compile,
+word, entry: entry,
+' word, compile,
 ' entry, compile,
 ret,
 
@@ -100,7 +100,7 @@ key :
 here key } c, key } c, 0 ,
 
 entry: {{
-[compile] transient-word
+[compile] word
 [compile] dup
 literal ( "}}" )
 [compile] s=
@@ -146,7 +146,7 @@ here key ; , 0 ,
 
 entry: compiling
 literal ( ";" )
-{{ transient-word swap over s= }} if
+{{ word swap over s= }} if
 {{ drop ret, exit }} then
 {{ dup find dup }} if
 {{ swap drop compile-or-execute compiling exit }} then

@@ -41,11 +41,11 @@ i ~\ ~L^c?,~J
 t ~P~0~\~X
 ;
 
-h `w`o`r`d 0\ E     :v ( collect word on heap ) ( TODO: inline? )
+h `w`o`r`d`, 0\ E     :v ( collect word on heap )
 ~h~k~c
 ;
 
-h `t`r`a`n`s`i`e`n`t`-`w`o`r`d 0\ E :w
+h `w`o`r`d 0\ E :w
 ~v~D~H~!
 ;
 
@@ -73,7 +73,7 @@ i ~V ~L^[?,~J
 t ~P ~L^[?,~J
 ;
 
-h `' 0\ E       ( Forth level ' -- transient-word find! )
+h `' 0\ E       ( Forth level ' -- word find! )
 ~w~f
 ;
 

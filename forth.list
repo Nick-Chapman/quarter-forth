@@ -18,8 +18,7 @@ f/dict.f
 # Now we can inspect ("words") and manage ("hide") our dictionary.
 
 # Reference implementations for "s=", "type", "find" and "word".
-# My BIG GOAL is to improve the bootstrap so we don't need asm defs for these.
-#f/reference.f
+f/reference.f
 
 # Standard words, without using numerals ( except 0, 1 )
 f/standard.f

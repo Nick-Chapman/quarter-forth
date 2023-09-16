@@ -70,7 +70,7 @@ here 0 , constant ;
 
 ( Tick )
 
-: ' ( "name" -- xt|0 ) transient-word find! ;
+: ' ( "name" -- xt|0 ) word find! ;
 
 ( Repeated execution )
 

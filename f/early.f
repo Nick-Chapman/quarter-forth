@@ -2,7 +2,7 @@
 ( A few important words which we define early )
 
 : char ( -- c )
-transient-word c@ ;
+word c@ ;
 
 : ~ char emit ;
 ~ e ~ a ~ r ~ l ~ y
