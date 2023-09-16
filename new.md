@@ -3,7 +3,7 @@
 
 Interpreter and colon compiler normally heart of Forth system.
 Nice if that logic can be extracted into Forth so it doesn't have to be repeated for each port.
-That is what I have done in nforth..
+That is what I have done in Quarter Forth.
 The kernel just starts a minimal  _word-find-execute_ loop [link]
 But even this is quite a piece of complicated logic which must be coded in Asm, and so repeated for each re-targetting.
 It needs 3 sub components (words) -- word find execute

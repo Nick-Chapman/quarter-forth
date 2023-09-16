@@ -1,4 +1,4 @@
-# List of Forth files making up nforth. These get embedded into _build/kernel.img
+# List of files making up Quarter Forth. These get embedded into _build/kernel.img
 
 # Coing in Quarter (not Forth yet), define a WFX-loop...
 f/quarter.q
