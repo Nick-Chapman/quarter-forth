@@ -81,6 +81,10 @@ sp0 .s-continue
 sp sp0 swap - /2
 ;
 
+: rdepth ( -- n )          ( depth of return stack )
+rsp rsp0 swap - /2
+;
+
 : .?stack
 depth if
 ." stack is not empty: < " .s [char] > emit cr

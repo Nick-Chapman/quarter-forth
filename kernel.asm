@@ -264,6 +264,16 @@ defword "sp0" ; ( -- addr )
     pspush ax
     ret
 
+defword "rsp" ; ( -- addr )
+    mov ax, sp
+    pspush ax
+    ret
+
+defword "rsp0" ; ( -- addr )
+    mov ax, 0
+    pspush ax
+    ret
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Stack manipulation
 
