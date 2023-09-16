@@ -832,32 +832,38 @@ key_q:
     ret
 
 defword "set-cursor-shape" ; ( u -- )
+    mov ah, 0x1
     pspop cx
-    mov ah, 1
     int 0x10
     ret
 
 defword "set-cursor-position" ; ( row/col -- )
-    mov ah, 2
-    mov bh, 0 ; page
+    mov ah, 0x2
     pspop dx ; row/col
+    mov bh, 0 ; page
     int 0x10
     ret
 
-defword "read-character-at-cursor" ; ( -- char )
+defword "read-char-col" ; ( -- char col )
     mov ah, 0x8
     mov bh, 0 ; page
     int 0x10
-    mov ah, 0 ; hide colour
-    pspush ax
+    ;; ah: col, al: char
+    mov bl, al
+    mov bh, 0
+    pspush bx ; char
+    mov al, ah
+    mov ah, 0
+    pspush ax ; col
     ret
 
-defword "write-character-at-cursor" ; ( char -- )
-    mov ah, 0xA
+defword "write-char-col" ; ( char col -- )
+    mov ah, 0x9
+    pspop bl ; bg;fg col
     pspop al
     mov bh, 0 ; page
-    ;; mov bl ; colour if we use ah=09
     mov cx, 1 ; #time to print
+    int 0x10
     ret
 
 dictionary: dw lastxt

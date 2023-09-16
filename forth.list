@@ -49,6 +49,7 @@ f/regression.f
 
 f/relocate.f
 
+f/term.f # x86 BIOS terminal control
 f/snake.f
 
 # Line based keyboard entry, with backspace! (You miss this when you don't have it!)

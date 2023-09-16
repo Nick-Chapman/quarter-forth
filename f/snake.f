@@ -1,27 +1,18 @@
+.." snake" cr
 
 ( Make a snake game... )
 
-: set-block-cursor  7 set-cursor-shape ;
-: set-underline-cursor  [ 6 256 * 7 + ] literal set-cursor-shape ;
-: hide-cursor [ 7 256 * 6 + ] literal set-cursor-shape ;
-
-: at-xy ( x y -- ) 256 * swap + set-cursor-position ;
-
-: star [char] * emit ;
-: plus [char] + emit ;
-: dash [char] - emit ;
-: vbar [char] | emit ;
-: vbar-at-down ( row col -- row col ) 2dup at-xy vbar 1+ ;
+: block ( x y -- ) bl xy-emit ;
+: block-right ( row col -- row col ) 2dup block swap 1+ swap ;
+: block-down ( row col -- row col ) 2dup block 1+ ;
 
 : border
-1 1 at-xy plus
-1 23 at-xy plus
-78 1 at-xy plus
-78 23 at-xy plus
-2 1 at-xy ['] dash 76 times
-2 23 at-xy ['] dash 76 times
-1 2 ['] vbar-at-down 21 times 2drop
-78 2 ['] vbar-at-down 21 times 2drop
+red bg !
+1 1 ['] block-right 78 times 2drop
+1 2 ['] block-down 21 times 2drop
+78 2 ['] block-down 21 times 2drop
+1 23 ['] block-right 78 times 2drop
+black bg !
 ;
 
 : x-width 80 ;
@@ -92,7 +83,7 @@ head-y @ tail-1-y !
 
 : clear-tail  tail-2-x @ tail-2-y @ at-xy space ;
 
-: draw-head   head-x @ head-y @ at-xy [char] @ emit ;
+: draw-head   head-x @ head-y @ [char] @ xy-emit ;
 
 : move-snake
 clear-tail head-to-tail move-head
@@ -104,8 +95,8 @@ head-to-tail move-head draw-head
 head-to-tail move-head draw-head
 ;
 
-: collide? ( -- flag ) ( anything not white is consider a collision )
-head-x @ head-y @ at-xy read-character-at-cursor bl = 0= ;
+: collide? ( -- flag )
+head-x @ head-y @ xy-read-col 16 / red = ;
 
 : return-to-console
 0 0 at-xy set-underline-cursor
@@ -115,6 +106,7 @@ head-x @ head-y @ at-xy read-character-at-cursor bl = 0= ;
 do-pause key? 256 /mod control
 escaped @ if 0 0 at-xy ." Escape!" exit then
 move-snake
+( head-x @ head-y @ xy-read-col 0 0 at-xy .hex )
 collide? if 0 0 at-xy ." CRASH!" exit then
 draw-head
 recurse
@@ -123,6 +115,7 @@ recurse
 : go
 cls hide-cursor border
 set-start-state
+yellow fg ! ( for snake )
 init-draw-snake
 app-loop
 KEY drop return-to-console
