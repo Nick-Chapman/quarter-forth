@@ -7,6 +7,23 @@
 
 : at-xy ( x y -- ) 256 * swap + set-cursor-position ;
 
+: star [char] * emit ;
+: plus [char] + emit ;
+: dash [char] - emit ;
+: vbar [char] | emit ;
+: vbar-at-down ( row col -- row col ) 2dup at-xy vbar 1+ ;
+
+: border
+1 1 at-xy plus
+1 23 at-xy plus
+78 1 at-xy plus
+78 23 at-xy plus
+2 1 at-xy ['] dash 76 times
+2 23 at-xy ['] dash 76 times
+1 2 ['] vbar-at-down 21 times 2drop
+78 2 ['] vbar-at-down 21 times 2drop
+;
+
 variable x
 variable y
 
@@ -33,16 +50,14 @@ variable direction
 
 : tick ( -- ) time 2drop ;
 : tick2   tick tick ;
-variable pause  '  tick  pause !
+
+variable pause ' tick pause !
 : setH         ['] tick  pause ! ;
 : setV         ['] tick2 pause ! ; ( half speed when vertical )
 : do-pause  pause @ execute ;
 
-
-: is-escape  27 = ;
-
 variable escaped
-
+: is-escape  27 = ;
 : control ( ascii scan-code -- )
 over is-escape if true escaped ! then
 dup 72 = if ['] up    set-dir setV then
@@ -55,37 +70,29 @@ dup 80 = if ['] down  set-dir setV then
 : draw   x @ y @ at-xy [char] @ emit ;
 : clear  x @ y @ at-xy space ;
 
-: app-loop
-draw do-pause key? 256 /mod control
-escaped @ if exit then
-clear move recurse
-;
+: collide? ( -- flag ) ( anything not white is consider a collision )
+x @ y @ at-xy read-character-at-cursor bl = 0= ;
 
 : set-start-pos 25 x ! 10 y ! ;
-set-start-pos
 
-: star [char] * emit ;
-: star-at-down ( row col -- row col ) 2dup at-xy star 1+ ;
-
-: border
-1 1 at-xy ['] star 78 times
-1 2 ['] star-at-down 21 times 2drop
-78 2 ['] star-at-down 21 times 2drop
-1 23 at-xy ['] star 78 times
+: return-to-console
+0 0 at-xy set-underline-cursor
 ;
 
-
-: snake
-false escaped !
-app-loop
-0 0 at-xy set-underline-cursor
-." Escaped " cr
+: app-loop
+draw do-pause key? 256 /mod control
+escaped @ if 0 0 at-xy ." Escape!" exit then
+clear move
+collide? if 0 0 at-xy ." CRASH!" exit then
+recurse
 ;
 
 : go
 cls
+set-start-pos
 hide-cursor
 border
-( 0 0 at-xy set-underline-cursor )
-snake
+false escaped !
+app-loop
+KEY drop return-to-console
 ;

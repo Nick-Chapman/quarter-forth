@@ -844,6 +844,14 @@ defword "set-cursor-position" ; ( row/col -- )
     int 0x10
     ret
 
+defword "read-character-at-cursor" ; ( -- char )
+    mov ah, 0x8
+    mov bh, 0 ; page
+    int 0x10
+    mov ah, 0 ; hide colour
+    pspush ax
+    ret
+
 defword "write-character-at-cursor" ; ( char -- )
     mov ah, 0xA
     pspop al
