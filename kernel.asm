@@ -792,12 +792,58 @@ internal_print_string: ; in: DI=string; print null-terminated string.
     pop ax
     ret
 
-defword "time"
-    hlt ; up to 1/16s
+defword "time" ; ( -- u u ) ;; wait/sync to the next 1/16s
+_time:
+    ;; save current time in bx
     mov ah, 0
     int 0x1A
-    pspush cx ; result in 1/16s granularity
+    mov bx, dx
+.loop:
+    hlt ; until the next interrupt
+    mov ah, 0
+    int 0x1A
+    ;; but that might not be a time tick, so loop until time has moved forward
+    cmp dx,bx
+    jz .loop
+    ;; push both time words on the stack
+    pspush cx
     pspush dx
+    ret
+
+defword "key?" ; ( -- u )
+key_q:
+    mov ah, 1 ; key pressed?
+    int 0x16
+    pspush ax
+.loop:
+    mov ah, 1 ; still pressed?
+    int 0x16
+    jz .done
+    mov ah, 0 ; clear
+    int 0x16
+    jmp .loop
+.done:
+    ret
+
+defword "set-cursor-shape" ; ( u -- )
+    pspop cx
+    mov ah, 1
+    int 0x10
+    ret
+
+defword "set-cursor-position" ; ( row/col -- )
+    mov ah, 2
+    mov bh, 0 ; page
+    pspop dx ; row/col
+    int 0x10
+    ret
+
+defword "write-character-at-cursor" ; ( char -- )
+    mov ah, 0xA
+    pspop al
+    mov bh, 0 ; page
+    ;; mov bl ; colour if we use ah=09
+    mov cx, 1 ; #time to print
     ret
 
 dictionary: dw lastxt
