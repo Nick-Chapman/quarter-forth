@@ -93,7 +93,7 @@ then
 
 ( Repeated execution )
 
-: times ( xt n -- ) ( call xt, n times )
+: times ( xt n -- ) ( call xt, n times ) ( TODO : move to standard )
 dup if >r dup >r ( xt )
 execute
 r> r> ( xt n )
@@ -187,7 +187,7 @@ hide raw-key
 hide see-all
 hide see1
 hide see10
-hide times
+( hide times )
 { hide x-see }
 hide xxd-line
 hide xxd-page
