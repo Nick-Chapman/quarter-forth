@@ -64,12 +64,28 @@ clear move recurse
 : set-start-pos 25 x ! 10 y ! ;
 set-start-pos
 
+: star [char] * emit ;
+: star-at-down ( row col -- row col ) 2dup at-xy star 1+ ;
+
+: border
+1 1 at-xy ['] star 78 times
+1 2 ['] star-at-down 21 times 2drop
+78 2 ['] star-at-down 21 times 2drop
+1 23 at-xy ['] star 78 times
+;
+
+
 : snake
-cls hide-cursor
 false escaped !
 app-loop
 0 0 at-xy set-underline-cursor
 ." Escaped " cr
 ;
 
-: go   tick key? .hex space recurse ;
+: go
+cls
+hide-cursor
+border
+( 0 0 at-xy set-underline-cursor )
+snake
+;

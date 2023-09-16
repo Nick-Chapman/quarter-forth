@@ -810,6 +810,12 @@ _time:
     pspush dx
     ret
 
+ defword "KEY" ; ( -- u )
+    mov ah, 0 ; block for key
+    int 0x16
+    pspush ax
+    ret
+
 defword "key?" ; ( -- u )
 key_q:
     mov ah, 1 ; key pressed?
