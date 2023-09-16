@@ -491,16 +491,16 @@ _lit:
     add bx, 2
     jmp bx
 
-defword "execute"
+defword "execute" ; ( xt -- )
 _execute:
     pspop bx
     jmp bx
 
+defword "jump" ; ( xt -- )
 _jump: ;; TODO: simplify
     call _from_rs
     call _drop
-    call _execute
-    ret
+    jmp _execute
 
 _exit:
     pop bx ; and ignore
