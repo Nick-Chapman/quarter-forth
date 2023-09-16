@@ -1,4 +1,4 @@
-.." term" cr
+.." Loading term" cr
 
 ( x86 BIOS terminal control )
 
@@ -8,12 +8,16 @@
 
 : at-xy ( x y -- ) 256 * swap + set-cursor-position ;
 
+: xy-read-char-col ( x y -- char col )
+at-xy read-char-col
+;
+
 : xy-read-char ( x y -- char )
-at-xy read-char-col drop
+xy-read-char-col drop
 ;
 
 : xy-read-col ( x y -- col )
-at-xy read-char-col nip
+xy-read-char-col nip
 ;
 
 variable fg
