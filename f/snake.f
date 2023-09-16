@@ -24,75 +24,106 @@
 78 2 ['] vbar-at-down 21 times 2drop
 ;
 
-variable x
-variable y
-
 : x-width 80 ;
 : y-width 24 ;
 
-: modX  x-width mod ;
-: modY  y-width mod ;
+{ : modX  x-width mod ;
+: modY  y-width mod ; }
 
 : -1   0 1 - ;
-: -x [ x-width -1 + ] literal ;
-: -y [ y-width -1 + ] literal ;
+{ : -x [ x-width -1 + ] literal ;
+: -y [ y-width -1 + ] literal ; }
 
-: left    x @ -x + modX x ! ;
-: right   x @  1 + modX x ! ;
-: up      y @ -y + modY y ! ;
-: down    y @  1 + modY y ! ;
+variable head-x
+variable head-y
+variable direction
+variable going-vertical
+variable escaped
+
+: left    head-x @ -1 + head-x ! ;
+: right   head-x @  1 + head-x ! ;
+: up      head-y @ -1 + head-y ! ;
+: down    head-y @  1 + head-y ! ;
 : nop ;
 
-variable direction
-: move   direction @ execute ;
+: set-start-state
+25 head-x !
+10 head-y !
+['] right direction !
+false going-vertical !
+false escaped !
+;
+
+: move-head   direction @ execute ;
 : set-dir ( xt -- ) direction ! ;
-' right set-dir
 
 : tick ( -- ) time 2drop ;
 : tick2   tick tick ;
 
-variable pause ' tick pause !
-: setH         ['] tick  pause ! ;
-: setV         ['] tick2 pause ! ; ( half speed when vertical )
-: do-pause  pause @ execute ;
+: isH going-vertical @ 0= ;
+: isV going-vertical @ ;
+: setH false going-vertical ! ;
+: setV true going-vertical ! ;
 
-variable escaped
+: do-pause  going-vertical @ if tick then tick ; ( extra tick when vertical )
+
 : is-escape  27 = ;
 : control ( ascii scan-code -- )
 over is-escape if true escaped ! then
-dup 72 = if ['] up    set-dir setV then
-dup 75 = if ['] left  set-dir setH then
-dup 77 = if ['] right set-dir setH then
-dup 80 = if ['] down  set-dir setV then
+dup 72 = if isH if ['] up    set-dir setV then then
+dup 80 = if isH if ['] down  set-dir setV then then
+dup 75 = if isV if ['] left  set-dir setH then then
+dup 77 = if isV if ['] right set-dir setH then then
 2drop
 ;
 
-: draw   x @ y @ at-xy [char] @ emit ;
-: clear  x @ y @ at-xy space ;
+variable tail-1-x
+variable tail-1-y
+
+variable tail-2-x
+variable tail-2-y
+
+: head-to-tail
+tail-1-x @ tail-2-x !
+tail-1-y @ tail-2-y !
+head-x @ tail-1-x !
+head-y @ tail-1-y !
+;
+
+: clear-tail  tail-2-x @ tail-2-y @ at-xy space ;
+
+: draw-head   head-x @ head-y @ at-xy [char] @ emit ;
+
+: move-snake
+clear-tail head-to-tail move-head
+;
+
+: init-draw-snake
+draw-head
+head-to-tail move-head draw-head
+head-to-tail move-head draw-head
+;
 
 : collide? ( -- flag ) ( anything not white is consider a collision )
-x @ y @ at-xy read-character-at-cursor bl = 0= ;
-
-: set-start-pos 25 x ! 10 y ! ;
+head-x @ head-y @ at-xy read-character-at-cursor bl = 0= ;
 
 : return-to-console
 0 0 at-xy set-underline-cursor
 ;
 
 : app-loop
-draw do-pause key? 256 /mod control
+do-pause key? 256 /mod control
 escaped @ if 0 0 at-xy ." Escape!" exit then
-clear move
+move-snake
 collide? if 0 0 at-xy ." CRASH!" exit then
+draw-head
 recurse
 ;
 
 : go
-cls
-set-start-pos
-hide-cursor
-border
-false escaped !
+cls hide-cursor border
+set-start-state
+init-draw-snake
 app-loop
 KEY drop return-to-console
 ;
