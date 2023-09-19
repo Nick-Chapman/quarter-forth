@@ -21,6 +21,13 @@
 10 fib      55 x
 
 
+( Iterative version of factorial, making use of do..i..loop )
+
+: fact-iterative ( n -- ) 1 swap 1 do i * loop ;
+
+6 fact-iterative  720 x
+
+
 : even? dup /2 2 * = ;
 
 : collatz
