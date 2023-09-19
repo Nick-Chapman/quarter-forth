@@ -97,37 +97,47 @@ latest
 : ekey?   key? 256 / ;
 
 
+( Not a fully compliant definition for postpone, but it works for do..i..loop )
+
+: postpone ( "word" -- )
+'
+['] lit compile,
+,
+['] compile, compile,
+; immediate
+
+
 ( Loops -- do..i..loop )
 
 : do
-['] >r compile,
-['] >r compile,
+postpone >r
+postpone >r
 here
 ; immediate
 
 : i
-['] r> compile,
-['] r> compile,
-['] dup compile,
-['] >r compile,
-['] swap compile,
-['] >r compile,
+postpone r>
+postpone r>
+postpone dup
+postpone >r
+postpone swap
+postpone >r
 ; immediate
 
 : loop
-['] r> compile,
-['] r> compile,
-['] 1 compile,
-['] + compile,
-['] 2dup compile,
-['] >r compile,
-['] >r compile,
-['] < compile,
-['] 0branch compile,
+postpone r>
+postpone r>
+postpone 1
+postpone +
+postpone 2dup
+postpone >r
+postpone >r
+postpone <
+postpone 0branch
 here - ,
-['] r> compile,
-['] r> compile,
-['] 2drop compile,
+postpone r>
+postpone r>
+postpone 2drop
 ; immediate
 
 

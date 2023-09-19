@@ -71,6 +71,7 @@ Done:
 - finish/merge write up in nex.text into README
 - alt tail imps. currenly compile branch. try "jump," or "jump (xt -- )" builtin word (like execute)
 - do/loop -- make F example work using original code
+- postpone -- use in imp of do..i..loop
 
 Next:
 
@@ -90,7 +91,6 @@ Next:
 - signed printing & numeric conversion ?
 - smart print that can see if numbers are XT addresses
 
-- postpone ???
 - does> ???
 
 - port everything to 6502. bbc or own-6502-computer
