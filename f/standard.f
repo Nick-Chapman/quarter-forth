@@ -12,7 +12,7 @@
 
 ( Output )
 
-: space     bl emit ;
+: space     [ bl ] literal emit ;
 : spaces    dup if space 1 - tail spaces then drop ;
 
 ( Defining words )
@@ -23,7 +23,7 @@ here 0 , constant ;
 ( Bools )
 
 : false     ( -- b )        0 ;
-: true      ( -- b )        0 1 - ;
+: true      ( -- b )        [ 0 1 - ] literal ;
 : or        ( b1 b2 -- b )  if drop true then ;         ( bool disjunction )
 : and       ( b1 b2 -- b )  if exit then drop false ;   ( bool conjunction )
 : invert    ( b -- b )      true xor ;                  ( bool negation )

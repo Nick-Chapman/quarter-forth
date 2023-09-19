@@ -73,13 +73,13 @@ Done:
 - do/loop -- make F example work using original code
 - postpone -- use in imp of do..i..loop
 - fix layout typos in README
+- make interpreter available under [ while still using boot defined :
 
 Next:
 
 - tighten up the Asm code for core primitives
 
-- make interpreter available under [ while still using boot defined :
-- implement simple-: in quarter.q to avoid need for boot.f
+- implement simple-: in quarter.q (and nesting [) to avoid need for boot.f
 
 - module" end-module
 - support: create, use for variable (constant will be it's own def still)
