@@ -27,4 +27,4 @@ _build/forth.f : forth.list $(wildcard f/*)
 _build: ; @mkdir -p $@
 
 burn: _build/disk.img
-	sudo dd if=$< of=/dev/sdb1
+	dd if=$< of=/dev/sdb

@@ -36,5 +36,8 @@ start:
 
     jmp 0: kernel_load_address
 
-    times 510 - ($ - $$) db 0xff
+    times 446 - ($ - $$) db 0xff
+    ;; PMBR partition table, from byte 446
+    db 0, 0, 2, 0, 0xee, 0xff, 0xff, 0xff, 1, 0, 0, 0, 1, 0, 0, 0
+    times 510 - ($ - $$) db 0x00
     dw 0xaa55
