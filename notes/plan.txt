@@ -70,12 +70,17 @@ Done:
 - run for real. not in qemu
 - finish/merge write up in nex.text into README
 - alt tail imps. currenly compile branch. try "jump," or "jump (xt -- )" builtin word (like execute)
+- do/loop -- make F example work using original code
 
 Next:
 
+- make interpreter available under [ while still using boot defined :
+- implement simple-: in quarter.q to avoid need for boot.f
+- fix layout typos in README
+
+
 - module" end-module
 - support: create, use for variable (constant will be it's own def still)
-- do/loop -- make F example work using original code
 
 - add stack effect comment to all kernel words
 

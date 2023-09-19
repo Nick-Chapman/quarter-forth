@@ -3,7 +3,7 @@
 ( Large letter F. Adapted from "starting Forth", by Leo Brodie )
 
 : star      [char] * emit ;
-: stars     dup if star 1 - tail stars then drop ;   ( TODO: 0 do star loop )
+: stars     0 do star loop ;
 : margin    cr 30 spaces ;
 : blip      margin star ;
 : bar       margin 5 stars ;

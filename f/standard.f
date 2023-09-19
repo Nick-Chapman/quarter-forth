@@ -97,4 +97,38 @@ latest
 : ekey?   key? 256 / ;
 
 
+( Loops -- do..i..loop )
+
+: do
+['] >r compile,
+['] >r compile,
+here
+; immediate
+
+: i
+['] r> compile,
+['] r> compile,
+['] dup compile,
+['] >r compile,
+['] swap compile,
+['] >r compile,
+; immediate
+
+: loop
+['] r> compile,
+['] r> compile,
+['] 1 compile,
+['] + compile,
+['] 2dup compile,
+['] >r compile,
+['] >r compile,
+['] < compile,
+['] 0branch compile,
+here - ,
+['] r> compile,
+['] r> compile,
+['] 2drop compile,
+; immediate
+
+
 { words-since char ) emit cr }
