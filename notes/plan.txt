@@ -72,13 +72,14 @@ Done:
 - alt tail imps. currenly compile branch. try "jump," or "jump (xt -- )" builtin word (like execute)
 - do/loop -- make F example work using original code
 - postpone -- use in imp of do..i..loop
+- fix layout typos in README
 
 Next:
 
+- tighten up the Asm code for core primitives
+
 - make interpreter available under [ while still using boot defined :
 - implement simple-: in quarter.q to avoid need for boot.f
-- fix layout typos in README
-
 
 - module" end-module
 - support: create, use for variable (constant will be it's own def still)

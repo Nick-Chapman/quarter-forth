@@ -16,11 +16,11 @@ Bootstrapping continues until eventually we define support for parsing numbers, 
 - Case sensitive; lowercase preferred.
 - Null terminated strings.
 - Interpreter "[" and colon compiler ":" are separate words -- looking for markers, respectively "]" and ";" -- instead of being a single state aware word.
-- Numbers are unsigned. the `number? parser and `.` printer are base state aware, controlled by `hex` / `decimal`.
+- Numbers are unsigned. the `number?` parser and `.` printer are base state aware, controlled by `hex` / `decimal`.
 - No support for floats or double arithmetic.
 - We do have return stack operators.
 - Recursion is possible/allowed. Enabled by words becoming visible in the dictionary from the moment the dictionary header is linked.
-- Recursion is the preferred means of coding iteration. Currently there is no support for the standard Forth looping words. They are not hard, but just not been done yet, and not really a priority for me. When you have recursion, who needs loops?
+- Recursion is the preferred means of coding iteration, although there is now support for standard Forth loops using `do`..`i`..`loop`. But when you have recursion, who needs loops?
 - Tail recursion is supported via `tail` or`recurse` which seems to nicely complement the standard word `exit`. It allows easy coding of iterative processes which don't consume the return stack. You can do just about everything you want with if/then/exit/tail.
 
 ### x86 Implementation choices
