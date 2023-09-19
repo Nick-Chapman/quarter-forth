@@ -67,6 +67,9 @@ Done:
 - cleanup 10/13 cr code in kernel
 - primordal mode (-1), access to fixed array of single-char words
 - allowing bootstrap def of word/find
+- run for real. not in qemu
+- finish/merge write up in nex.text into README
+- alt tail imps. currenly compile branch. try "jump," or "jump (xt -- )" builtin word (like execute)
 
 Next:
 
@@ -74,10 +77,7 @@ Next:
 - support: create, use for variable (constant will be it's own def still)
 - do/loop -- make F example work using original code
 
-- finish/merge write up in nex.text into README
 - add stack effect comment to all kernel words
-
-- alt tail imps. currenly compile branch. try "jump," or "jump (xt -- )" builtin word (like execute)
 
 - support nested parens in comments
 - "quit" - clear return stack and restart interpreter loop
@@ -88,7 +88,6 @@ Next:
 - postpone ???
 - does> ???
 
-- run for real. not in qemu
 - port everything to 6502. bbc or own-6502-computer
 
 - stretch: continue BBC meteors game

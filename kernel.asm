@@ -732,7 +732,7 @@ _echo_enabled:
     pspush bx
     ret
 
-defword "echo-off" ;; TODO: To Forth
+defword "echo-off"
     mov byte [echo_enabled], 0
     ret
 
