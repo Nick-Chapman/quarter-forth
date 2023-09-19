@@ -66,10 +66,10 @@ ret,
 
 entry: tail    immediate
 [compile] '
+[compile] literal
 [compile] lit
-' branchA ,
+' jump ,
 [compile] compile,
-[compile] ,
 ret,
 
 

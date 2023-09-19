@@ -526,12 +526,6 @@ _branchR:
     jmp bx ; branch to target
 
 
-defword "branchA" ; used by tail -- TODO: avoid
-_branchA:
-    pop bx
-    mov bx, [bx]
-    jmp bx
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Compilation
 

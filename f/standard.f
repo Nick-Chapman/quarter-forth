@@ -82,7 +82,7 @@ r> r> ( xt n )
 then drop drop
 ;
 
-( Tail recuse to current definition )
+( Tail recurse to current definition )
 
 : recurse ( "word" -- )
 latest
