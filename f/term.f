@@ -4,7 +4,7 @@
 
 : set-block-cursor  7 set-cursor-shape ;
 : set-underline-cursor  [ 6 256 * 7 + ] literal set-cursor-shape ;
-: hide-cursor [ 7 256 * 6 + ] literal set-cursor-shape ;
+: hide-cursor [ 32 256 * ] literal set-cursor-shape ;
 
 : at-xy ( x y -- ) 256 * swap + set-cursor-position ;
 
