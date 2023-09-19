@@ -279,31 +279,30 @@ defword "rsp0" ; ( -- addr )
 
 defword "dup"
 _dup:
-    pspop ax
-    pspush ax
-    pspush ax
+    ;call check_ps_underflow ; any benefit
+    mov ax, [bp]
+    mov [bp-2], ax
+    sub bp, 2
     ret
 
 defword "swap"
 _swap:
-    pspop bx
-    pspop ax
-    pspush bx
-    pspush ax
+    mov ax, [bp]
+    mov bx, [bp+2]
+    mov [bp], bx
+    mov [bp+2], ax
     ret
 
 defword "drop"
 _drop:
-    pspop ax
+    add bp, 2
     ret
 
 defword "over"
 _over:
-    pspop ax
-    pspop bx
-    pspush bx
-    pspush ax
-    pspush bx
+    mov ax, [bp+2]
+    mov [bp-2], ax
+    sub bp, 2
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
