@@ -11,6 +11,26 @@ The [first stage](f/quarter.q) of the bootstrap process defines the `word` and `
 The [next stage](f/boot.f) builds a simple `:` compiler, with support for immediate words.
 Bootstrapping continues until eventually we define support for parsing numbers, and thus become able to implement the standard [interpreter](f/interpreter.f) and [compiler](f/colon.f) which we expect from a Forth system.
 
+### Language choices
+
+- Case sensitive; lowercase preferred.
+- Null terminated strings.
+- Interpreter "[" and colon compiler ":" are separate words -- looking for markers, respectively "]" and ";" -- instead of being a single state aware word.
+- Numbers are unsigned. the `number? parser and `.` printer are base state aware, controlled by `hex` / `decimal`.
+- No support for floats or double arithmetic.
+- We do have return stack operators.
+- Recursion is possible/allowed. Enabled by words becoming visible in the dictionary from the moment the dictionary header is linked.
+- Recursion is the preferred means of coding iteration. Currently there is no support for the standard Forth looping words. They are not hard, but just not been done yet, and not really a priority for me. When you have recursion, who needs loops?
+- Tail recursion is supported via `tail` or`recurse` which seems to nicely complement the standard word `exit`. It allows easy coding of iterative processes which don't consume the return stack. You can do just about everything you want with if/then/exit/tail.
+
+### x86 Implementation choices
+
+- 16 bit. cell = 2bytes
+- Threading model: subroutine threaded
+- x86. call instructions are 3 bytes. A 1 byte op-code + 2 bytes relative address.
+- Dictionary header format: (null-terminated) string, link-cell, length/flag-byte, followed directly by the executable code. The address of the executable code is used as the representation for execution tokens. The link cell is 0 or points to the previous XT.
+
+
 ### References useful to me:
 - [Threaded Interpretive Languages, R. G. Loeliger, 1981](https://archive.org/details/R.G.LoeligerThreadedInterpretiveLanguagesTheirDesignAndImplementationByteBooks1981)
 - [Starting Forth, Leo Brodie](https://www.forth.com/starting-forth)
