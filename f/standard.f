@@ -141,4 +141,8 @@ postpone 2drop
 ; immediate
 
 
+: erase ( a n -- )
+dup 0= if 2drop exit then over 0 swap c! swap 1+ swap 1- recurse ;
+
+
 { words-since char ) emit cr }

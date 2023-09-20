@@ -128,7 +128,7 @@ defwordWithFlags (hidden_flag), %1
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Parameter stack (register: bp)
 
-param_stack_base equ 0xf800  ; allows 2k for call stack
+param_stack_base equ 0xfe00 ; allow 512 for call stack (max depth=256)
 
 init_param_stack:
     mov bp, param_stack_base
@@ -866,15 +866,19 @@ here_start:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Check Size
 
-%assign R ($ - $$) ; Space required so far in this section
-%assign N kernel_size_in_sectors
-%assign A (N * sector_size)
-;%warning "Kernel size" required=R, allowed=A (#sectors=N)
-%if R>A
-%error "Kernel too big!" required=R, allowed=A (#sectors=N)
+;; Size allocated in layout.asm:
+%assign As kernel_size_in_sectors       ; in sectors
+%assign Ab (As * sector_size)           ; in bytes
+
+;; Size we actually require:
+%assign Rb ($ - $$)                     ; in bytes
+%assign Rs (1 + ((Rb-1)/sector_size))   ; in sectors
+
+%if Rb>Ab
+%error Kernel sectors allocated: As, required: Rs
 %endif
 
-    times (A - R) db 0xba ;; because embedded string data follows directory
+    times (Ab - Rb) db 0xba ;; because embedded string data follows directory
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Embedded string data. Loaded at 0x8000
@@ -883,10 +887,14 @@ builtin_data:
     incbin "_build/forth.f"
     db 0
 
-%assign R ($ - $$) ; Space required so far in this section
-%assign N embedded_size_in_sectors
-%assign A ((N + kernel_size_in_sectors) * sector_size)
-;%warning "Forth size" required=R, allowed=A (#sectors=N)
-%if R>A
-%error "Embedded Forth too big!" required=R, allowed=A (#sectors=N)
+;; Size allocated in layout.asm:
+%assign As embedded_size_in_sectors
+%assign Ab (As * sector_size)
+
+;; Size we actually require:
+%assign Rb ($ - builtin_data)           ; in bytes
+%assign Rs (1 + ((Rb-1)/sector_size))   ; in sectors
+
+%if Rb>Ab
+%error Forth sectors allocated: As, required: Rs
 %endif

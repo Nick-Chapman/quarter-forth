@@ -51,6 +51,10 @@ f/relocate.f
 f/term.f # x86 BIOS terminal control
 f/snake.f
 
+f/brainfuck-interpreter.f
+f/fibs.bf
+#f/collatz.bf
+
 # Line based keyboard entry, with backspace! (You miss this when you don't have it!)
 f/buffer.f
 

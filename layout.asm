@@ -18,4 +18,4 @@
     embedded_load_address equ 0x8002 ;; save 2 bytes for warm start detection
 
     kernel_size_in_sectors equ 6 ; max 59
-    embedded_size_in_sectors equ 57 ; max 64
+    embedded_size_in_sectors equ 59 ; max 62 ;; leaving 1k for param stack and return stack
