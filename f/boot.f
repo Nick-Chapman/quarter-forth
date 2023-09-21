@@ -162,21 +162,3 @@ ret,
 entry: :
 {{ entry: compiling ret, }}
 ret,
-
-
-( We also define a version of [ which can nest within the compiler )
-
-key ?
-key [
-here key ] , 0 ,
-
-entry: [ immediate
-literal ( "]" )
-{{ word swap over s= }} if
-{{ drop exit }} then
-{{ dup find dup }} if
-{{ swap drop execute [ exit }} then
-{{ drop ."boot" }} literal ( '[' )
-{{ emit type }} literal ( '?' )
-{{ emit cr crash compiling exit }}
-ret,

@@ -74,12 +74,14 @@ setup_dispatch_table:
     set '>', _compile_comma
     set '?', _dispatch
     set '@', _fetch
+    set 'A', _crash_only_during_startup
     set 'B', _0branch
     set 'C', _c_fetch
     set 'D', _dup
     set 'E', _entry_comma
     set 'G', _xt_next
     set 'H', _here_pointer
+    set 'I', _immediate_flip
     set 'J', _jump
     set 'L', _lit
     set 'M', _cr
@@ -501,6 +503,7 @@ _jump: ;; TODO: simplify
     call _drop
     jmp _execute
 
+defword "exit"
 _exit:
     pop bx ; and ignore
     ret

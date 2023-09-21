@@ -65,16 +65,17 @@ i ~W~P~X
 t ~P ~p ^?# ~.~M~*
 ;
 
-:[              ( word-find-execute loop )
-(^$#~.)
-~w~f ~D
-i ~V ~L^[?,~J
-t ~P ~L^[?,~J
-;
-
 h `' 0\ E       ( Forth level ' -- word find! )
 ~w~f
 ;
 
-( enter the WFX-loop )
-[
+( Interpreter )
+
+h `] 0\
+h `[ 0\ E ZI :[
+# ~w~W~O~q i ~P~X t     ( get word; exit if ] )
+~D~f~D i ~W~P~V '[#~J t ( lookup; execute if found )
+~P~p ^?#~.~M~A '[#~J    ( otherwise report error )
+;
+
+( Enter interpreter ) [

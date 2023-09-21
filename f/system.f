@@ -392,7 +392,7 @@ then drop number? if ['] lit compile, , tail compiling
 then ." ** Colon compiler: '" type ." ' ?" cr crash-only-during-startup tail compiling
 ;
 
-: : entry: compiling ; ( TODO: use word, and entry, in preference to entry: )
+: : word, entry, compiling ;
 
 ( Interpreter: "[" )
 
