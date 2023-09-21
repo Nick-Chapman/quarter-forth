@@ -498,14 +498,14 @@ _execute:
     jmp bx
 
 defword "jump" ; ( xt -- )
-_jump: ;; TODO: simplify
-    call _from_rs
-    call _drop
-    jmp _execute
+_jump:
+    pop ax
+    pspop bx
+    jmp bx
 
 defword "exit"
 _exit:
-    pop bx ; and ignore
+    pop ax
     ret
 
 defword "0branch"
