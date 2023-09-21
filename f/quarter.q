@@ -11,7 +11,7 @@ h `l`i`t`e`r`a`l 0\ E
 :t  ~D~h~W~-~W~! ;
 
 h`(0\E
-:(  ~^ ^)# ~= i ~X t ~L^(?,~J ;
+:(  ~^ ^)# ~= i ~X t '(#~J ;
 
 ( This file is in Quarter syntax. )
 ( The above squiggle gives us comments both in Quarter code )
@@ -19,13 +19,13 @@ h`(0\E
 h `s`= 0\ E         :q ( string equality )
 ~O~O~C~W~C~O~= i
 0# ~= i ~P~P 01-# ~X
-t ~1~+~W~1~+ ~L^q?,~J
+t ~1~+~W~1~+ 'q#~J
 t ~P~P~P 0#
 ;
 
 h `t`y`p`e 0\ E     :p ( string print )
 ~D~C~D
-i ~.~1~+ ~L^p?,~J
+i ~.~1~+ 'p#~J
 t ~P~P
 ;
 
@@ -35,11 +35,11 @@ t ~P~P
 :k                  ( skip leading whitespace )
 ~^~D~n
 i ~\~X
-t ~P ~L^k?,~J
+t ~P 'k#~J
 ;
 
 :c ~^~D~n           ( collect while not whitespace )
-i ~\ ~L^c?,~J
+i ~\ 'c#~J
 t ~P~0~\~X
 ;
 
@@ -52,9 +52,9 @@ h `w`o`r`d 0\ E :w
 ;
 
 :g                          ( find-loop )
-~D i ~D ~Y i ~G ~L^g?,~J
+~D i ~D ~Y i ~G 'g#~J
 t ~O~O~N~q i ~W~P~X
-t ~G ~L^g?,~J
+t ~G 'g#~J
 t ~P~P~0
 ;
 
@@ -83,19 +83,16 @@ h `[ 0\ E :[
 
 ( Compiler )
 
-h `C`O`X 0\ E :o ( TODO: INLINE THIS )
-~D~I i ~V~X t ~>
-;
-
 h `; 0\
-h `q`-`c`o`m`p`i`l`i`n`g 0\ E :|
+:]
 # ~w~W~O~q i ~P~;~X t
-~D~f~D i ~W~P~o '|#~J t
-~P~p ^?#~.~M~A '|#~J
+~D~f~D i ~W~P
+~D~I i ~V ']#~J t ~> ']#~J t
+~P~p ^?#~.~M~A ']#~J
 ;
 
 h `: 0\ E
-~v~E~|~;        ( TODO: are we compiling 2x ret, ? )
+~v~E ']#~J
 ;
 
 ( Enter interpreter ) [
