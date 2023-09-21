@@ -128,7 +128,7 @@ defwordWithFlags (hidden_flag), %1
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Parameter stack (register: bp)
 
-param_stack_base equ 0xfe00 ; allow 512 for call stack (max depth=256)
+param_stack_base equ 0xfc00 ; allow 1k for call stack (max depth=512) ; need this for non tail recursive imp of words!
 
 init_param_stack:
     mov bp, param_stack_base
