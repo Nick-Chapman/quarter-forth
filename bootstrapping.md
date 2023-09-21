@@ -13,7 +13,7 @@ Wouldn't it be nice if we could avoid defining these in Asm. The idea behind Qua
 
 The kernel starts up running a _key-dispatch-execute_ loop: We can think of `key` as standing in for `word`, and `dispatch` for `find`. The primitive `key` is necessary anyway in a Forth system, being the primary means to access input from the keyboard. But `dispatch` is novel.
 
-The kernel will expose via a simple dispatch table whatever primitives are needed to implement `word` and `find` in the `quarter` bootstrap code. This is in addition to exposing all primitives in the initial dictionary. The dispatch table has 128 entries, and is indexed by the 7-bit ascii value of the character. All that remains is to see what primitives are [needed](kernel.asm#L58), and decide how to name them so the [quarter bootstrap code](f/quarter.q) retains as much readability as possible!
+The kernel will expose via a simple dispatch table whatever primitives are needed to implement `word` and `find` in the `quarter` bootstrap code. This is in addition to exposing all primitives in the initial dictionary. The dispatch table has 128 entries, and is indexed by the 7-bit ascii value of the character. All that remains is to see what primitives are [needed](kernel.asm#L58), and decide how to name them so the [quarter bootstrap code](f/forth.q) retains as much readability as possible!
 
 At the conclusion of the bootstrap code we have again the basic _word-find-execute_ loop.
 
