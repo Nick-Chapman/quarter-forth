@@ -1,4 +1,4 @@
-.." Loading tools ( " latest
+.." Loading tools" cr
 
 ( Expect... )
 
@@ -91,6 +91,17 @@ depth if
 then
 ;
 
+( Repeated execution )
+
+: times ( xt n -- ) ( call xt, n times )
+dup if >r dup >r ( xt )
+execute
+r> r> ( xt n )
+1 - tail times
+then drop drop
+;
+
+
 ( Pagination )
 
 get-key constant old-key
@@ -181,4 +192,3 @@ hide see10
 { hide x-see }
 hide xxd-line
 hide xxd-page
-words-since char ) emit cr

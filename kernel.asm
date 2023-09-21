@@ -518,7 +518,7 @@ _0branch: ; relative
     jmp bx ; branch to target
 
 
-defword "branchR" ; used by else & string compilation
+defword "branchR" ; used by else & string compilation ; TODO: loose R suffix
 _branchR:
     pop bx
     add bx, [bx] ; add relative offset

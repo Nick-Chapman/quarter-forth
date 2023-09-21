@@ -1,4 +1,4 @@
-.." Loading buffer ( " latest
+.." Loading buffer" cr
 
 get-key constant old-key
 : raw-key  old-key execute ;
@@ -92,4 +92,4 @@ hide ok
 hide old-key
 hide raw-key
 hide reset-kb-pointer
-words-since char ) emit cr
+
