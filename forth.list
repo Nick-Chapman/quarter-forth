@@ -1,6 +1,6 @@
 # List of files making up Quarter Forth. These get embedded into _build/kernel.img
 
-f/quarter.q     # "[" and ":" and supporting immediate words (but no numerics).
+f/forth.q       # "[" and ":" and supporting immediate words (but no numerics).
 f/system.f      # Now we have a pretty standard forth system
 f/tools.f       # Stack (.s), memory (mem,dump,xxd); decompiling (see);
 f/regression.f  # Regression tests for standard words.
