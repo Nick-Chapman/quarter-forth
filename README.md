@@ -6,11 +6,12 @@ Quarter Forth is named for the _not-quite_ Forth language (_quarter_) used while
 
 ### Bootstrapping
 
-The [Kernel](kernel.asm) implements the core primitive, and then starts just a bare _key-dispatch-execute_ loop, to allow the [bootstrapping](forth.list) process to begin.
+The [Kernel](kernel.asm) provides the core primitive, and starts a bare _key-dispatch-execute_ loop, so the [bootstrapping](forth.list) process can begin.
 
-The [first stage](f/forth.q) of the bootstrap process starts by defining the `word` and `find` primitives necessary for a Forth system. Until these are available we are coding in _quarter_ where primitives are referenced by single character names, and accessed via a hard-coded dispatch table in the kernel. By the end of the first stage we have defined a very basic `[` interpreter and `:` compiler, with support for immediate words, but no numeric support yet. And we enter the interpreter, leaving the spartan world of quarter behind.
+The [first stage](f/forth.q) of the bootstrap defines the `word` and `find` primitives
+necessary for a basic Forth interpreter and compiler. At this point, we are coding in _quarter_ where primitives are referenced by single character names, and accessed via a hard-coded dispatch table in the kernel. By the end of the first stage we have definitions for `[` and `:`. We enter the interpreter now and transition to Forth.
 
-Bootstrapping now continues in [Forth](f/system.f), defining all the standard Forth words, including support for parsing numbers, and thus implementing the standard behaviour for a Forth interpreter `[` and `:` compiler.
+Bootstrapping continues in [Forth](f/system.f), defining all the standard Forth words, and providing us support for numerics, resulting in implementations for `[` and `:` with the standard behaviour expected from a Forth system.
 
 ### Language choices
 
