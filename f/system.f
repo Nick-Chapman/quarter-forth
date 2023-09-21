@@ -45,7 +45,7 @@ word, entry,
 
 : if     ['] 0branch compile, ahead> ; immediate
 : then   <patch                      ; immediate
-: else   ['] branchR compile, ahead> swap <patch ; immediate
+: else   ['] branch compile, ahead> swap <patch ; immediate
 
 ( Strings Literals... )
 
@@ -57,7 +57,7 @@ then c, tail collect-string
 ( Compile code for a literal string, leaving address on stack )
 
 : s" ( ..." -- string )
-( make a branch slot )          ['] branchR compile, ahead>
+( make a branch slot )          ['] branch compile, ahead>
 ( note where string starts )    here swap
 ( collect the string chars )    collect-string drop ( the closing " )
 ( add a null )                  0 c,

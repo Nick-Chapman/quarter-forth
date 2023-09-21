@@ -508,8 +508,8 @@ _exit:
     pop bx ; and ignore
     ret
 
-defword "0branch" ; or else looks "see" displays wrong
-_0branch: ; relative
+defword "0branch"
+_0branch:
     pop bx
     pspop cx
     cmp cx, 0
@@ -518,14 +518,13 @@ _0branch: ; relative
     jmp bx
 .no:
     add bx, [bx] ; add relative offset (will be backpatched in by "then/else")
-    jmp bx ; branch to target
+    jmp bx
 
 
-defword "branchR" ; used by else & string compilation ; TODO: loose R suffix
-_branchR:
+defword "branch" ; used by else & string compilation
     pop bx
     add bx, [bx] ; add relative offset
-    jmp bx ; branch to target
+    jmp bx
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
