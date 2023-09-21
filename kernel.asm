@@ -81,7 +81,7 @@ setup_dispatch_table:
     set 'E', _entry_comma
     set 'G', _xt_next
     set 'H', _here_pointer
-    set 'I', _immediate_flip
+    set 'I', _immediate_query
     set 'J', _jump
     set 'L', _lit
     set 'M', _cr

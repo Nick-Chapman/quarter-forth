@@ -1,4 +1,12 @@
 
+( Set the immediate bit on some words defined in quarter )
+
+' ( immediate^
+' [ immediate^
+' literal immediate^
+
+( Print  banner to indicate this file is being processed )
+
 : char ( -- c ) word c@ ;
 
 : ~ char emit ;
@@ -7,6 +15,14 @@ cr
 
 ( A few important words which we define early )
 
+: immediate   latest immediate^ ;
+
+: [compile] ( "name" -- )
+[ ' ' compile, ' compile, compile, ] ; immediate
+
+: tail ( "name" -- )
+' [compile] literal lit [ ' jump , ] compile, ; immediate
+
 : [char] ( comp: "name" -- ) ( run: -- c )
 char [compile] literal ; immediate
 
@@ -14,13 +30,15 @@ char [compile] literal ; immediate
 ' [compile] literal ; immediate
 
 : constant ( x "name" -- )
-entry:
+word, entry,
 ['] lit compile, ,
 ['] exit compile, ;
 
 ( We have already defined "if" and "then" in boot.f )
 ( But we'll define them again here using standard Forth )
 ( and also "else" )
+
+: here  here-pointer @ ;
 
 : ahead> ( -- a ) here 0 , ;
 : <patch ( a -- ) dup here swap - swap ! ;
@@ -417,8 +435,6 @@ hide <patch
 hide ahead>
 hide base
 hide collect-string
-hide compile-or-execute
-hide compiling
 hide compiling
 hide convert-digit
 hide decimal-digit?
@@ -435,5 +451,4 @@ hide space
 hide word,
 hide words-continue
 hide x-hide
-hide {{
 hide ~

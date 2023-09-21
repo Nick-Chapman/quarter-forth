@@ -4,10 +4,13 @@
 :~  '^> '?> '>> ;
 :`  ~^ ~\ ;
 :h  ~H~@ ;
+
+h `l`i`t`e`r`a`l 0\ E
 :#  ~L'L,~>~, ;
 :i  ~L ^B?, ~>~h 0# ~, ;
 :t  ~D~h~W~-~W~! ;
 
+h`(0\E
 :(  ~^ ^)# ~= i ~X t ~L^(?,~J ;
 
 ( This file is in Quarter syntax. )
@@ -72,10 +75,27 @@ h `' 0\ E       ( Forth level ' -- word find! )
 ( Interpreter )
 
 h `] 0\
-h `[ 0\ E ZI :[
+h `[ 0\ E :[
 # ~w~W~O~q i ~P~X t     ( get word; exit if ] )
 ~D~f~D i ~W~P~V '[#~J t ( lookup; execute if found )
 ~P~p ^?#~.~M~A '[#~J    ( otherwise report error )
+;
+
+( Compiler )
+
+h `C`O`X 0\ E :o ( TODO: INLINE THIS )
+~D~I i ~V~X t ~>
+;
+
+h `; 0\
+h `q`-`c`o`m`p`i`l`i`n`g 0\ E :|
+# ~w~W~O~q i ~P~;~X t
+~D~f~D i ~W~P~o '|#~J t
+~P~p ^?#~.~M~A '|#~J
+;
+
+h `: 0\ E
+~v~E~|~;        ( TODO: are we compiling 2x ret, ? )
 ;
 
 ( Enter interpreter ) [

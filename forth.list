@@ -1,17 +1,9 @@
 # List of files making up Quarter Forth. These get embedded into _build/kernel.img
 
-# TODO: kill boot.f and replace with more quarter code
-
-f/quarter.q # basic WFX (word-find-execute) loop. No ":".
-f/boot.f # Now we have "[" and ":" and supporting immediate words (but no numerics).
-
-f/system.f # Now we have a pretty standard forth system
-
-# Examine stack (.s), memory (mem,dump,xxd); decompiling (see); regression support ("x")
-f/tools.f
-
-# Some regression tests for standard words.
-f/regression.f
+f/quarter.q     # "[" and ":" and supporting immediate words (but no numerics).
+f/system.f      # Now we have a pretty standard forth system
+f/tools.f       # Stack (.s), memory (mem,dump,xxd); decompiling (see);
+f/regression.f  # Regression tests for standard words.
 
 f/examples.f    # various examples
 f/primes.f      # compute all 16bit primes
