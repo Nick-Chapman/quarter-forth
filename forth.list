@@ -19,8 +19,7 @@ f/primes.f      # compute all 16bit primes
 # f/relocate.f  # WIP explore code relocation
 # f/own-mult.f  # WIP multiplication defined using shift and add
 
-f/term.f # x86 BIOS terminal control
-f/snake.f
+f/snake.f       # Game on x86 BIOS terminal control
 
 f/brainfuck-interpreter.f
 f/fibs.bf

@@ -17,7 +17,7 @@ constant key-buffer
 : is-backspace 8 = ;
 : is-printable dup 32 >= swap 127 <= and ;
 
-( Replace the inner echo-{enabled,on,off} )
+( Replace the inner echo-{enabled,on,off} ) ( TODO: do we need a new variable? )
 echo-enabled @ variable echo-enabled echo-enabled ! echo-off
 : echo-on true echo-enabled ! ;
 : echo-off false echo-enabled ! ;
@@ -92,4 +92,3 @@ hide ok
 hide old-key
 hide raw-key
 hide reset-kb-pointer
-

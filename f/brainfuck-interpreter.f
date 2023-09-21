@@ -1,3 +1,4 @@
+.." Loading bf" cr
 
 : forward ( pc n -- pc' )
 over c@ [char] ] = if 1- dup 0= if drop exit then then
@@ -32,3 +33,7 @@ recurse
 here dup 256 erase ( get a chunk of free blank memory )
 run-bf-given-pc-and-mem-pointer
 ;
+
+hide forward
+hide backward
+hide run-bf-given-pc-and-mem-pointer

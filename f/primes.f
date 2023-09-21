@@ -1,5 +1,4 @@
-
-.." Loading primes ( " latest
+.." Loading primes" cr
 
 : divisible-by ( n1 n2  -- flag ) mod 0= ;
 
@@ -52,14 +51,12 @@ primes-below-256 emit-list
 256 big-loop
 ;
 
+hide any-divide
+hide big-loop
+hide divisible-by
+hide emit-list
+hide is-big-prime
+hide is-small-prime
 hide primes-below-16
 hide primes-below-256
-hide divisible-by
-hide any-divide
-hide is-small-prime
 hide small-loop
-hide is-big-prime
-hide big-loop
-hide emit-list
-
-words-since char ) emit cr

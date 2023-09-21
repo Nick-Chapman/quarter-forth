@@ -1,5 +1,54 @@
 .." Loading snake" cr
 
+( x86 BIOS terminal control )
+
+: set-block-cursor  7 set-cursor-shape ;
+: set-underline-cursor  [ 6 256 * 7 + ] literal set-cursor-shape ;
+: hide-cursor [ 32 256 * ] literal set-cursor-shape ;
+
+: at-xy ( x y -- ) 256 * swap + set-cursor-position ;
+
+: xy-read-char-col ( x y -- char col )
+at-xy read-char-col
+;
+
+: xy-read-char ( x y -- char )
+xy-read-char-col drop
+;
+
+: xy-read-col ( x y -- col )
+xy-read-char-col nip
+;
+
+variable fg
+variable bg
+
+: colour 16 bg @ * fg @ + ;
+
+: xy-emit ( x y char -- ) ( using fg; dont move cursor )
+-rot at-xy colour write-char-col
+;
+
+ 0 constant black
+ 1 constant blue
+ 2 constant green
+ 3 constant cyan
+ 4 constant red
+ 5 constant magenta
+ 6 constant brown
+ 7 constant light-grey
+ 8 constant dark-grey
+ 9 constant light-blue
+10 constant light-green
+11 constant light-cyan
+12 constant light-red
+13 constant light-magenta
+14 constant yellow
+15 constant white
+
+white fg !
+black bg !
+
 ( Make a snake game... )
 
 : block ( x y -- ) bl xy-emit ;
@@ -134,3 +183,68 @@ snake
 then
 set-underline-cursor
 ;
+
+hide -1
+hide app-loop
+hide at-xy
+hide black
+hide block
+hide block-down
+hide block-right
+hide blue
+hide border
+hide brown
+hide clear-tail
+hide collide?
+hide colour
+hide control
+hide cyan
+hide dark-grey
+hide do-pause
+hide down
+hide draw-head
+hide green
+hide head-to-tail
+hide head-to-tail-loop
+hide hide-cursor
+hide is-escape
+hide is-return
+hide isH
+hide isV
+hide left
+hide light-blue
+hide light-cyan
+hide light-green
+hide light-grey
+hide light-magenta
+hide light-red
+hide magenta
+hide maybe-grow
+hide nop
+hide pause1
+hide red
+hide right
+hide set-block-cursor
+hide set-dir
+hide set-start-state
+hide set-underline-cursor
+hide setH
+hide setV
+hide shift-x
+hide shift-xy
+hide shift-y
+hide snake-char
+hide speed-up
+hide tick
+hide tick2
+hide up
+hide white
+hide xpos
+hide xta
+hide xy-emit
+hide xy-read-char
+hide xy-read-char-col
+hide xy-read-col
+hide yellow
+hide ypos
+hide yta
