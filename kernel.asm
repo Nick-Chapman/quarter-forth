@@ -18,7 +18,7 @@ start:
 .cold:
     call _cls
     mov word [warm_addr], warm_mark
-.warm: ;; TODO: try preserve defined words on warm reset. by not resetiing latest and here
+.warm:
     call init_param_stack
     push _bye
 .loop:
