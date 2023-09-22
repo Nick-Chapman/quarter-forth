@@ -6,12 +6,13 @@
 :h  ~H~@ ;
 
 h `l`i`t`e`r`a`l 0\ E
-:#  ~L'L,~>~, ;
+:#  'L ~L, ~> ~, ;
 :i  ~L ^B?, ~>~h 0# ~, ;
 :t  ~D~h~W~-~W~! ;
+:j  ~' 'L#~>~, 'J#~> ;
 
 h`(0\E
-:(  ~^ ^)# ~= i ~X t '(#~J ;
+:(  ~^ ^)# ~= i ~X t j( ;
 
 ( This file is in Quarter syntax. )
 ( The above squiggle gives us comments both in Quarter code )
@@ -19,13 +20,13 @@ h`(0\E
 h `s`= 0\ E         :q ( string equality )
 ~O~O~C~W~C~O~= i
 0# ~= i ~P~P 01-# ~X
-t ~1~+~W~1~+ 'q#~J
+t ~1~+~W~1~+ jq
 t ~P~P~P 0#
 ;
 
 h `t`y`p`e 0\ E     :p ( string print )
 ~D~C~D
-i ~.~1~+ 'p#~J
+i ~.~1~+ jp
 t ~P~P
 ;
 
@@ -35,11 +36,11 @@ t ~P~P
 :k                  ( skip leading whitespace )
 ~^~D~n
 i ~\~X
-t ~P 'k#~J
+t ~P jk
 ;
 
 :c ~^~D~n           ( collect while not whitespace )
-i ~\ 'c#~J
+i ~\ jc
 t ~P~0~\~X
 ;
 
@@ -52,9 +53,9 @@ h `w`o`r`d 0\ E :w
 ;
 
 :g                          ( find-loop )
-~D i ~D ~Y i ~G 'g#~J
+~D i ~D ~Y i ~G jg
 t ~O~O~N~q i ~W~P~X
-t ~G 'g#~J
+t ~G jg
 t ~P~P~0
 ;
 
@@ -77,8 +78,8 @@ h `' 0\ E       ( Forth level ' -- word find! )
 h `] 0\
 h `[ 0\ E :[
 # ~w~W~O~q i ~P~X t     ( get word; exit if ] )
-~D~f~D i ~W~P~V '[#~J t ( lookup; execute if found )
-~P~p ^?#~.~M~A '[#~J    ( otherwise report error )
+~D~f~D i ~W~P~V j[ t    ( lookup; execute if found )
+~P~p ^?#~.~M~A j[       ( otherwise report error )
 ;
 
 ( Compiler )
@@ -87,12 +88,12 @@ h `; 0\
 :]
 # ~w~W~O~q i ~P~;~X t
 ~D~f~D i ~W~P
-~D~I i ~V ']#~J t ~> ']#~J t
-~P~p ^?#~.~M~A ']#~J
+~D~I i ~V j] t ~> j] t
+~P~p ^?#~.~M~A j]
 ;
 
 h `: 0\ E
-~v~E ']#~J
+~v~E j]
 ;
 
 ( Enter interpreter ) [
