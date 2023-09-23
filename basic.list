@@ -1,0 +1,7 @@
+# List of files making up Basic Quarter Forth.
+
+f/forth.q       # Basic compiler and interpreter.
+f/system.f      # Now we have a pretty standard forth system
+f/tools.f       # Stack (.s), memory (mem,dump,xxd); decompiling (see).
+f/buffer.f      # Line based keyboard entry, with backspace.
+f/start.f       # Welcome; enables echo; marks startup-is-complete.

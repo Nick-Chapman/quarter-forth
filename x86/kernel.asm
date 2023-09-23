@@ -1,5 +1,5 @@
 
-    %include "layout.asm"
+    %include "x86/layout.asm"
 
     bits 16
     org kernel_load_address
@@ -886,7 +886,7 @@ here_start:
 ;;; Embedded string data. Loaded at 0x8000
 
 builtin_data:
-    incbin "_build/forth.f"
+    incbin FORTH
     db 0
 
 ;; Size allocated in layout.asm:

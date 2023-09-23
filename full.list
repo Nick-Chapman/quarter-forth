@@ -1,8 +1,8 @@
-# List of files making up Quarter Forth. These get embedded into _build/kernel.img
+# List of files making up Quarter Forth + example applications.
 
-f/forth.q       # "[" and ":" and supporting immediate words (but no numerics).
+f/forth.q       # Basic compiler and interpreter.
 f/system.f      # Now we have a pretty standard forth system
-f/tools.f       # Stack (.s), memory (mem,dump,xxd); decompiling (see);
+f/tools.f       # Stack (.s), memory (mem,dump,xxd); decompiling (see).
 f/regression.f  # Regression tests for standard words.
 
 f/examples.f    # various examples
@@ -17,11 +17,6 @@ f/brainfuck-interpreter.f
 f/fibs.bf
 #f/collatz.bf
 
-# Line based keyboard entry, with backspace! (You miss this when you don't have it!)
-f/buffer.f
-
-# Displays welcome message, enables echo, and marks startup-is-complete.
-f/start.f
-
-# Helpful for dev.
+f/buffer.f      # Line based keyboard entry, with backspace.
+f/start.f       # Welcome; enables echo; marks startup-is-complete.
 f/play.f
