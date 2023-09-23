@@ -75,28 +75,35 @@ Done:
 - fix layout typos in README
 - make interpreter available under [ while still using boot defined :
 - tighten up the Asm code for core primitives
+- implement simple-: in quarter.q (and nesting [) to avoid need for boot.f
 
 Next:
 
-- implement simple-: in quarter.q (and nesting [) to avoid need for boot.f
+- x86 subdir for x66 specific file
+- make: allow build different forth.list -- basic/full
+- rename first two files: quarter.q and forth.f
+- combine bootloader & kernel into single asm.
+- have bootloader relocate itself to very high memory; so allow large contingious embedded forth
+- zero mem on startup; better, fill with no-ops leading to controlled "runaway" crash
+
+- brainfuck compiler
+- support nested parens in comments
+- support: create, use for variable (constant will be it's own def still)
+- clean up notes subdir
+- add stack effect comment to all kernel words
+- do write up on Quarter language
+- non-legacy USB boot
+
+- port everything to bbc/6502
+- continue BBC meteors game
+
 
 - module" end-module
-- support: create, use for variable (constant will be it's own def still)
-
-- add stack effect comment to all kernel words
-
-- support nested parens in comments
 - "quit" - clear return stack and restart interpreter loop
 - "abort" - clear param stack and call quit
 - signed printing & numeric conversion ?
 - smart print that can see if numbers are XT addresses
-
 - does> ???
-
-- port everything to 6502. bbc or own-6502-computer
-
-- stretch: continue BBC meteors game
 - stretch: static type checker (in Haskell)
-
 - macros/defs in prep to explore threaded interpreter
 - threaded interpreter: direct or indirect?
