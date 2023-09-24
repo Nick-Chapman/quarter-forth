@@ -1,9 +1,7 @@
 
     %include "x86/layout.asm"
-    bootloader_address equ 0x7c00
-    relocation_address equ kernel_load_address + kernel_size_in_sectors * sector_size
     bits 16
-    org relocation_address
+    org bootloader_relocation_address
 
     jmp start
     times 0x3e - ($ - $$) db 0x00 ; skip FAT headers
@@ -18,7 +16,7 @@ start:
 .relocate:
     mov cx, 0
     mov si, bootloader_address
-    mov di, relocation_address
+    mov di, bootloader_relocation_address
 .loop:
     mov ax, [si]
     mov [di], ax

@@ -14,8 +14,17 @@
 
 ;;; We also load in embedded string data at 0x8000. So we have 128 pages here.
 
-    kernel_load_address equ 0x500
-    embedded_load_address equ 0x8000
+    bootloader_address equ 0x7c00
 
-    kernel_size_in_sectors equ 6 ; max 59
-    embedded_size_in_sectors equ 55 ; max 62 ;; leaving 1k for param stack and return stack
+    kernel_load_address equ 0x500
+    kernel_size_in_sectors equ 6
+
+    bootloader_relocation_address equ \
+       kernel_load_address + kernel_size_in_sectors * sector_size ; 0x1100
+
+    embedded_load_address equ \
+       bootloader_relocation_address + sector_size ; 0x1300
+
+    ;; 124 because we leave 1k each for the param + return stack
+    embedded_size_in_sectors equ \
+        124 - (embedded_load_address / sector_size + 1)
