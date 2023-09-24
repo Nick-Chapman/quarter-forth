@@ -17,11 +17,13 @@ _build/bootloader.img: x86/bootloader.asm x86/layout.asm
 	@echo Assembling $<
 	@nasm $(NASM_FLAGS) -o $@ $< || rm -f $@
 
+.PRECIOUS:_build/kernel-%.img
 _build/kernel-%.img: x86/kernel.asm x86/layout.asm _build/%.f
 	@echo Assembling $<
 	@nasm $(NASM_FLAGS) -o $@ $< -dFORTH="'_build/$*.f'" || rm -f $@
 
 
+.PRECIOUS:_build/%.f
 _build/%.f : %.list $(wildcard f/*)
 	@echo Combining Forth files: $<
 	@bash -c 'cat $< | sed s/#.*// | xargs cat > $@' || rm -f $@
