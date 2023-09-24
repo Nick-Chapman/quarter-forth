@@ -30,7 +30,7 @@ recurse
 ;
 
 : run-bf ( prog-string -- )
-here dup 256 erase ( get a chunk of free blank memory )
+here dup 1024 erase ( get a chunk of free blank memory )
 run-bf-given-pc-and-mem-pointer
 ;
 

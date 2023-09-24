@@ -15,7 +15,8 @@ f/snake.f       # Game on x86 BIOS terminal control
 
 f/brainfuck-interpreter.f
 f/fibs.bf
-#f/collatz.bf
+f/collatz.bf
+f/mand.bf
 
 f/buffer.f      # Line based keyboard entry, with backspace.
 f/start.f       # Welcome; enables echo; marks startup-is-complete.
