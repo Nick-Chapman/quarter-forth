@@ -8,17 +8,9 @@
 
 echo_enabled: dw 0 ;; Set to 1 to debug!
 
-    warm_addr equ 0x8000
-    warm_mark equ 0x2a2a ; "**"
-
 start:
-    call setup_dispatch_table
-    cmp word [warm_addr], warm_mark
-    jz .warm
-.cold:
     call _cls
-    mov word [warm_addr], warm_mark
-.warm:
+    call setup_dispatch_table
     call init_param_stack
     push _bye
 .loop:

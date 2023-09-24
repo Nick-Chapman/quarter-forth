@@ -15,7 +15,7 @@
 ;;; We also load in embedded string data at 0x8000. So we have 128 pages here.
 
     kernel_load_address equ 0x500
-    embedded_load_address equ 0x8002 ;; save 2 bytes for warm start detection
+    embedded_load_address equ 0x8000
 
     kernel_size_in_sectors equ 6 ; max 59
     embedded_size_in_sectors equ 55 ; max 62 ;; leaving 1k for param stack and return stack
