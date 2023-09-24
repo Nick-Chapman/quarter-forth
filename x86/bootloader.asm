@@ -1,8 +1,9 @@
 
     %include "x86/layout.asm"
     bootloader_address equ 0x7c00
+    relocation_address equ kernel_load_address + kernel_size_in_sectors * sector_size
     bits 16
-    org bootloader_address
+    org relocation_address
 
     jmp start
     times 0x3e - ($ - $$) db 0x00 ; skip FAT headers
@@ -14,6 +15,23 @@ start:
     mov ss, ax
     mov sp, 0
 
+.relocate:
+    mov cx, 0
+    mov si, bootloader_address
+    mov di, relocation_address
+.loop:
+    mov ax, [si]
+    mov [di], ax
+    inc si
+    inc di
+    inc cx
+    cmp cx, 512
+    jz .done
+    jmp .loop
+.done:
+    jmp 0:part2
+
+part2:
     ;; Note. Sectors are numbered from 1. The bootloader (this file!) is in the 1st sector.
     ;; So the kernel starts at sector 2
     first_non_boot_sector equ 2
