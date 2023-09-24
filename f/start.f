@@ -8,7 +8,7 @@ mem cr
 
 : wipe ( a -- )
 [ here ] literal x-hide ( Hide this function when run. )
-sp over - 1000 - erase ( Wipe memory upto the top of the parameter stack. )
+sp over - 2 - erase ( Wipe memory upto the top of the parameter stack. )
 ( We must enable echo here, rather than after the call below )
 echo-on
 ;
