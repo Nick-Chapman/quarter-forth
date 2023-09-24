@@ -28,5 +28,5 @@ _build/%.f : %.list $(wildcard f/*)
 
 _build: ; @mkdir -p $@
 
-burn: _build/disk.img
+burn-%: _build/disk-%.img
 	dd if=$< of=/dev/sdb
