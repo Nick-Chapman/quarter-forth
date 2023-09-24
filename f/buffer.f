@@ -17,7 +17,8 @@ constant key-buffer
 : is-backspace 8 = ;
 : is-printable dup 32 >= swap 127 <= and ;
 
-( Replace the inner echo-{enabled,on,off} ) ( TODO: do we need a new variable? )
+
+( Replace the inner echo-{enabled,on,off} )
 echo-enabled @ variable echo-enabled echo-enabled ! echo-off
 : echo-on true echo-enabled ! ;
 : echo-off false echo-enabled ! ;
@@ -71,9 +72,12 @@ then drop
 reset-kb-pointer fill buffered-key
 ;
 
+' buffered-key set-key ( Install the buffered-key input routine )
+
 ( All text which follows must be within the max line length )
 
 hide at-start-of-buffer
+hide buffered-key
 hide echo
 hide fill
 hide fill-loop
