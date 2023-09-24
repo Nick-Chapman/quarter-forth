@@ -71,13 +71,9 @@ then drop
 reset-kb-pointer fill buffered-key
 ;
 
-( Install the new buffered-key input routine )
-' buffered-key set-key
-
 ( All text which follows must be within the max line length )
 
 hide at-start-of-buffer
-hide buffered-key
 hide echo
 hide fill
 hide fill-loop

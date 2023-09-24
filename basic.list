@@ -4,4 +4,4 @@ f/quarter.q     # Basic compiler and interpreter.
 f/forth.f       # Now we have a pretty standard forth system
 f/tools.f       # Stack (.s), memory (mem,dump,xxd); decompiling (see).
 f/buffer.f      # Line based keyboard entry, with backspace.
-f/start.f       # Welcome; enables echo; marks startup-is-complete.
+f/start.f       # Welcome; enable echo; startup-is-complete; wipes memory.

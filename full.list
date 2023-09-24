@@ -19,5 +19,4 @@ f/collatz.bf
 f/mand.bf
 
 f/buffer.f      # Line based keyboard entry, with backspace.
-f/start.f       # Welcome; enables echo; marks startup-is-complete.
-f/play.f
+f/start.f       # Welcome; enable echo; startup-is-complete; wipes memory.

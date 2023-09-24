@@ -450,5 +450,4 @@ hide show-if-not-hidden
 hide space
 hide word,
 hide words-continue
-hide x-hide
 hide ~
