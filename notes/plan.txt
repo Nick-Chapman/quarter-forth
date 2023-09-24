@@ -81,11 +81,11 @@ Done:
 - combine bootloader & kernel into single asm. - -NO
 - have bootloader relocate itself to very high memory; so allow large contingious embedded forth
 - rename first two files: quarter.q and forth.f
+- brainfuck compiler
 
 Next:
 - zero mem on startup; better, fill with no-ops leading to controlled "runaway" crash
 
-- brainfuck compiler
 - support nested parens in comments
 - support: create, use for variable (constant will be it's own def still)
 - clean up notes subdir

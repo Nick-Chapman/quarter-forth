@@ -122,4 +122,4 @@ print the final 1 and newline
 ++++++++++++++++++++++++++++++++++++++++++++++++.[-]
 ++++++++++. newline
 
-" run-bf ;
+" fast-run-bf ;

@@ -448,6 +448,5 @@ hide print-digit
 hide rot
 hide show-if-not-hidden
 hide space
-hide word,
 hide words-continue
 hide ~

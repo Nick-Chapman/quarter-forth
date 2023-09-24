@@ -7,4 +7,4 @@
     ]<<<
 ]
 
-" run-bf ;
+" fast-run-bf ;
