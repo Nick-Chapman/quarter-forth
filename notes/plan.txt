@@ -78,12 +78,11 @@ Done:
 - implement simple-: in quarter.q (and nesting [) to avoid need for boot.f
 - x86 subdir for x66 specific file
 - make: allow build different forth.list -- basic/full
+- combine bootloader & kernel into single asm. - -NO
+- have bootloader relocate itself to very high memory; so allow large contingious embedded forth
+- rename first two files: quarter.q and forth.f
 
 Next:
-
-- rename first two files: quarter.q and forth.f
-- combine bootloader & kernel into single asm.
-- have bootloader relocate itself to very high memory; so allow large contingious embedded forth
 - zero mem on startup; better, fill with no-ops leading to controlled "runaway" crash
 
 - brainfuck compiler
