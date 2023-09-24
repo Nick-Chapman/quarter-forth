@@ -13,20 +13,10 @@ start:
     mov ss, ax
     mov sp, 0
 
-.relocate:
-    mov cx, 0
+    mov cx, 0x100
     mov si, bootloader_address
     mov di, bootloader_relocation_address
-.loop:
-    mov ax, [si]
-    mov [di], ax
-    inc si
-    inc di
-    inc cx
-    cmp cx, 512
-    jz .done
-    jmp .loop
-.done:
+    rep movsw
     jmp 0:part2
 
 part2:
