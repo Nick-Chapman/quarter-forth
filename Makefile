@@ -9,7 +9,7 @@ run-%: _build _build/disk-%.img
 
 _build/disk-%.img: _build/bootloader.img _build/kernel-%.img
 	@echo Creating disk image: $@
-	@cat $^ > $@
+	@cat $^ > $@ || rm -f $@
 
 NASM_FLAGS = -Werror
 
