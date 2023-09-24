@@ -8,10 +8,17 @@
 
 echo_enabled: dw 0 ;; Set to 1 to debug!
 
+param_stack_base equ 0
+
 start:
+    mov ax, 1000h
+    mov ss, ax
+    mov sp, 0
+    mov bp, param_stack_base
+
     call _cls
     call setup_dispatch_table
-    call init_param_stack
+
     push _bye
 .loop:
     call _key
@@ -122,23 +129,17 @@ defwordWithFlags (hidden_flag), %1
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Parameter stack (register: bp)
 
-param_stack_base equ 0xfc00 ; allow 1k for call stack (max depth=512) ; need this for non tail recursive imp of words!
-
-init_param_stack:
-    mov bp, param_stack_base
-    ret
-
 %macro pspush 1
     sub bp, 2
-    mov [bp], %1
+    mov [ds:bp], %1
 %endmacro
 
 defwordHidden "underflow?"
 check_ps_underflow:
-    cmp bp, param_stack_base
-    jb .ok
+    cmp bp, 0
+    jnz .ok
     sub bp, 2
-    mov word [bp], 0
+    mov word [ds:bp], 0
     print "stack underflow."
     call _cr
     call _crash_only_during_startup
@@ -147,7 +148,7 @@ check_ps_underflow:
 
 %macro pspop 1
     call check_ps_underflow
-    mov %1, [bp]
+    mov %1, [ds:bp]
     add bp, 2
 %endmacro
 
@@ -273,29 +274,29 @@ defword "rsp0" ; ( -- addr )
 
 defword "dup"
 _dup:
-    ;call check_ps_underflow ; any benefit
-    mov ax, [bp]
-    mov [bp-2], ax
+    mov ax, [ds:bp]
+    mov [ds:bp-2], ax
     sub bp, 2
     ret
 
 defword "swap"
 _swap:
-    mov ax, [bp]
-    mov bx, [bp+2]
-    mov [bp], bx
-    mov [bp+2], ax
+    mov ax, [ds:bp]
+    mov bx, [ds:bp+2]
+    mov [ds:bp], bx
+    mov [ds:bp+2], ax
     ret
 
 defword "drop"
 _drop:
+    call check_ps_underflow
     add bp, 2
     ret
 
 defword "over"
 _over:
-    mov ax, [bp+2]
-    mov [bp-2], ax
+    mov ax, [ds:bp+2]
+    mov [ds:bp-2], ax
     sub bp, 2
     ret
 
