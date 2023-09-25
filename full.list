@@ -17,6 +17,8 @@ f/brainfuck-interpreter.f
 f/fibs.bf
 f/collatz.bf
 f/mand.bf
+f/factor.bf
 
+#f/play.f
 f/buffer.f      # Line based keyboard entry, with backspace.
 f/start.f       # Welcome; enable echo; startup-is-complete; wipes memory.

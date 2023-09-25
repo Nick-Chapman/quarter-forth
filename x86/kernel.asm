@@ -704,6 +704,7 @@ _read_char:
 read_char_indirection: dw read_char_0  ; out: -> AL
 
 read_char_0: ; first read from embedded string
+    call ensure_here_stays_behind_embedded_pointer
     mov bx, [builtin]
     mov al, [bx]
     cmp al, 0
@@ -716,6 +717,17 @@ read_char_interactive:
     mov ah, 0
     int 0x16
     ret
+
+ensure_here_stays_behind_embedded_pointer:
+    mov ax, [builtin]
+    mov bx, [here]
+    cmp ax, bx
+    jna .bad
+    ret
+.bad:
+    print "Here pointer has caught up with embedded string pointer"
+    call _cr
+    jmp _crash
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Output

@@ -16,7 +16,7 @@ swap 1- swap recurse
 over c@
 dup 0= if drop 2drop exit then
 dup [char] . = if drop dup c@ emit else
-dup [char] , = if drop key over c! crash else
+dup [char] , = if drop key over c! else
 dup [char] > = if drop 1+ else
 dup [char] < = if drop 1- else
 dup [char] + = if drop dup c@ 1 + 256 mod over c! else
@@ -34,11 +34,13 @@ here dup 1024 erase ( get a chunk of free blank memory )
 run-bf-given-pc-and-mem-pointer
 ;
 
+: comma ( mp -- ) key over c! ;
 : dot ( mp -- ) dup c@ emit ;
 : plus ( mp -- ) dup c@ 1 + 256 mod over c! ;
 : minus ( mp -- ) dup c@ 1 - 256 mod over c! ;
 : test-mp ( mp -- ) dup c@ ;
 
+: c-comma  [ ' comma ] literal compile, ;
 : c-dot  [ ' dot ] literal compile, ;
 : c-plus  [ ' plus ] literal compile, ;
 : c-minus  [ ' minus ] literal compile, ;
@@ -58,7 +60,7 @@ swap dup here swap - swap ! ;
 
 : compile-bf ( s -- )
 dup c@ ( s c ) dup 0= if 2drop exit then
-dup [char] , = if drop crash else
+dup [char] , = if drop c-comma else
 dup [char] . = if drop c-dot else
 dup [char] + = if drop c-plus else
 dup [char] - = if drop c-minus else
@@ -73,10 +75,14 @@ then then then then then then then then
 
 ( Compile and run... )
 
+: run-bf-xt ( bf-xt -- )
+here 1024 erase           ( space for the memory tape )
+here swap execute drop    ( run the compiled program )
+;
+
 : fast-run-bf ( str -- )
 here swap compile-bf ret, ( compile the program )
-here 1024 erase           ( space for the memory tape )
-here over execute drop    ( run the compiled program )
+dup run-bf-xt
 here-pointer !            ( reset to loose the compiled program )
 ;
 
@@ -88,7 +94,6 @@ hide c-minus
 hide c-plus
 hide c-right
 hide c-rsq
-hide compile-bf
 hide dot
 hide forward
 hide minus

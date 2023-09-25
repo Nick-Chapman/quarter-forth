@@ -82,6 +82,8 @@ Done:
 - have bootloader relocate itself to very high memory; so allow large contingious embedded forth
 - rename first two files: quarter.q and forth.f
 - brainfuck compiler
+- explore bf compilation speedy for factorization example
+- spend ages debugging issue where [here] caught up with [builtin] (embedded string ptr)
 
 Next:
 - zero mem on startup; better, fill with no-ops leading to controlled "runaway" crash
