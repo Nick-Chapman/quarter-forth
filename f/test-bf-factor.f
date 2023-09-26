@@ -8,10 +8,10 @@ time nip
 ." Testing compiled bf factorization..." cr
 
 ( The bf factorization program expects the input to be terminated by NL )
-( s" 1
+s" 1
 " go
 s" 12
-" go )
+" go
 s" 123
 " go
 s" 1234
@@ -27,7 +27,6 @@ s" 123456
 time nip
 ." #Ticks (1/18s) = " swap - . cr
 
-." Any key to quit" cr crash
-
+startup-is-complete
 ;
 test-bf-factor

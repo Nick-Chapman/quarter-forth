@@ -18,8 +18,8 @@ swap 1- swap recurse
 
 : comma ( mp -- ) bf-key over c! ;
 : dot ( mp -- ) dup c@ emit ;
-: plus ( mp -- ) dup c@ 1 + 256 mod over c! ;
-: minus ( mp -- ) dup c@ 1 - 256 mod over c! ;
+: plus ( mp n -- ) swap dup c@ rot + 256 mod over c! ;
+: minus ( mp n -- ) swap dup c@ rot - 256 mod over c! ;
 : non-zero? ( mp -- ) dup c@ ;
 
 : run-bf-given-pc-and-mem-pointer ( pc mp )
@@ -29,8 +29,8 @@ dup [char] . = if drop dot else
 dup [char] , = if drop comma else
 dup [char] > = if drop 1+ else
 dup [char] < = if drop 1- else
-dup [char] + = if drop plus else
-dup [char] - = if drop minus else
+dup [char] + = if drop 1 plus else
+dup [char] - = if drop 1 minus else
 dup [char] [ = if drop non-zero? 0= if swap 0 forward swap then else
 dup [char] ] = if drop non-zero? if swap 0 backward swap then else
 drop
@@ -44,13 +44,6 @@ here dup 1024 erase ( get a chunk of free blank memory )
 run-bf-given-pc-and-mem-pointer
 ;
 
-: c-comma  compile comma ;
-: c-dot  compile dot ;
-: c-plus  compile plus ;
-: c-minus  compile minus ;
-: c-left  compile 1- ;
-: c-right  compile 1+ ;
-
 : c-lsq
 here swap
 compile non-zero?
@@ -62,10 +55,20 @@ here 0 ,
 swap compile branch here - ,
 swap dup here swap - swap ! ;
 
+: collect-left  ( s n -- s' n' ) over c@ [char] < = if swap 1+ swap 1+ recurse then ;
+: collect-right ( s n -- s' n' ) over c@ [char] > = if swap 1+ swap 1+ recurse then ;
+: collect-plus  ( s n -- s' n' ) over c@ [char] + = if swap 1+ swap 1+ recurse then ;
+: collect-minus ( s n -- s' n' ) over c@ [char] - = if swap 1+ swap 1+ recurse then ;
+
+: c-left  ( s -- s' ) 1 collect-left  compile lit , compile - ;
+: c-right ( s -- s' ) 1 collect-right compile lit , compile + ;
+: c-plus  ( s -- s' ) 1 collect-plus  compile lit , compile plus ;
+: c-minus ( s -- s' ) 1 collect-minus compile lit , compile minus ;
+
 : compile-bf ( s -- )
-dup c@ ( s c ) dup 0= if 2drop exit then
-dup [char] , = if drop c-comma else
-dup [char] . = if drop c-dot else
+dup 1+ swap c@ ( s c ) dup 0= if 2drop exit then
+dup [char] , = if drop compile comma else
+dup [char] . = if drop compile dot else
 dup [char] + = if drop c-plus else
 dup [char] - = if drop c-minus else
 dup [char] < = if drop c-left else
@@ -74,7 +77,7 @@ dup [char] [ = if drop c-lsq else
 dup [char] ] = if drop c-rsq else
 drop
 then then then then then then then then
-1+ recurse
+recurse
 ;
 
 ( Compile and run... )
@@ -110,12 +113,7 @@ here-pointer !            ( reset to loose the compiled program )
 
 
 hide backward
-hide c-dot
-hide c-left
 hide c-lsq
-hide c-minus
-hide c-plus
-hide c-right
 hide c-rsq
 hide dot
 hide forward
