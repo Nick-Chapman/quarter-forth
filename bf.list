@@ -1,0 +1,11 @@
+
+f/quarter.q     # Basic compiler and interpreter.
+f/forth.f       # Now we have a pretty standard forth system
+
+f/brainfuck-interpreter.f
+#f/fibs.f
+#f/collatz.f
+#f/mand.f
+
+f/factor.f
+f/test-bf-factor.f
