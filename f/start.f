@@ -16,6 +16,8 @@ echo-on
 startup-is-complete
 hide startup-is-complete
 hide crash-only-during-startup
-here wipe
 
+test-bf-factor
+
+here wipe
 Everything after the call to "wipe" will be wiped!

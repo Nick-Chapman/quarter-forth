@@ -1,5 +1,9 @@
 .." Loading bf" cr
 
+( Allow the input stream to be redirected )
+variable v-key  ' key v-key !
+: bf-key v-key @ execute ;
+
 : forward ( pc n -- pc' )
 over c@ [char] ] = if 1- dup 0= if drop exit then then
 over c@ [char] [ = if 1+ then
@@ -16,7 +20,7 @@ swap 1- swap recurse
 over c@
 dup 0= if drop 2drop exit then
 dup [char] . = if drop dup c@ emit else
-dup [char] , = if drop key over c! else
+dup [char] , = if drop bf-key over c! else
 dup [char] > = if drop 1+ else
 dup [char] < = if drop 1- else
 dup [char] + = if drop dup c@ 1 + 256 mod over c! else
@@ -34,7 +38,7 @@ here dup 1024 erase ( get a chunk of free blank memory )
 run-bf-given-pc-and-mem-pointer
 ;
 
-: comma ( mp -- ) key over c! ;
+: comma ( mp -- ) bf-key over c! ;
 : dot ( mp -- ) dup c@ emit ;
 : plus ( mp -- ) dup c@ 1 + 256 mod over c! ;
 : minus ( mp -- ) dup c@ 1 - 256 mod over c! ;
@@ -85,6 +89,25 @@ here swap compile-bf ret, ( compile the program )
 dup run-bf-xt
 here-pointer !            ( reset to loose the compiled program )
 ;
+
+variable input-p
+: ikey ( -- c ) ( Next the next char from the input string )
+input-p @ c@ dup if 1 input-p +! else crash then ;
+
+: irun-bf-xt ( input-str bf-xt -- )
+v-key @ -rot                      ( save existing key routine... )
+swap input-p !  ['] ikey v-key !  ( read from input-str instead )
+here 1024 erase                   ( space for the memory tape )
+here swap execute drop            ( run the compiled program )
+v-key !                           ( ... restore )
+;
+
+: fast-irun-bf ( input-str prog-str -- )
+here swap compile-bf ret, ( compile the program )
+dup -rot irun-bf-xt
+here-pointer !            ( reset to loose the compiled program )
+;
+
 
 hide backward
 hide c-dot

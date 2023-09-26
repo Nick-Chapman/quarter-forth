@@ -207,15 +207,19 @@
 
 ( Play around with BF compilation for factorization example )
 
-: x factor.bf ;
-
-." SLOW: " x run-bf 12
-." SLOW: " x run-bf 123
-( ." SLOW: " x run-bf 1234 )
-
-." FAST: " x fast-run-bf 12
-." FAST: " x fast-run-bf 123
-." FAST: " x fast-run-bf 1234
-." FAST: " x fast-run-bf 12345
-." FAST: " x fast-run-bf 123456
-( ." FAST: " x fast-run-bf 1234567 )
+: go factor.bf fast-irun-bf ;
+: test-bf-factor
+." Testing compiled bf factorization..." cr
+( The bf factorization program expects the input to be terminated by NL )
+s" 123
+" go
+s" 1234
+" go
+s" 12345
+" go
+s" 123456
+" go
+s" 1234567
+" go
+;
+hide go
