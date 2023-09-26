@@ -122,4 +122,7 @@ print the final 1 and newline
 ++++++++++++++++++++++++++++++++++++++++++++++++.[-]
 ++++++++++. newline
 
-" fast-run-bf ;
+" ;
+
+: fast collatz.bf fast-run-bf ;
+: slow collatz.bf run-bf ;

@@ -16,17 +16,23 @@ over c@ [char] ] = if 1+ then
 swap 1- swap recurse
 ;
 
+: comma ( mp -- ) bf-key over c! ;
+: dot ( mp -- ) dup c@ emit ;
+: plus ( mp -- ) dup c@ 1 + 256 mod over c! ;
+: minus ( mp -- ) dup c@ 1 - 256 mod over c! ;
+: non-zero? ( mp -- ) dup c@ ;
+
 : run-bf-given-pc-and-mem-pointer ( pc mp )
 over c@
 dup 0= if drop 2drop exit then
-dup [char] . = if drop dup c@ emit else
-dup [char] , = if drop bf-key over c! else
+dup [char] . = if drop dot else
+dup [char] , = if drop comma else
 dup [char] > = if drop 1+ else
 dup [char] < = if drop 1- else
-dup [char] + = if drop dup c@ 1 + 256 mod over c! else
-dup [char] - = if drop dup c@ 1 - 256 mod over c! else
-dup [char] [ = if drop dup c@ 0= if swap 0 forward swap then else
-dup [char] ] = if drop dup c@ if swap 0 backward swap then else
+dup [char] + = if drop plus else
+dup [char] - = if drop minus else
+dup [char] [ = if drop non-zero? 0= if swap 0 forward swap then else
+dup [char] ] = if drop non-zero? if swap 0 backward swap then else
 drop
 then then then then then then then then
 swap 1+ swap
@@ -38,28 +44,22 @@ here dup 1024 erase ( get a chunk of free blank memory )
 run-bf-given-pc-and-mem-pointer
 ;
 
-: comma ( mp -- ) bf-key over c! ;
-: dot ( mp -- ) dup c@ emit ;
-: plus ( mp -- ) dup c@ 1 + 256 mod over c! ;
-: minus ( mp -- ) dup c@ 1 - 256 mod over c! ;
-: test-mp ( mp -- ) dup c@ ;
-
-: c-comma  [ ' comma ] literal compile, ;
-: c-dot  [ ' dot ] literal compile, ;
-: c-plus  [ ' plus ] literal compile, ;
-: c-minus  [ ' minus ] literal compile, ;
-: c-left  [ ' 1- ] literal compile, ;
-: c-right  [ ' 1+ ] literal compile, ;
+: c-comma  compile comma ;
+: c-dot  compile dot ;
+: c-plus  compile plus ;
+: c-minus  compile minus ;
+: c-left  compile 1- ;
+: c-right  compile 1+ ;
 
 : c-lsq
 here swap
-['] test-mp compile,
-['] 0branch compile,
+compile non-zero?
+compile 0branch
 here 0 ,
 -rot ;
 
 : c-rsq
-swap ['] branch compile, here - ,
+swap compile branch here - ,
 swap dup here swap - swap ! ;
 
 : compile-bf ( s -- )
@@ -122,4 +122,4 @@ hide forward
 hide minus
 hide plus
 hide run-bf-given-pc-and-mem-pointer
-hide test-mp
+hide non-zero?

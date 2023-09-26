@@ -8,6 +8,10 @@ time nip
 ." Testing compiled bf factorization..." cr
 
 ( The bf factorization program expects the input to be terminated by NL )
+( s" 1
+" go
+s" 12
+" go )
 s" 123
 " go
 s" 1234

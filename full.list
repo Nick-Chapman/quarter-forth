@@ -13,5 +13,8 @@ f/primes.f      # compute all 16bit primes
 
 f/snake.f       # Game on x86 BIOS terminal control
 
+f/brainfuck-interpreter.f
+f/collatz.f
+
 f/buffer.f      # Line based keyboard entry, with backspace.
 f/start.f       # Welcome; enable echo; startup-is-complete; wipes memory.

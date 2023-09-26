@@ -206,46 +206,47 @@ latest
 : akey?   key? 256 mod ;
 : ekey?   key? 256 / ;
 
-( Not a fully compliant definition for postpone, but it works for do..i..loop )
 
-: postpone ( "word" -- )
+( compile is like postpone, but only for non-immediate words )
+: compile ( "word" -- )
 '
 ['] lit compile,
 ,
 ['] compile, compile,
 ; immediate
 
+
 ( Loops -- do..i..loop )
 
 : do
-postpone >r
-postpone >r
+compile >r
+compile >r
 here
 ; immediate
 
 : i
-postpone r>
-postpone r>
-postpone dup
-postpone >r
-postpone swap
-postpone >r
+compile r>
+compile r>
+compile dup
+compile >r
+compile swap
+compile >r
 ; immediate
 
 : loop
-postpone r>
-postpone r>
-postpone 1
-postpone +
-postpone 2dup
-postpone >r
-postpone >r
-postpone <
-postpone 0branch
+compile r>
+compile r>
+compile 1
+compile +
+compile 2dup
+compile >r
+compile >r
+compile <
+compile 0branch
 here - ,
-postpone r>
-postpone r>
-postpone 2drop
+compile r>
+compile r>
+compile 2drop
 ; immediate
 
 : erase ( a n -- )
