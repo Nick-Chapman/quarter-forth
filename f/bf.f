@@ -4,6 +4,8 @@
 variable v-key  ' key v-key !
 : bf-key v-key @ execute ;
 
+( Brainfuck Interpreter... )
+
 : forward ( pc n -- pc' )
 over c@ [char] ] = if 1- dup 0= if drop exit then then
 over c@ [char] [ = if 1+ then
@@ -43,6 +45,8 @@ recurse
 here dup 1024 erase ( get a chunk of free blank memory )
 run-bf-given-pc-and-mem-pointer
 ;
+
+( Brainfuck Compiler... )
 
 : c-lsq
 here swap
@@ -111,13 +115,28 @@ dup -rot irun-bf-xt
 here-pointer !            ( reset to loose the compiled program )
 ;
 
-
 hide backward
+hide bf-key
+hide c-left
 hide c-lsq
+hide c-minus
+hide c-plus
+hide c-right
 hide c-rsq
+hide collect-left
+hide collect-minus
+hide collect-plus
+hide collect-right
+hide comma
+hide compile-bf
 hide dot
 hide forward
+hide ikey
+hide input-p
+hide irun-bf-xt
 hide minus
+hide non-zero?
 hide plus
 hide run-bf-given-pc-and-mem-pointer
-hide non-zero?
+hide run-bf-xt
+hide v-key

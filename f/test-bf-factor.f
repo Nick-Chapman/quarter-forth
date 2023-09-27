@@ -20,8 +20,8 @@ s" 12345
 " go
 s" 123456
 " go
-( s" 1234567
-" go )
+s" 1234567
+" go
 
 ." DONE" cr
 time nip
