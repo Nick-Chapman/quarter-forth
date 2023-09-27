@@ -29,11 +29,6 @@ char [compile] literal ; immediate
 : ['] ( comp: "name" ) ( run: -- xt )
 ' [compile] literal ; immediate
 
-: constant ( x "name" -- )
-word, entry,
-['] lit compile, ,
-['] exit compile, ;
-
 ( We have already defined "if" and "then" in boot.f )
 ( But we'll define them again here using standard Forth )
 ( and also "else" )
@@ -46,6 +41,38 @@ word, entry,
 : if     ['] 0branch compile, ahead> ; immediate
 : then   <patch                      ; immediate
 : else   ['] branch compile, ahead> swap <patch ; immediate
+
+
+( compile is like postpone, but only for non-immediate words )
+: compile ( "word" -- )
+'
+['] lit compile,
+,
+['] compile, compile,
+; immediate
+
+
+( Defining words )
+
+: 2 [ 1 1 + ] literal ;
+: 3 [ 2 1 + ] literal ;
+
+: create
+word, entry,
+compile lit     ( 3 )
+here 0 ,        ( 2 )
+compile branch  ( 3 )
+2 ,             ( 2 )
+ret,
+here swap !
+;
+
+: does> latest [ 3 2 3 + + ] literal + dup r> swap - swap !
+;
+
+: variable  create 0 , ;
+: constant  create , does> @ ;
+
 
 ( Strings Literals... )
 
@@ -136,11 +163,6 @@ dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
 : space     [ bl ] literal emit ;
 : spaces    dup if space 1 - tail spaces then drop ;
 
-( Defining words )
-
-: variable ( initialized to 0 )
-here 0 , constant ;
-
 ( Bools )
 
 : false     ( -- b )        0 ;
@@ -185,7 +207,7 @@ here 0 , constant ;
 
 : +! ( n a ) swap over @ + swap ! ;
 
-( Alternative comments, useful since parens don't nest )
+( Alternative comments, useful since parens don't nest -- TODO: fix this! )
 
 : {         key [char] } = if exit then tail { ; immediate
 
@@ -205,15 +227,6 @@ latest
 
 : akey?   key? 256 mod ;
 : ekey?   key? 256 / ;
-
-
-( compile is like postpone, but only for non-immediate words )
-: compile ( "word" -- )
-'
-['] lit compile,
-,
-['] compile, compile,
-; immediate
 
 
 ( Loops -- do..i..loop )

@@ -84,12 +84,12 @@ Done:
 - brainfuck compiler
 - explore bf compilation speedy for factorization example
 - spend ages debugging issue where [here] caught up with [builtin] (embedded string ptr)
+- create/does> - finally figured this out! use for variable/consant
 
 Next:
 - zero mem on startup; better, fill with no-ops leading to controlled "runaway" crash
 
 - support nested parens in comments
-- support: create, use for variable (constant will be it's own def still)
 - clean up notes subdir
 - add stack effect comment to all kernel words
 - do write up on Quarter language
@@ -98,13 +98,11 @@ Next:
 - port everything to bbc/6502
 - continue BBC meteors game
 
-
 - module" end-module
 - "quit" - clear return stack and restart interpreter loop
 - "abort" - clear param stack and call quit
 - signed printing & numeric conversion ?
 - smart print that can see if numbers are XT addresses
-- does> ???
 - stretch: static type checker (in Haskell)
 - macros/defs in prep to explore threaded interpreter
 - threaded interpreter: direct or indirect?
