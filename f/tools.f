@@ -34,11 +34,13 @@ sp here - ." Available = " .hex4 cr
 dup @ + 2 +
 ;
 
-: dis ( a -- )
+( Disassemble code at a given address )
+
+: disassemble ( a -- )
 dup c@ is-call if ( a )
   dup 1 + @rel->abs xt->name ( a name )
   type space ( a )
-  3 + tail dis
+  3 + recurse
 then
   dup c@ ( a c )
   dup is-ret if ( a c )
@@ -48,19 +50,18 @@ then
   then
     .hex2
     ( a ) space
-    1 + tail dis
+    1 + recurse
 ;
 
 : x-see ( xt -- )
-." : "
-dup xt->name type
-."    "
-dup dis
+." : " dup xt->name type ."    "
+dup disassemble
 immediate? if ."  immediate" then
+cr
 ;
 
-: see
-word find! dup if x-see cr then ; immediate
+: see ( "name" -- )
+word find! dup if x-see then ;
 
 ( Show stack non destructively )
 
@@ -161,7 +162,7 @@ then
 
 : see10 ( xt -- xt' ) ['] see1 10 times ;
 : see-all
-latest ['] see10 pag
+latest ['] see10 pag ( TODO: paginate )
 ;
 
 hide .s-continue
@@ -172,7 +173,6 @@ hide dc
 hide dc-oneK
 hide dc64
 hide default-0
-hide dis
 hide drop-if-not-zero
 hide e8
 hide emit-byte
@@ -185,10 +185,7 @@ hide old-key
 hide pag
 hide pag-continue
 hide raw-key
-hide see-all
 hide see1
 hide see10
-( hide times )
-{ hide x-see }
 hide xxd-line
 hide xxd-page

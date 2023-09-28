@@ -1,37 +1,42 @@
 
 ( Set the immediate bit on some words defined in quarter )
 
-' ( immediate^
 ' [ immediate^
-' literal immediate^
+' ( immediate^
 
-( Print  banner to indicate this file is being processed )
+( TODO: define nested comments here! )
 
-: char ( -- c ) word c@ ;
+: immediate
+latest immediate^ ;
 
-: ~ char emit ;
-~ s ~ y ~ s ~ t ~ e ~ m ~ . ~ f
-cr
 
-( A few important words which we define early )
+: literal ( comp: x -- ) ( run: -- x ) ( repeats ":#" in quarter )
+[ ' lit ] lit [ , ] compile, , ; immediate
 
-: immediate   latest immediate^ ;
 
 : [compile] ( "name" -- )
 [ ' ' compile, ' compile, compile, ] ; immediate
 
-: tail ( "name" -- )
-' [compile] literal lit [ ' jump , ] compile, ; immediate
-
-: [char] ( comp: "name" -- ) ( run: -- c )
-char [compile] literal ; immediate
-
 : ['] ( comp: "name" ) ( run: -- xt )
 ' [compile] literal ; immediate
 
-( We have already defined "if" and "then" in boot.f )
-( But we'll define them again here using standard Forth )
-( and also "else" )
+
+( compile is like postpone, but only for non-immediate words )
+: compile ( "word" -- )
+' ['] lit compile, , ['] compile, compile, ; immediate
+
+
+: tail ( "name" -- )
+' [compile] literal lit [ ' jump , ] compile, ; immediate
+
+( Tail recurse to current definition )
+: recurse ( "word" -- )
+latest compile lit , compile jump
+; immediate
+
+
+( We defined "if" and "then" as :i and :t in quarter )
+( But we'll define them again here, and also "else" )
 
 : here  here-pointer @ ;
 
@@ -43,13 +48,31 @@ char [compile] literal ; immediate
 : else   ['] branch compile, ahead> swap <patch ; immediate
 
 
-( compile is like postpone, but only for non-immediate words )
-: compile ( "word" -- )
-'
-['] lit compile,
-,
-['] compile, compile,
-; immediate
+( Word )
+
+: is-white ( c -- flag ) bl swap < 0 1 - xor ; ( <= 32 )
+
+: skip-leading-whitespace
+key dup is-white if ( c )
+drop tail skip-leading-whitespace ( keep skipping... )
+then c, ( collect first char ) ;
+
+: collect-while-not-whitespace
+key dup is-white if ( c )
+drop 0 c, exit ( add null-terminator )
+then c, tail collect-while-not-whitespace ( colect & keep collecting... ) ;
+
+: word, ( "name" -- str )
+here skip-leading-whitespace collect-while-not-whitespace ;
+
+: word ( "name" -- str )
+word, dup here-pointer ! ;
+
+: char ( "c" -- c )
+word c@ ;
+
+: [char] ( comp: "name" -- ) ( run: -- c )
+char [compile] literal ; immediate
 
 
 ( Defining words )
@@ -72,6 +95,12 @@ here swap !
 
 : variable  create 0 , ;
 : constant  create , does> @ ;
+
+
+( Emit a string -- repeats ":p" in quarter )
+: type ( a -- )
+dup c@ ( a c ) dup if ( a c ) emit ( a ) 1 + recurse
+then drop drop ;
 
 
 ( Strings Literals... )
@@ -117,6 +146,9 @@ ret,
 dup execute
 here-pointer !
 ;
+
+( Now we can print a banner for this file )
+.." forth.f" cr
 
 : space     bl emit ;
 : rot       >r swap r> swap ;
@@ -211,17 +243,6 @@ dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
 
 : {         key [char] } = if exit then tail { ; immediate
 
-( Tick )
-
-: ' ( "name" -- xt|0 ) word find! ;
-
-( Tail recurse to current definition )
-
-: recurse ( "word" -- )
-latest
-['] lit compile, ,
-['] jump compile,
-; immediate
 
 1 1 + dup * dup * dup * constant 256
 
@@ -358,61 +379,27 @@ hex-mode @ if .hex else .decimal then space ;
 : ? ( addr -- ) @ . ;
 
 
-( Forth reference implementations for s=, type, word and find )
+( String equality -- repeats ":q" in quarter )
 
-{
+: s= ( a1 a2 -- flag )
+over over c@ swap c@ over ( a1 a2 c2 c1 c2 ) = if
+[ 0 ] literal = if drop drop [ 0 1 - ] literal exit then
+1 + swap 1 + recurse
+then drop drop drop [ 0 ] literal ;
 
-  ( String equality )
+( Find )
 
-  : s= ( a1 a2 -- flag )
-  over over c@ swap c@ over ( a1 a2 c2 c1 c2 ) = if
-  0 = if drop drop 0 1 - exit then
-  1 + swap 1 + tail s=
-  then drop drop drop 0 ;
+: find-loop ( s x -- x )
+dup if ( s x )
+dup hidden? if xt->next tail find-loop then
+over over ( s x s x ) xt->name ( s x s s2 ) s= if ( s x ) swap drop exit
+then xt->next tail find-loop
+then ( s xt ) drop drop 0 ( xt might not be 0 in case word is hidden ) ;
 
-  ( String print )
-
-  : type ( a -- )
-  dup c@ ( a c ) dup if ( a c ) emit ( a ) 1 + tail type
-  then drop drop ;
-
-  ( Word )
-
-  : is-white ( c -- flag ) bl swap < 0 1 - xor ; ( <= 32 )
-
-  : skip-leading-whitespace
-  key dup is-white if ( c )
-  drop tail skip-leading-whitespace ( keep skipping... )
-  then c, ( collect first char ) ;
-
-  : collect-while-not-whitespace
-  key dup is-white if ( c )
-  drop 0 c, exit ( add null-terminator )
-  then c, tail collect-while-not-whitespace ( colect & keep collecting... ) ;
-
-  : word, ( "name" -- str ) here skip-leading-whitespace collect-while-not-whitespace ;
-  : word ( "name" -- str ) word, dup here-pointer ! ;
-
-  ( Find )
-
-  : find-loop ( s x -- x )
-  dup if ( s x )
-  dup hidden? if xt->next tail find-loop then
-  over over ( s x s x ) xt->name ( s x s s2 ) s= if ( s x ) swap drop exit
-  then xt->next tail find-loop
-  then ( s xt ) drop drop 0 ( xt might not be 0 in case word is hidden ) ;
-
-  : find ( string -- xt|0 ) latest find-loop ;
-  : find! ( "name" -- xt|0 )
-  dup find dup if swap drop exit then
-  drop type [char] ? emit cr crash-only-during-startup ;
-
-  hide collect-while-not-whitespace
-  hide find-loop
-  hide is-white
-  hide skip-leading-whitespace
-
-}
+: find ( string -- xt|0 ) latest find-loop ;
+: find! ( "name" -- xt|0 )
+dup find dup if swap drop exit then
+drop type [char] ? emit cr crash-only-during-startup ;
 
 ( Colon compier: ":" )
 
@@ -449,18 +436,21 @@ hide <patch
 hide ahead>
 hide base
 hide collect-string
+hide collect-while-not-whitespace
 hide compiling
 hide convert-digit
 hide decimal-digit?
 hide digit?
 hide dot-loop
 hide extended-digit?
+hide find-loop
 hide hex-digit?
 hide hex-mode
+hide is-white
 hide number-loop
 hide print-digit
 hide rot
 hide show-if-not-hidden
+hide skip-leading-whitespace
 hide space
 hide words-continue
-hide ~
