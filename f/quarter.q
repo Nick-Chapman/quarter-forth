@@ -13,7 +13,6 @@ tick, compile, literal, if, then, open-paren:start-comment )
 
 :h ~H~@ ; (here)
 :j ~' 'L#~>~, 'J#~> ; (jump)
-( TODO: r - recurse )
 :q ~O~O~C~W~C~O~= i 0# ~= i ~P~P 01-# ~X t ~1~+~W~1~+ jq t ~P~P~P 0# ; (s=)
 :p ~D~C~D i ~.~1~+ jp t ~P~P ; (type)
 :n 11+D*D*D+#~W~< ; (is-white)
@@ -24,13 +23,12 @@ tick, compile, literal, if, then, open-paren:start-comment )
 :g ~D i ~D ~Y i ~G jg t ~O~O~N~q i ~W~P~X t ~G jg t ~P~P~0 ; (find-loop)
 :u ~Z~g ; (find)
 :f ~D~u~D i ~W~P~X t ~P ~p ^?# ~.~M~* ; (find!)
-:` ~^~\ ; ( literal-char-comma -- TODO inline, and rename \ as ` )
 
 ( interpreter and compiler )
-h `]0\ h`[0\E :[# ~w~W~O~q i ~P  ~X t ~D~f~D i ~W~P        ~V j[         t ~P~p ^?#~.~M~A j[;
-h `;0\        :]# ~w~W~O~q i ~P~;~X t ~D~f~D i ~W~P ~D~I i ~V j] t ~> j] t ~P~p ^?#~.~M~A j];
-h `:0\E ~v~E j] ;
+h ^]\0\ h^[\0\E :[# ~w~W~O~q i ~P  ~X t ~D~f~D i ~W~P        ~V j[         t ~P~p ^?#~.~M~A j[;
+h ^;\0\         :]# ~w~W~O~q i ~P~;~X t ~D~f~D i ~W~P ~D~I i ~V j] t ~> j] t ~P~p ^?#~.~M~A j];
+h ^:\0\E ~v~E j] ;
 
-h `'0\E ~w~f ; ( tick )
+h ^'\0\E ~w~f ; ( tick )
 
 [
