@@ -69,7 +69,7 @@ word find! dup if x-see then ;
 2 -
 dup 2 - sp > if ( the 2 is for the extra item while processing )
 dup @ .
-tail .s-continue
+recurse
 then
 drop
 ;
@@ -98,7 +98,7 @@ then
 dup if >r dup >r ( xt )
 execute
 r> r> ( xt n )
-1 - tail times
+1 - recurse
 then drop drop
 ;
 
@@ -114,7 +114,7 @@ get-key constant old-key
 over execute
 cr ." (press any key; escape to exit)" cr
 raw-key is-escape if drop drop exit ( quit when escape key pressed )
-then cr tail pag-continue ;
+then cr recurse ;
 
 ( Paginated dump )
 : pag ( start-addr xt -- ) swap pag-continue ;

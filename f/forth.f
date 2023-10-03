@@ -52,13 +52,13 @@ latest compile lit , compile jump
 
 : skip-leading-whitespace
 key dup is-white if ( c )
-drop tail skip-leading-whitespace ( keep skipping... )
+drop recurse ( keep skipping... )
 then c, ( collect first char ) ;
 
 : collect-while-not-whitespace
 key dup is-white if ( c )
 drop 0 c, exit ( add null-terminator )
-then c, tail collect-while-not-whitespace ( colect & keep collecting... ) ;
+then c, recurse ( colect & keep collecting... ) ;
 
 : word, ( "name" -- str )
 here skip-leading-whitespace collect-while-not-whitespace ;
@@ -123,7 +123,7 @@ then drop drop ;
 
 : collect-string
 key dup [char] " = if exit
-then c, tail collect-string
+then c, recurse
 ;
 
 ( Compile code for a literal string, leaving address on stack )
@@ -209,7 +209,7 @@ dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
 ( Output )
 
 : space     [ bl ] literal emit ;
-: spaces    dup if space 1 - tail spaces then drop ;
+: spaces    dup if space 1 - recurse then drop ;
 
 ( Bools )
 
@@ -347,7 +347,7 @@ dup c@ dup 0 = if 2drop ( acc ) 1 exit
 then ( acc str c ) dup digit? ( acc str c flag )
 dup 0 = if 2drop 2drop 0 exit
 then drop convert-digit rot base * + swap char+ ( acc' str' )
-tail number-loop
+recurse
 ;
 
 : number? ( str -- u 1 | 0 )
@@ -402,9 +402,9 @@ then drop drop drop [ 0 ] literal ;
 
 : find-loop ( s x -- x )
 dup if ( s x )
-dup hidden? if xt->next tail find-loop then
+dup hidden? if xt->next recurse then
 over over ( s x s x ) xt->name ( s x s s2 ) s= if ( s x ) swap drop exit
-then xt->next tail find-loop
+then xt->next recurse
 then ( s xt ) drop drop 0 ( xt might not be 0 in case word is hidden ) ;
 
 : find ( string -- xt|0 ) latest find-loop ;
@@ -417,9 +417,9 @@ drop type [char] ? emit cr crash-only-during-startup ;
 : compiling
 word
 dup s" ;" s= if drop ret, exit then
-dup find dup if swap drop dup immediate? if execute else compile, then tail compiling
-then drop number? if ['] lit compile, , tail compiling
-then ." ** Colon compiler: '" type ." ' ?" cr crash-only-during-startup tail compiling
+dup find dup if swap drop dup immediate? if execute else compile, then recurse
+then drop number? if ['] lit compile, , recurse
+then ." ** Colon compiler: '" type ." ' ?" cr crash-only-during-startup recurse
 ;
 
 : : word, entry, compiling ;
@@ -429,9 +429,9 @@ then ." ** Colon compiler: '" type ." ' ?" cr crash-only-during-startup tail com
 : [
 word
 dup s" ]" s= if drop exit then
-dup find dup if swap drop execute tail [
-then drop number? if tail [
-then ." ** Interpreter: '" type ." ' ?" cr crash-only-during-startup tail [
+dup find dup if swap drop execute recurse
+then drop number? if recurse
+then ." ** Interpreter: '" type ." ' ?" cr crash-only-during-startup recurse
 ; immediate
 
 ( And enter! ) [

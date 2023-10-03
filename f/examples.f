@@ -33,8 +33,8 @@
 : collatz
 dup .
 dup 1 = if drop exit then
-dup even? if /2 tail collatz then
-3 * 1 + tail collatz
+dup even? if /2 recurse then
+3 * 1 + recurse
 ;
 
 : z

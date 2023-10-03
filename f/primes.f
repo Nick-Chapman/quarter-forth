@@ -6,7 +6,7 @@
 dup c@ ( n list cand|0 ) dup 0= if drop 2drop false exit
 then -rot swap rot over swap ( list n n cand )
 divisible-by if 2drop true exit then
-swap ( n list ) char+ tail any-divide
+swap ( n list ) char+ recurse
 ;
 
 ( Fixed table of small primes below 16 )
@@ -20,7 +20,7 @@ constant primes-below-16
 dup 256 = if drop exit then
 dup is-small-prime if
 dup c, ( write prime here )
-then 1 + tail small-loop
+then 1 + recurse
 ;
 
 ( Generate table of primes under 256 at compile time )
@@ -37,12 +37,12 @@ primes-below-256 any-divide invert
 : big-loop ( n list -- )
 dup 0 = if drop exit then
 dup is-big-prime if dup .
-then 1 + tail big-loop
+then 1 + recurse
 ;
 
 : emit-list ( list -- )
 dup c@ ( list elem ) dup 0= if 2drop exit then
-( list n ) . char+ tail emit-list
+( list n ) . char+ recurse
 ;
 
 : primes

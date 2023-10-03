@@ -37,18 +37,18 @@ exit ( stop filling )
 
 then ( a c ) dup is-backspace if ( a c )
 
-over at-start-of-buffer if drop tail fill-loop ( ignore backspace )
+over at-start-of-buffer if drop recurse ( ignore backspace )
 
 then dup echo space echo ( Handle the backspace visually )
 1 - tail fill-loop ( Move the pointer back one step  )
 
-then dup is-printable 0= if drop tail fill-loop ( ignore non-printable )
+then dup is-printable 0= if drop recurse ( ignore non-printable )
 
-then over is-space-left-in-buffer 0= if drop tail fill-loop ( ignore char )
+then over is-space-left-in-buffer 0= if drop recurse ( ignore char )
 
 then ( a c )
 echo 1 + ( show char and record in buffer )
-tail fill-loop
+recurse
 ;
 
 : fill

@@ -21,8 +21,8 @@ c, 1 +
 
 : copy-colon-body ( a -- )
 dup c@ is-ret if drop ret, exit
-then dup c@ is-call if copy-call tail copy-colon-body
-then copy-byte tail copy-colon-body
+then dup c@ is-call if copy-call recurse
+then copy-byte recurse
 ;
 
 : copy-colon-def ( "src" "copy" -- )

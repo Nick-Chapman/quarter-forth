@@ -16,7 +16,7 @@ then rshift if ( n1 hn2 ) ( R: acc )
 over r> + >r ( n1 hn2 ) ( R: acc' )
 ( fall through )
 then swap double swap ( dn1 hn2 ) ( R: acc' )
-tail acc-mult
+recurse
 ;
 
 : * ( u1 u2 -- u3 )
