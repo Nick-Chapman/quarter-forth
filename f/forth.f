@@ -4,8 +4,6 @@
 ' [ immediate^
 ' ( immediate^
 
-( TODO: define nested comments here! )
-
 : immediate
 latest immediate^ ;
 
@@ -73,6 +71,24 @@ word c@ ;
 
 : [char] ( comp: "name" -- ) ( run: -- c )
 char [compile] literal ; immediate
+
+
+( Nested comments )
+
+( We defined basic comments in quarter.q -- now we define comments which properly nest. )
+
+: skip-to-close ( level -- )
+key dup
+[char] ( = if drop 1 + recurse then
+[char] ) = if dup 0 = if drop exit then 1 - then
+recurse ;
+
+: (
+0 skip-to-close ; immediate
+
+( Now(we(have)nested)comments -- hurrah!)
+
+( fi ( fo ) fum )
 
 
 ( Defining words )
@@ -238,11 +254,6 @@ dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
 ( Misc )
 
 : +! ( n a ) swap over @ + swap ! ;
-
-( Alternative comments, useful since parens don't nest -- TODO: fix this! )
-
-: {         key [char] } = if exit then tail { ; immediate
-
 
 1 1 + dup * dup * dup * constant 256
 

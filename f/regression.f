@@ -179,5 +179,3 @@ hide one
 hide sq
 hide two
 hide v
-
-{ words-since char ) emit cr }
