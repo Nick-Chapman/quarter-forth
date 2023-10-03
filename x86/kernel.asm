@@ -92,8 +92,8 @@ setup_dispatch_table:
     set 'X', _exit
     set 'Y', _hidden_query
     set 'Z', _latest
-    set '`', _c_comma
     set '^', _key
+    set '`', _c_comma
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
