@@ -45,4 +45,4 @@ Bootstrapping continues in [Forth](f/system.f), defining all the standard Forth 
 
 Particular thanks go to the _tumble forth_ tutorial, which guided my first steps.
 
-Future plans are ideas are [here](notes/plan.txt).
+Articles in preparation for being blogged are [here](blog).
