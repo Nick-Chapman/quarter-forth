@@ -48,6 +48,8 @@ latest compile lit , compile jump
 
 ( Word )
 
+: bl [ 1 1 + dup * dup * dup + ] literal ;
+
 : is-white ( c -- flag ) bl swap < 0 1 - xor ; ( <= 32 )
 
 : skip-leading-whitespace

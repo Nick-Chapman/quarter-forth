@@ -331,12 +331,6 @@ _one:
     dw 1
     ret
 
-defword "bl" ; ascii code for space
-_bl:
-    call _lit
-    dw 32
-    ret
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Numeric operations; TODO: M*, general shifts, bitwise-ops
 
