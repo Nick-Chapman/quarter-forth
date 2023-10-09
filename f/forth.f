@@ -1,3 +1,5 @@
+( Start the Forth Interpreter which was defined in quarter.q )
+[
 
 ( Set the immediate bit on some words defined in quarter )
 
@@ -114,6 +116,11 @@ here swap !
 : variable  create 0 , ;
 : constant  create , does> @ ;
 
+(
+  ( Versions of constant/variable which avoid create/does> )
+  : constant ( x "name" -- ) word, entry, compile lit , ret, ;
+  : variable ( "name" -- ) here 0 , constant ;
+)
 
 ( Emit a string -- repeats ":p" in quarter )
 : type ( a -- )
@@ -225,9 +232,6 @@ dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
 
 : ?dup  ( x -- 0 | x x )    dup if dup then ;   ( duplicate x if non-zero )
 : nip   ( a b -- b )        swap drop ;         ( drop item under stack top. )
-
-: rot   >r swap r> swap ;
-: -rot  swap >r swap r> ;
 
 : 2dup  over over ;
 : 2drop drop drop ;
@@ -414,6 +418,11 @@ then ( s xt ) drop drop 0 ( xt might not be 0 in case word is hidden ) ;
 dup find dup if swap drop exit then
 drop type [char] ? emit cr crash-only-during-startup ;
 
+( Tick )
+
+: ' ( "word" -- xt )
+word find! ;
+
 ( Colon compier: ":" )
 
 : compiling
@@ -438,7 +447,6 @@ then ." ** Interpreter: '" type ." ' ?" cr crash-only-during-startup recurse
 
 ( And enter! ) [
 
-hide -rot
 hide .hex1
 hide 10
 hide 16
@@ -462,7 +470,6 @@ hide hex-mode
 hide is-white
 hide number-loop
 hide print-digit
-hide rot
 hide show-if-not-hidden
 hide skip-leading-whitespace
 hide space

@@ -18,4 +18,4 @@ hide startup-is-complete
 hide crash-only-during-startup
 
 here wipe
-Everything after the call to "wipe" will be wiped!
+( Everything after the call to "wipe" will be wiped! )

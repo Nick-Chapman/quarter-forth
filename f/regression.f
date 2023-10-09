@@ -20,7 +20,7 @@
 ( Heap allocation )
 
 here            here x
-here 42 ,       here cell - x
+here 42 ,       here swap - cell x
 here 7 allot    here 7 - x
 3 cells         6 x
 
@@ -77,6 +77,7 @@ false false and  false x
 
 0 1 - constant -1 ( helper word for minus one! )
 
+( Requires signed comparison )
 -1 0<       true x
  0 0<       false x
  1 0<       false x
@@ -105,12 +106,15 @@ variable eggs
 e e e e eggs @ 4 x
 e e e eggs @ 7 x
 
-variable v
-0 2 - v ! ( set v to -2 )
-( c@ gets the bytes in little endian )
-v c@       254 x
-v c@ 1 +   255 x
-
+(
+  ( Test makes architectural assumptions... )
+  variable v
+  0 3 - v ! ( set v to -3 )
+  ( c@ gets the bytes in little endian )
+  v c@       253 x
+  v 1 + c@   255 x
+  hide v
+)
 
 ( Cell and Char size )
 
@@ -178,4 +182,3 @@ hide life
 hide one
 hide sq
 hide two
-hide v

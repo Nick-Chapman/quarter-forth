@@ -30,5 +30,3 @@ h ^;`0`         :]# ~w~W~O~q i ~P~;~X t ~D~f~D i ~W~P ~D~I i ~V j] t ~> j] t ~P~
 h ^:`0`E ~v~E j] ;
 
 h ^'`0`E ~w~f ; ( tick )
-
-[
