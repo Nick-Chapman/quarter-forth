@@ -4,7 +4,7 @@ A new Forth system, currently targeting bare metal x86, but which aims to minimi
 
 Quarter Forth is named for the _not-quite_ Forth language (_quarter_) used while [bootstrapping](bootstrapping.md).
 
-I've blogged about Forth and Quarter [here](https://github.com/Nick-Chapman/blog)
+I've blogged about Forth and Quarter [here](https://nick-chapman.github.io/blog/)
 
 ### Bootstrapping
 
