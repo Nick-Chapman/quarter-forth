@@ -4,6 +4,8 @@ A new Forth system, currently targeting bare metal x86, but which aims to minimi
 
 Quarter Forth is named for the _not-quite_ Forth language (_quarter_) used while [bootstrapping](bootstrapping.md).
 
+I've blogged about Forth and Quarter [here](https://github.com/Nick-Chapman/blog)
+
 ### Bootstrapping
 
 The [Kernel](kernel.asm) provides the core primitive, and starts a bare _key-dispatch-execute_ loop, so the [bootstrapping](forth.list) process can begin.
@@ -44,5 +46,3 @@ Bootstrapping continues in [Forth](f/system.f), defining all the standard Forth 
 - [Tumble Forth, Virgil Dupras](https://tumbleforth.hardcoded.net)
 
 Particular thanks go to the _tumble forth_ tutorial, which guided my first steps.
-
-Articles in preparation for being blogged are [here](blog).
