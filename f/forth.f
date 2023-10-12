@@ -47,6 +47,8 @@ latest compile lit , compile jump
 : then   <patch                      ; immediate
 : else   ['] branch compile, ahead> swap <patch ; immediate
 
+: begin here ; immediate
+: again ['] branch compile, here - , ; immediate
 
 ( Word )
 
