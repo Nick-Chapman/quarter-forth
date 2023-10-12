@@ -22,7 +22,7 @@ tick, compile, literal, if, then, open-paren:start-comment )
 :w ~v~D~H~! ; (word)
 :g ~D i ~D ~Y i ~G jg t ~O~O~N~q i ~W~P~X t ~G jg t ~P~P~0 ; (find-loop)
 :u ~Z~g ; (find)
-:f ~D~u~D i ~W~P~X t ~P ~p ^?# ~.~M~A ; (find!)
+:f ~D~u~D i ~W~P~X t ~P ~p ^?# ~.~M~A~0; (find!)
 
 ( interpreter and compiler )
 h ^]`0` h^[`0`E :[# ~w~W~O~q i ~P  ~X t ~D~f~D i ~W~P        ~V j[         t ~P~p ^?#~.~M~A j[;

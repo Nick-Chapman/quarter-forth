@@ -93,8 +93,10 @@ false false and  false x
  1 abs     1 x
 -1 abs     1 x
 
+(
  1 0 ?dup   0 x 1 x
  1 2 ?dup   2 x 2 x 1 x
+)
 
 
 ( misc: +! )

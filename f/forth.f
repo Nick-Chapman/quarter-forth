@@ -100,6 +100,7 @@ recurse ;
 : 2 [ 1 1 + ] literal ;
 : 3 [ 2 1 + ] literal ;
 
+( TypeChecker not happy with create/does>
 : create
 word, entry,
 compile lit     ( 3 )
@@ -115,12 +116,11 @@ here swap !
 
 : variable  create 0 , ;
 : constant  create , does> @ ;
+)
 
-(
   ( Versions of constant/variable which avoid create/does> )
   : constant ( x "name" -- ) word, entry, compile lit , ret, ;
   : variable ( "name" -- ) here 0 , constant ;
-)
 
 ( Emit a string -- repeats ":p" in quarter )
 : type ( a -- )
@@ -168,8 +168,11 @@ then c, recurse
 here
 ['] ." execute
 ret,
+(
 dup execute
-here-pointer !
+here-pointer ! ( TypeChecker not happy )
+)
+execute
 ;
 
 ( Now we can print a banner for this file )
@@ -198,14 +201,14 @@ drop
 ( hide )
 
 : x-hide ( xt|0 -- )
-dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
+dup if hidden^ exit then drop ( dont try to flip bit on a 0-xt )
 ;
 
 : hide ( "name" -- ) ' x-hide ;
 
 ( Standard Forth words )
 
-: allot     here + here-pointer ! ;
+: allot     here swap + here-pointer ! ; ( appease TypeChecker with swap )
 
 ( This is a 16bit Forth; cell size is 2. Chars have size 1 )
 
@@ -230,7 +233,10 @@ dup if hidden^ exit then ( dont try to flip bit on a 0-xt )
 
 ( Stack manipulation )
 
+( TypeChecker not happy with branch-dependent stack heights )
+(
 : ?dup  ( x -- 0 | x x )    dup if dup then ;   ( duplicate x if non-zero )
+)
 : nip   ( a b -- b )        swap drop ;         ( drop item under stack top. )
 
 : 2dup  over over ;
@@ -347,6 +353,8 @@ then
 
 : base ( -- n )
 hex-mode @ if 16 else 10 then ;
+
+( TODO: rewrite to avoid branch-dependent stacks heights, for sake of TypeChecker )
 
 : number-loop ( acc str -- u 1 | 0 )
 dup c@ dup 0 = if 2drop ( acc ) 1 exit
