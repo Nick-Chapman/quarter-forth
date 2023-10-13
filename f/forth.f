@@ -9,6 +9,7 @@
 : immediate
 latest immediate^ ;
 
+: here  here-pointer @ ;
 
 : literal ( comp: x -- ) ( run: -- x ) ( repeats ":#" in quarter )
 [ ' lit ] lit [ , ] compile, , ; immediate
@@ -29,16 +30,15 @@ latest immediate^ ;
 : tail ( "name" -- )
 ' [compile] literal lit [ ' jump , ] compile, ; immediate
 
-( Tail recurse to current definition )
+( Branch to beginning of current definition )
 : recurse ( "word" -- )
-latest compile lit , compile jump
+compile lit latest , compile jump
+( compile branch latest here - , ) ( TODO: simpler def when TypeChecker is happy )
 ; immediate
 
 
 ( We defined "if" and "then" as :i and :t in quarter )
 ( But we'll define them again here, and also "else" )
-
-: here  here-pointer @ ;
 
 : ahead> ( -- a ) here 0 , ;
 : <patch ( a -- ) dup here swap - swap ! ;
@@ -83,6 +83,7 @@ char [compile] literal ; immediate
 
 ( We defined basic comments in quarter.q -- now we define comments which properly nest. )
 
+( TypeChecker not happy when recurse uses branch instead of jump )
 : skip-to-close ( level -- )
 key dup
 [char] ( = if drop 1 + recurse then
@@ -378,6 +379,8 @@ then
 [char] 0 + emit
 ;
 
+( expect TypeChecker difficulty here: recursive call at different stack height )
+( i.e. polymorphic recursion; Mycroft recursion)
 : dot-loop ( u -- )
 dup 0= if drop exit ( stop; don't print leading zeros ) then
 10 /mod ( u%10 u/10 -- ) dot-loop print-digit
