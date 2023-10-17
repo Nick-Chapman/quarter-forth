@@ -429,7 +429,7 @@ then ( s xt ) drop drop 0 ( xt might not be 0 in case word is hidden ) ;
 : find ( string -- xt|0 ) latest find-loop ;
 : find! ( "name" -- xt|0 )
 dup find dup if swap drop exit then
-drop type [char] ? emit cr crash-only-during-startup ;
+swap type [char] ? emit cr crash-only-during-startup ;
 
 ( Tick )
 
