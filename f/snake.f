@@ -71,8 +71,8 @@ black bg !
 here max-len 1 + cells allot constant xta
 here max-len 1 + cells allot constant yta
 
-: xpos ( n -- ) cells xta + ;
-: ypos ( n -- ) cells yta + ;
+: xpos ( n -- ) cells xta swap + ;
+: ypos ( n -- ) cells yta swap + ;
 
 variable direction
 variable going-vertical
