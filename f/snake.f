@@ -114,7 +114,7 @@ false escaped !
 : shift-xy dup shift-x shift-y ;
 
 : head-to-tail-loop ( n -- n' )
-dup 0= if exit then
+dup 0= if drop exit then
 dup shift-xy 1 - recurse ;
 
 : head-to-tail   len @ head-to-tail-loop ;
@@ -135,7 +135,7 @@ then ;
 : pause1  going-vertical @ if tick then tick ; ( half speed when going vertical )
 : do-pause   ['] pause1 slowness @ times ;
 
-: speed-up slowness @ 1 - dup if slowness ! then ;
+: speed-up slowness @ 1 - dup if slowness ! exit then drop ;
 
 : is-escape  27 = ;
 : is-return  13 = ;
@@ -160,6 +160,8 @@ char @ constant snake-char
 snake-char =
 ;
 
+: wait KEY drop ;
+
 : app-loop
 do-pause
 key? 256 /mod control
@@ -167,7 +169,7 @@ escaped @ if cls 0 0 at-xy ." Escape!" cr false exit then
 clear-tail head-to-tail move-head
 collide? if 1 0 at-xy ." CRASH" true exit then
 draw-head
-len @ max-len = if 1 0 at-xy ." YOU WIN            " KEY KEY true exit then
+len @ max-len = if 1 0 at-xy ." YOU WIN            " wait wait true exit then
 recurse
 ;
 
@@ -178,7 +180,7 @@ set-start-state
 draw-head
 app-loop ( again? )
 if
-."  (press any key to try again)" cr KEY
+."  (press any key to try again)" cr wait
 snake
 then
 set-underline-cursor
