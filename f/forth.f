@@ -357,20 +357,16 @@ then
 : base ( -- n )
 hex-mode @ if 16 else 10 then ;
 
-( TODO: rewrite to avoid branch-dependent stacks heights, for sake of TypeChecker )
-
-: number-loop ( acc str -- u 1 | 0 )
+: number-loop ( acc str -- u flag )
 dup c@ dup 0 = if 2drop ( acc ) 1 exit
 then ( acc str c ) dup digit? ( acc str c flag )
-dup 0 = if 2drop 2drop 0 exit
+dup 0 = if 2drop drop 0 exit
 then drop convert-digit rot base * + swap char+ ( acc' str' )
 recurse
 ;
 
-: number? ( str -- u 1 | 0 )
-dup 0 swap number-loop ( s u 1 | s 0 )
-dup if rot drop
-then
+: number? ( str -- u flag )
+0 swap number-loop ( s u 1 | s acc 0 )
 ;
 
 ( Print as unsigned decimal )
@@ -442,8 +438,8 @@ word find! ;
 word
 dup s" ;" s= if drop ret, exit then
 dup find dup if swap drop dup immediate? if execute else compile, then recurse
-then drop number? if ['] lit compile, , recurse
-then ." ** Colon compiler: '" type ." ' ?" cr crash-only-during-startup recurse
+then drop dup number? if nip ['] lit compile, , recurse
+then drop ." ** Colon compiler: '" type ." ' ?" cr crash-only-during-startup recurse
 ;
 
 : : word, entry, compiling ;
@@ -454,8 +450,8 @@ then ." ** Colon compiler: '" type ." ' ?" cr crash-only-during-startup recurse
 word
 dup s" ]" s= if drop exit then
 dup find dup if swap drop execute recurse
-then drop number? if recurse
-then ." ** Interpreter: '" type ." ' ?" cr crash-only-during-startup recurse
+then drop dup number? if nip recurse
+then drop ." ** Interpreter: '" type ." ' ?" cr crash-only-during-startup recurse
 ; immediate
 
 ( And enter! ) [
