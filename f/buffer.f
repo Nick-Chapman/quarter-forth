@@ -27,6 +27,8 @@ echo-enabled @ variable echo-enabled echo-enabled ! echo-off
 : ok
 echo-enabled @ if ."  ok" cr then ;
 
+: -1   0 1 - ;
+
 : fill-loop ( a -- a' )
 raw-key ( a c )
 over over swap ( a c c a ) c!
@@ -40,7 +42,7 @@ then ( a c ) dup is-backspace if ( a c )
 over at-start-of-buffer if drop recurse ( ignore backspace )
 
 then dup echo space echo ( Handle the backspace visually )
-1 - tail fill-loop ( Move the pointer back one step  )
+-1 + tail fill-loop ( Move the pointer back one step  )
 
 then dup is-printable 0= if drop recurse ( ignore non-printable )
 
