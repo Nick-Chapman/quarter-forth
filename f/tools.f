@@ -17,9 +17,9 @@ sp here -
 
 : memv ( report verbose memory usage info )
 ." Memory (hex)" cr
-here      ." here      = " .hex4 cr
-sp        ." sp        = " .hex4 cr
-sp0       ." sp0       = " .hex4 cr
+here      ." here      = " as-num .hex4 cr
+sp        ." sp        = " as-num .hex4 cr
+sp0       ." sp0       = " as-num .hex4 cr
 sp here - ." Available = " .hex4 cr
 ;
 

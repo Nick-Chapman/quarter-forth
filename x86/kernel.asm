@@ -269,6 +269,9 @@ defword "rsp0" ; ( -- addr )
     pspush ax
     ret
 
+defword "as-num" ; ( x -- num ) ;; NOP for sake of Typechecking
+    ret
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Stack manipulation
 
