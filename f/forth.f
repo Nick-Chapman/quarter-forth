@@ -32,8 +32,8 @@ latest immediate^ ;
 
 ( Branch to beginning of current definition )
 : recurse ( "word" -- )
-compile lit latest , compile jump
-( compile branch latest here - , ) ( TODO: simpler def when TypeChecker is happy )
+( compile lit latest , compile jump ) ( OLD VERSION )
+compile branch latest here - ,
 ; immediate
 
 
