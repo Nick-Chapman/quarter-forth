@@ -8,12 +8,11 @@
 
 echo_enabled: dw 0 ;; Set to 1 to debug!
 
-param_stack_base equ 0
+return_stack_base equ 0 ; top of memory
+param_stack_base equ 0xfc00 ; allowing 1k for return stack (512 cells)
 
 start:
-    mov ax, 1000h
-    mov ss, ax
-    mov sp, 0
+    mov sp, return_stack_base
     mov bp, param_stack_base
 
     call _cls
@@ -131,15 +130,15 @@ defwordWithFlags (hidden_flag), %1
 
 %macro pspush 1
     sub bp, 2
-    mov [ds:bp], %1
+    mov [bp], %1
 %endmacro
 
 defwordHidden "underflow?"
 check_ps_underflow:
-    cmp bp, 0
-    jnz .ok
+    cmp bp, param_stack_base
+    jb .ok
     sub bp, 2
-    mov word [ds:bp], 0
+    mov word [bp], 0
     print "stack underflow."
     call _cr
     call _crash_only_during_startup
@@ -148,7 +147,7 @@ check_ps_underflow:
 
 %macro pspop 1
     call check_ps_underflow
-    mov %1, [ds:bp]
+    mov %1, [bp]
     add bp, 2
 %endmacro
 
@@ -265,7 +264,7 @@ defword "rsp" ; ( -- addr )
     ret
 
 defword "rsp0" ; ( -- addr )
-    mov ax, 0
+    mov ax, return_stack_base
     pspush ax
     ret
 
@@ -277,17 +276,17 @@ defword "as-num" ; ( x -- num ) ;; NOP for sake of Typechecking
 
 defword "dup"
 _dup:
-    mov ax, [ds:bp]
-    mov [ds:bp-2], ax
+    mov ax, [bp]
+    mov [bp-2], ax
     sub bp, 2
     ret
 
 defword "swap"
 _swap:
-    mov ax, [ds:bp]
-    mov bx, [ds:bp+2]
-    mov [ds:bp], bx
-    mov [ds:bp+2], ax
+    mov ax, [bp]
+    mov bx, [bp+2]
+    mov [bp], bx
+    mov [bp+2], ax
     ret
 
 defword "drop"
@@ -298,8 +297,8 @@ _drop:
 
 defword "over"
 _over:
-    mov ax, [ds:bp+2]
-    mov [ds:bp-2], ax
+    mov ax, [bp+2]
+    mov [bp-2], ax
     sub bp, 2
     ret
 
