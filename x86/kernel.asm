@@ -58,7 +58,6 @@ setup_dispatch_table:
     set 13 , _nop
     set ' ', _nop
     set '!', _store
-    set '*', _multiply
     set '+', _add
     set ',', _comma
     set '-', _minus
