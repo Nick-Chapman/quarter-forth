@@ -492,3 +492,11 @@ hide skip-leading-whitespace
 hide space
 hide words-continue
 hide rev-words-continue
+
+
+( Expect... )
+
+: x
+over = if drop exit then
+." Expect failed, got: " . cr crash-only-during-startup
+;

@@ -1,12 +1,5 @@
 .." Loading tools" cr
 
-( Expect... )
-
-: x
-over = if drop exit then
-." Expect failed, got: " . cr crash-only-during-startup
-;
-
 ( Tools for exploring mem and defs )
 
 : mem ( report bytes available )
