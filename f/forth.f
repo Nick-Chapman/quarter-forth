@@ -270,7 +270,21 @@ dup if hidden^ exit then drop ( dont try to flip bit on a 0-xt )
 
 : +! ( n a ) swap over @ + swap ! ;
 
-1 1 + dup * dup * dup * constant 256
+( Make the numbers we need )
+
+1 1 +
+constant 2
+
+2 1 + dup * 1 +
+constant 10
+
+2 dup * dup *
+constant 16
+
+16 dup *
+constant 256
+
+( Non-blocking key check )
 
 : akey?   key? 256 mod ;
 : ekey?   key? 256 / ;
@@ -313,20 +327,6 @@ compile 2drop
 dup 0= if 2drop exit then over 0 swap c! swap 1+ swap 1- recurse ;
 
 ( Support for numbers... )
-
-( Make the numbers we need )
-
-1 1 +
-constant 2
-
-2 1 + dup * 1 +
-constant 10
-
-2 dup * dup *
-constant 16
-
-16 dup *
-constant 256
 
 ( Behaviour of . and number? is modal  )
 
@@ -460,7 +460,6 @@ hide .hex1
 hide 10
 hide 16
 hide 2
-hide 256
 hide 256
 hide <patch
 hide ahead>
