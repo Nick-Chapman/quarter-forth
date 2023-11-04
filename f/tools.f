@@ -130,17 +130,21 @@ depth drop-if-not-zero
 
 ( Ascii char dump, paginated on 1k blocks )
 
+64 constant dump-width
+
 : dc ( a -- a+1 ) dup c@ emit-printable-or-dot 1 + ;
-: dc64 ( a -- a+64 ) dup .hex4 ." : " ['] dc 64 times cr ;
-: dc-oneK ( a -- a+1K ) ['] dc64 16 times ;
-: dump ( start-addr -- ) default-0 ['] dc-oneK pag ;
+: dump-line ( a -- a+64 ) dup .hex4 ." : " ['] dc dump-width times cr ;
+: dump-page ( a -- a+1K ) ['] dump-line 16 times ;
+: dump ( start-addr -- ) default-0 ['] dump-page pag ;
 
 ( xxd-style dump : hex-bytes + ascii to the side, paginated at 256 bytes )
+
+16 constant xxd-width
 
 : emit-byte ( c -- ) .hex2 space ;
 : db ( a -- a+1 ) dup c@ emit-byte 1 + ;
 : xxd-line ( a -- a+16 )
-dup .hex4 ." : " dup ['] db 16 times space drop ['] dc 16 times cr ;
+dup .hex4 ." : " dup ['] db xxd-width times space drop ['] dc xxd-width times cr ;
 : xxd-page ( a -- a+1K ) ['] xxd-line 16 times ;
 : xxd ( start-addr -- ) default-0 ['] xxd-page pag ;
 
@@ -163,8 +167,8 @@ hide @rel->abs
 hide c3
 hide db
 hide dc
-hide dc-oneK
-hide dc64
+hide dump-page
+hide dump-line
 hide default-0
 hide drop-if-not-zero
 hide e8
