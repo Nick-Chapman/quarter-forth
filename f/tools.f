@@ -3,11 +3,12 @@
 ( Tools for exploring mem and defs )
 
 : mem ( report bytes available )
-sp here -
+himem here -
 ." Bytes available: "
 . cr
 ;
 
+( Not so useful.
 : memv ( report verbose memory usage info )
 ." Memory (hex)" cr
 here      ." here      = " as-num .hex4 cr
@@ -15,6 +16,7 @@ sp        ." sp        = " as-num .hex4 cr
 sp0       ." sp0       = " as-num .hex4 cr
 sp here - ." Available = " .hex4 cr
 ;
+)
 
 ( Dump colon definitions )
 
