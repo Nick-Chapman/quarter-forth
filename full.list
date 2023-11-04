@@ -2,6 +2,7 @@
 
 f/quarter.q     # Basic compiler and interpreter.
 f/forth.f       # Now we have a pretty standard forth system
+f/x86-params.f
 f/tools.f       # Stack (.s), memory (mem,dump,xxd); decompiling (see).
 f/regression.f  # Regression tests for standard words.
 

@@ -130,7 +130,8 @@ depth drop-if-not-zero
 
 ( Ascii char dump, paginated on 1k blocks )
 
-64 constant dump-width
+screen-width 10 / 8 *
+constant dump-width
 
 : dc ( a -- a+1 ) dup c@ emit-printable-or-dot 1 + ;
 : dump-line ( a -- a+64 ) dup .hex4 ." : " ['] dc dump-width times cr ;
@@ -139,7 +140,8 @@ depth drop-if-not-zero
 
 ( xxd-style dump : hex-bytes + ascii to the side, paginated at 256 bytes )
 
-16 constant xxd-width
+dump-width 4 /
+constant xxd-width
 
 : emit-byte ( c -- ) .hex2 space ;
 : db ( a -- a+1 ) dup c@ emit-byte 1 + ;
@@ -169,6 +171,7 @@ hide db
 hide dc
 hide dump-page
 hide dump-line
+hide dump-width
 hide default-0
 hide drop-if-not-zero
 hide e8
@@ -186,3 +189,4 @@ hide see1
 hide see10
 hide xxd-line
 hide xxd-page
+hide xxd-width

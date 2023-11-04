@@ -14,7 +14,7 @@ constant key-buffer
 : is-space-left-in-buffer ( a -- flag ) key-buffer - key-buffer-size < ;
 
 : is-newline dup 13 = swap 10 = or ;
-: is-backspace 8 = ;
+: is-backspace backspace-code = ;
 : is-printable dup 32 >= swap 126 <= and ;
 
 
@@ -83,7 +83,6 @@ hide buffered-key
 hide echo
 hide fill
 hide fill-loop
-hide is-backspace
 hide is-newline
 hide is-printable
 hide is-space-left-in-buffer
