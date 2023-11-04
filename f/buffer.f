@@ -15,7 +15,7 @@ constant key-buffer
 
 : is-newline dup 13 = swap 10 = or ;
 : is-backspace 8 = ;
-: is-printable dup 32 >= swap 127 <= and ;
+: is-printable dup 32 >= swap 126 <= and ;
 
 
 ( Replace the inner echo-{enabled,on,off} )
