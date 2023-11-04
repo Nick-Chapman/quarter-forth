@@ -19,7 +19,13 @@ constant key-buffer
 
 
 ( Replace the inner echo-{enabled,on,off} )
-echo-enabled @ variable echo-enabled echo-enabled ! echo-off
+echo-enabled @
+hide echo-enabled
+variable echo-enabled
+echo-enabled !
+echo-off
+hide echo-on
+hide echo-off
 : echo-on true echo-enabled ! ;
 : echo-off false echo-enabled ! ;
 : echo echo-enabled @ if emit exit then drop ;
@@ -78,6 +84,7 @@ reset-kb-pointer fill buffered-key
 
 ( All text which follows must be within the max line length )
 
+hide -1
 hide at-start-of-buffer
 hide buffered-key
 hide echo
@@ -85,6 +92,7 @@ hide fill
 hide fill-loop
 hide is-newline
 hide is-printable
+hide is-backspace
 hide is-space-left-in-buffer
 hide kb-pointer
 hide key-buffer

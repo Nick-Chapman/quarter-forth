@@ -169,11 +169,11 @@ hide @rel->abs
 hide c3
 hide db
 hide dc
-hide dump-page
-hide dump-line
-hide dump-width
 hide default-0
 hide drop-if-not-zero
+hide dump-line
+hide dump-page
+hide dump-width
 hide e8
 hide emit-byte
 hide emit-printable-or-dot

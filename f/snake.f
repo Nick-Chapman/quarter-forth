@@ -189,6 +189,7 @@ set-underline-cursor
 hide -1
 hide app-loop
 hide at-xy
+hide bg
 hide black
 hide block
 hide block-down
@@ -202,9 +203,13 @@ hide colour
 hide control
 hide cyan
 hide dark-grey
+hide direction
 hide do-pause
 hide down
 hide draw-head
+hide escaped
+hide fg
+hide going-vertical
 hide green
 hide head-to-tail
 hide head-to-tail-loop
@@ -214,6 +219,7 @@ hide is-return
 hide isH
 hide isV
 hide left
+hide len
 hide light-blue
 hide light-cyan
 hide light-green
@@ -221,7 +227,9 @@ hide light-grey
 hide light-magenta
 hide light-red
 hide magenta
+hide max-len
 hide maybe-grow
+hide move-head
 hide nop
 hide pause1
 hide red
@@ -235,11 +243,13 @@ hide setV
 hide shift-x
 hide shift-xy
 hide shift-y
+hide slowness
 hide snake-char
 hide speed-up
 hide tick
 hide tick2
 hide up
+hide wait
 hide white
 hide xpos
 hide xta
