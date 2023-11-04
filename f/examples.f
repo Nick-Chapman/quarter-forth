@@ -1,4 +1,4 @@
-.." Loading examples ( " latest
+.." Loading examples" cr
 
 ( Large letter F. Adapted from "starting Forth", by Leo Brodie )
 
@@ -57,4 +57,3 @@ hide square
 hide star
 hide stars
 hide twice
-words-since char ) emit cr

@@ -185,31 +185,6 @@ execute
 : rot       >r swap r> swap ;
 : -rot      swap >r swap r> ;
 
-( "words": Print available words -- oldest first -- linear stack usage! )
-
-: show-if-not-hidden ( xt -- )
-dup hidden? if drop exit then xt->name type space
-;
-
-: rev-words-continue ( xtEarlier xt -- xtEarlier xt )
-over over = if exit then
-dup -rot xt->next rev-words-continue rot
-dup show-if-not-hidden
-drop
-;
-
-: words-since ( xtEarlier -- ) latest rev-words-continue drop drop ;
-: rev-words 0 words-since cr ;
-
-( "words": Print available words -- newest first -- avoid linear stack usage )
-
-: words-continue ( xt -- )
-dup 0 = if drop cr exit then
-dup show-if-not-hidden xt->next recurse
-;
-
-: words latest words-continue ;
-
 ( hide )
 
 : x-hide ( xt|0 -- )
@@ -487,11 +462,8 @@ hide hex-mode
 hide is-white
 hide number-loop
 hide print-digit
-hide show-if-not-hidden
 hide skip-leading-whitespace
 hide space
-hide words-continue
-hide rev-words-continue
 
 
 ( Expect... )

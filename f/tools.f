@@ -9,13 +9,13 @@ himem here -
 ;
 
 ( Not so useful.
-: memv ( report verbose memory usage info )
-." Memory (hex)" cr
-here      ." here      = " as-num .hex4 cr
-sp        ." sp        = " as-num .hex4 cr
-sp0       ." sp0       = " as-num .hex4 cr
-sp here - ." Available = " .hex4 cr
-;
+  : memv ( report verbose memory usage info )
+  ." Memory (hex)" cr
+  here      ." here      = " as-num .hex4 cr
+  sp        ." sp        = " as-num .hex4 cr
+  sp0       ." sp0       = " as-num .hex4 cr
+  sp here - ." Available = " .hex4 cr
+  ;
 )
 
 ( Dump colon definitions )
@@ -86,6 +86,32 @@ depth if
 ." stack is not empty: < " .s [char] > emit cr
 then
 ;
+
+( "words": Print available words -- oldest first -- linear stack usage! )
+
+: show-if-not-hidden ( xt -- )
+dup hidden? if drop exit then xt->name type space
+;
+
+(
+  : rev-words-continue ( xtEarlier xt -- xtEarlier xt )
+  over over = if exit then
+  dup -rot xt->next rev-words-continue rot
+  dup show-if-not-hidden
+  drop
+  ;
+  : words-since ( xtEarlier -- ) latest rev-words-continue drop drop ;
+  : rev-words 0 words-since cr ;
+)
+
+( "words": Print available words -- newest first -- avoid linear stack usage )
+
+: words-continue ( xt -- )
+dup 0 = if drop cr exit then
+dup show-if-not-hidden xt->next recurse
+;
+
+: words latest words-continue ;
 
 ( Repeated execution )
 
@@ -189,6 +215,8 @@ hide pag-continue
 hide raw-key
 hide see1
 hide see10
+hide show-if-not-hidden
+hide words-continue
 hide xxd-line
 hide xxd-page
 hide xxd-width
