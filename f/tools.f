@@ -20,20 +20,14 @@ himem here -
 
 ( Dump colon definitions )
 
-: e8 14 16 * 8 + ;
-: c3 12 16 * 3 + ;
-: is-call e8 = ;
-: is-ret c3 = ;
-
-: @rel->abs
-dup @ + 2 +
-;
+: is-call call-op-code = ;
+: is-ret ret-op-code = ;
 
 ( Disassemble code at a given address )
 
 : disassemble ( a -- )
 dup c@ is-call if ( a )
-  dup 1 + @rel->abs xt->name ( a name )
+  dup 1 + @call xt->name ( a name )
   type space ( a )
   3 + recurse
 then
@@ -193,8 +187,6 @@ latest ['] see10 pag ( TODO: paginate )
 ;
 
 hide .s-continue
-hide @rel->abs
-hide c3
 hide db
 hide dc
 hide default-0
@@ -202,7 +194,6 @@ hide drop-if-not-zero
 hide dump-line
 hide dump-page
 hide dump-width
-hide e8
 hide emit-byte
 hide emit-printable-or-dot
 hide is-call
