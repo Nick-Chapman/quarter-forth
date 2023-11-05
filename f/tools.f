@@ -23,10 +23,25 @@ himem here -
 : is-call call-op-code = ;
 : is-ret ret-op-code = ;
 
+: is-xt-loop ( cand dict )
+dup 0= if 2drop false exit then
+2dup = if 2drop true exit then
+xt->next recurse
+;
+
+: is-xt  latest is-xt-loop ;
+
 ( Disassemble code at a given address )
 
+: is-call-slot ( addr -- bool )
+dup c@ is-call
+if 1 + @call is-xt
+else drop false
+then
+;
+
 : disassemble ( a -- )
-dup c@ is-call if ( a )
+dup is-call-slot if ( a )
   dup 1 + @call xt->name ( a name )
   type space ( a )
   3 + recurse
@@ -54,10 +69,14 @@ word find! dup if x-see then ;
 
 ( Show stack non destructively )
 
+: .item
+dup is-xt if xt->name [char] ' emit type space exit then .
+;
+
 : .s-continue
 2 -
 dup 2 - sp > if ( the 2 is for the extra item while processing )
-dup @ .
+dup @ .item
 recurse
 then
 drop
@@ -197,9 +216,11 @@ hide dump-width
 hide emit-byte
 hide emit-printable-or-dot
 hide is-call
+hide is-call-slot
 hide is-escape
 hide is-printable?
 hide is-ret
+hide is-xt-loop
 hide old-key
 hide pag
 hide pag-continue
