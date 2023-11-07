@@ -29,7 +29,7 @@ _build/kernel-%.img: x86/kernel.asm x86/layout.asm _build/%.f
 
 
 .PRECIOUS:_build/%.f
-_build/%.f : %.list $(wildcard f/*)
+_build/%.f : %.list $(wildcard *.f *.q f/*)
 	@ echo 'Combining Forth files: $<'
 	@ bash -c 'cat $< | sed s/#.*// | xargs cat > $@' || rm -f $@
 

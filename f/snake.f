@@ -49,6 +49,16 @@ variable bg
 white fg !
 black bg !
 
+( Repeated execution -- copied from tools )
+
+: times ( xt n -- ) ( call xt, n times )
+dup if >r dup >r ( xt )
+execute
+r> r> ( xt n )
+1 - recurse
+then drop drop
+;
+
 ( Make a snake game... )
 
 : block ( x y -- ) bl xy-emit ;

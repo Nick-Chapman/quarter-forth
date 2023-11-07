@@ -38,7 +38,7 @@ dup even? if /2 recurse then
 ;
 
 : z
-27 collatz ;
+27 collatz cr ;
 
 ( AHA - Use return stack to make useful version of twice )
 
