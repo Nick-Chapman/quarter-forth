@@ -1,4 +1,6 @@
 
+: banner s" Welcome to Quarter Forth. A 16-bit Forth system running on x86." ;
+
 8 constant backspace-code
 80 constant screen-width
 : himem sp ;

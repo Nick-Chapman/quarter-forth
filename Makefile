@@ -1,5 +1,5 @@
 
-default = full
+default = x86
 
 build: build-$(default)
 run: run-$(default)

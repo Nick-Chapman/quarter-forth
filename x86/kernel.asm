@@ -861,6 +861,20 @@ defword "write-char-col" ; ( char col -- )
     int 0x10
     ret
 
+defword "fx" ; ( n n n -- ) ;; for BBC
+    pspop ax
+    pspop ax
+    pspop ax
+    print "{fx}"
+    call _cr
+    ret
+
+defword "mode" ; ( n -- ) ;; for BBC
+    pspop ax
+    print "{mode}"
+    call _cr
+    ret
+
 dictionary: dw lastxt
 builtin: dw embedded_load_address
 here_start:
