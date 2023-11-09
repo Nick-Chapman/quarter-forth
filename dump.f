@@ -1,27 +1,20 @@
 
 .." Loading dump.f" cr
 
-: .s-continue
-2 -
-dup 2 - sp > if ( the 2 is for the extra item while processing )
-dup @ .
-recurse
-then
-drop
-;
-
-: .s
-sp0 .s-continue
-;
-
-: show ( n a -- )
+: show1 ( n a -- )
 over 0= if 2drop exit then
-( dup as-num .hex ."  = " dup c@ .hex2 cr )
-dup c@ .hex2 space
+dup c@ [char] & emit .hex2 [char] , emit space
 1+ swap 1- swap recurse
 ;
 
-( here over - swap )
+: show ( n a -- )
+." equb " show1 0 . cr
+;
+
+( over - swap )
+
+dup .hex cr
+
 20 swap
 
 show cr
