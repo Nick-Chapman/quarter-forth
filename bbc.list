@@ -2,9 +2,11 @@ f/quarter.q
 f/forth.f
 f/bbc-params.f
 f/tools.f
-f/regression.f
-f/examples.f
-f/primes.f
+#f/regression.f
+#f/examples.f
+#f/primes.f
 f/buffer.f
 f/bbc-mos.f
+f/play-sound.f
+#f/snake.f
 f/start.f

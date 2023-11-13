@@ -21,7 +21,11 @@ bit 4-0 if CAPS LOCK is engaged.
 : mode1  1 mode ;
 : mode7  7 mode ;
 
-: cls  mode7 ; ( TODO: Track or query current mode )
+: cls  12 emit ;
+
+: at-xy ( y x -- )
+31 emit emit emit
+;
 
 ( Initial Setup )
 
