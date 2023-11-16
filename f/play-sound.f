@@ -21,3 +21,5 @@ half-second swap loud1-sound
 : g 128 pitched ;
 
 : tune c d e f g f e d c ;
+
+tune

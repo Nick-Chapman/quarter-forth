@@ -875,6 +875,16 @@ defword "mode" ; ( n -- ) ;; for BBC
     call _cr
     ret
 
+defword "sound" ;; for BBC
+    ;; ( duration pitch amplitude channel -- )
+    pspop ax
+    pspop ax
+    pspop ax
+    pspop ax
+    print "{sound}"
+    call _cr
+    ret
+
 dictionary: dw lastxt
 builtin: dw embedded_load_address
 here_start:
