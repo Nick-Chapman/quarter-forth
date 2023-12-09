@@ -8,12 +8,12 @@ I've blogged about Forth and Quarter [here](https://nick-chapman.github.io/blog/
 
 ### Bootstrapping
 
-The [Kernel](kernel.asm) provides the core primitive, and starts a bare _key-dispatch-execute_ loop, so the [bootstrapping](forth.list) process can begin.
+The [Kernel](x86/kernel.asm) provides the core primitive, and starts a bare _key-dispatch-execute_ loop, so the [bootstrapping](x86.list) process can begin.
 
-The [first stage](f/forth.q) of the bootstrap defines the `word` and `find` primitives
+The [first stage](f/quarter.q) of the bootstrap defines the `word` and `find` primitives
 necessary for a basic Forth interpreter and compiler. At this point, we are coding in _quarter_ where primitives are referenced by single character names, and accessed via a hard-coded dispatch table in the kernel. By the end of the first stage we have definitions for `[` and `:`. We enter the interpreter now and transition to Forth.
 
-Bootstrapping continues in [Forth](f/system.f), defining all the standard Forth words, and providing us support for numerics, resulting in implementations for `[` and `:` with the standard behaviour expected from a Forth system.
+Bootstrapping continues in [Forth](f/forth.f), defining all the standard Forth words, and providing us support for numerics, resulting in implementations for `[` and `:` with the standard behaviour expected from a Forth system.
 
 ### Language choices
 
