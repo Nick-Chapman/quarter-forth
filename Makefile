@@ -9,7 +9,7 @@ build-%: _build _build/disk-%.img
 
 run-%: _build _build/disk-%.img
 	@ echo 'Runing QEMU'
-	@ bash -c 'qemu-system-i386 -hda _build/disk-$*.img -ctrl-grab > /dev/null 2>& 1'
+	@ bash -c 'qemu-system-i386 -hda _build/disk-$*.img > /dev/null 2>& 1'
 
 .PRECIOUS:_build/disk-%.img
 _build/disk-%.img: _build/bootloader.img _build/kernel-%.img
